@@ -1,0 +1,9 @@
+﻿namespace PlayGuide
+{
+    runtimeclass ControlWindowViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        ControlWindowViewModel();
+
+        String Title;
+    }
+}

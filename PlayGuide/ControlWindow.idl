@@ -1,0 +1,13 @@
+﻿namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass ControlWindow : Microsoft.UI.Xaml.Window
+    {
+        ControlWindow();
+        void Grid_PointerPressed(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+        void Grid_PointerMoved(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+        void Grid_PointerReleased(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+        void Grid_PointerEntered(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+        void Grid_PointerExited(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+    }
+}

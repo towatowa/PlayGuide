@@ -1,0 +1,13 @@
+﻿namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass WebViewPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        WebViewPage(String url);
+        void PlayPause();
+        void Seek(Int32 sec);
+        void Close();
+        String GetUrl();
+        String WebTitle();
+    }
+}

@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="PlayGuide/PlayGuide.vcxproj" Id="ec68b658-d489-40db-a424-7bcf180741ca">
+    <Deploy />
+  </Project>
+  <Project Path="PlayGuideService/PlayGuideService.vcxproj" Id="a602b243-8b30-4de7-bbf9-afb117bba19b">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+</Solution>

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainWindow.xaml" />
+    <Page Include="ControlWindow.xaml" />
+    <Page Include="WebViewPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="MainWindow.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="IniHelper.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="PipeClient.cpp" />
+    <ClCompile Include="AppDataService.cpp" />
+    <ClCompile Include="Win32Helper.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="IniHelper.h" />
+    <ClInclude Include="Appdata.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="PipeClient.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="AppDataService.h" />
+    <ClInclude Include="Win32Helper.h" />
+    <ClInclude Include="WinEventMonitor.h" />
+    <ClInclude Include="ViewModelBase.h">
+      <Filter>ViewModel</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="WebView2Manager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\AppIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{ec68b658-d489-40db-a424-7bcf180741ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ViewModel">
+      <UniqueIdentifier>{ce053f84-f70f-4dc6-bcb4-0a47ee649699}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="PlayGuide_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PlayGuide.rc" />
+  </ItemGroup>
+</Project>

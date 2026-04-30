@@ -1,0 +1,9 @@
+﻿namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow(String url);
+        String Url{ set; get; };
+    }
+}

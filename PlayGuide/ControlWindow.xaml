@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="PlayGuide.ControlWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PlayGuide"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:media="using:Microsoft.UI.Xaml.Media"
+    Title="PlayGuide">
+
+    <!-- 设置系统背景为 Mica -->
+    <Window.SystemBackdrop>
+        <media:DesktopAcrylicBackdrop/>
+    </Window.SystemBackdrop>
+
+    <Grid Margin="0" 
+          Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+          x:Name="RootGrid"
+          PointerPressed="Grid_PointerPressed"
+          PointerMoved="Grid_PointerMoved"
+          PointerReleased="Grid_PointerReleased"
+          PointerEntered="Grid_PointerEntered"
+          PointerExited="Grid_PointerExited">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 🔝 Tab -->
+        <TabView x:Name="urlTabView"
+             Grid.Row="0"
+             HorizontalAlignment="Stretch">
+        </TabView>
+        <!-- 🌐 地址栏 -->
+        <Border Grid.Row="1"
+                Height="38"
+                Margin="0,8,0,0"
+                CornerRadius="8"
+                Padding="10,0"
+                Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    
+                    <!-- 标签 -->
+                </Grid.ColumnDefinitions>
+
+                <!-- 图标 -->
+                <SymbolIcon x:Name="SiteIcon"
+                        Symbol="Globe"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"/>
+
+                <!-- URL 输入 -->
+                <AutoSuggestBox x:Name="UrlBox"
+                            Grid.Column="1"
+                            Background="Transparent"
+                            PlaceholderText="Search Google or type a URL"
+                            BorderThickness="0"
+                            VerticalAlignment="Center"
+                            QueryIcon="Link"
+                            >
+                </AutoSuggestBox>
+            </Grid>
+        </Border>
+        <!-- 📌 8个Label区域 -->
+        <Grid Grid.Row="2"
+              Margin="0,8,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Home" Grid.Column="0" HorizontalAlignment="Center"/>
+            <TextBlock Text="GitHub" Grid.Column="1" HorizontalAlignment="Center"/>
+            <TextBlock Text="Docs" Grid.Column="2" HorizontalAlignment="Center"/>
+            <TextBlock Text="AI" Grid.Column="3" HorizontalAlignment="Center"/>
+            <TextBlock Text="News" Grid.Column="4" HorizontalAlignment="Center"/>
+            <TextBlock Text="Tools" Grid.Column="5" HorizontalAlignment="Center"/>
+            <TextBlock Text="Settings" Grid.Column="6" HorizontalAlignment="Center"/>
+            <TextBlock Text="More" Grid.Column="7" HorizontalAlignment="Center"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>
