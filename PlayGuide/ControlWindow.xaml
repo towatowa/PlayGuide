@@ -98,7 +98,7 @@
             <TextBlock Text="设置" Grid.Column="9" HorizontalAlignment="Right"/>
             <TextBlock Text="关于" Grid.Column="10" HorizontalAlignment="Right"/>
 
-        </Grid>9
+        </Grid>
 
     </Grid>
 
