@@ -23,11 +23,11 @@ int main()
     LOG_INFO << "初始化日志成功\n";
     AppDataService::Get().Initialize((utils::GetExeDir()) / L"config.ini");
     auto hook = std::make_unique<KeyboardHook>();
-
+    auto hotkey = AppDataService::Get().GetHotKeyCache();
     PipeServer::Get().Start();
     hook->SetCallback([&](SimpleEvent& ev)
         {
-            auto hotkey = AppDataService::Get().GetHotkey();
+            
             if (hotkey.find(ev.vk) != hotkey.end())
             {
                 ev.vk = hotkey[ev.vk];

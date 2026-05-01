@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <Windows.h>
+#include "Appdata.h"
 
 class IniHelper
 {

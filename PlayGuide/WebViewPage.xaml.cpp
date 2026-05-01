@@ -23,9 +23,10 @@ namespace winrt::PlayGuide::implementation
 	WebViewPage::WebViewPage()
 	{
 	}
-	WebViewPage::WebViewPage(hstring url)
+	WebViewPage::WebViewPage(hstring url, int idx)
 	{
 		m_url = url;
+		id = idx;
 		auto weak_this = this->get_weak();
 		//这里 webview2的初始化时机问题，由于Loaded是在加入 Visual Tree 才会 Loaded（就是设置为导航页时）
 		//因此如果在Loaded初始化会有白屏，正确的逻辑时机选择在Loaded更合适, 后续可以做WebView 预加载池优化响应速度
@@ -168,7 +169,7 @@ namespace winrt::PlayGuide::implementation
 						LOG_INFO << L"页面加载完成：" << title.c_str() << L"\n";
 
 						// 触发事件通知 MainWindow
-						TabInfo info{ 0, title.c_str(), url.c_str() };
+						TabInfo info{ self->id, title.c_str(), url.c_str() };
 						g_webViewComplatedEvent.Invoke(info);
 					}
 				});

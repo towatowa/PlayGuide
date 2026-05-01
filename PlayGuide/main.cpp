@@ -14,6 +14,7 @@
 #include <tlhelp32.h>
 #include "Win32Helper.h"
 #include <MddBootstrap.h>
+#include "AppDataService.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
@@ -165,7 +166,7 @@ int WINAPI wWinMain(
 
 	//启动事件监听线程
 	PipeClient::Get().StartAsync();
-	
+
 	Application::Start(
 		[&](auto&&)
 		{

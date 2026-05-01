@@ -15,6 +15,7 @@ namespace winrt::PlayGuide::implementation
 
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
         Event<bool>::EventRevoker closeControlWindowEvent;
+        
     private:
         winrt::Microsoft::UI::Xaml::Window m_mainWindow{ nullptr };
         winrt::Microsoft::UI::Xaml::Window m_controlWindow{ nullptr };

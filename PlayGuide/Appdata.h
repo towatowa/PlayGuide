@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Windows.h"
 #include <string>
+#include <unordered_map>
 
 constexpr UINT WM_PLAY = WM_USER + 1;
 constexpr UINT WM_SEEK_ADD = WM_USER + 2;
@@ -17,7 +18,7 @@ struct SimpleEvent
 
 struct TabInfo
 {
-    int idx{ 0 };
+    uint32_t idx{ 0 };
     std::wstring title{ L"" };
     std::wstring url{ L"" };
 };
@@ -28,13 +29,31 @@ struct Appdata
     int y{ 100 };
     int width{ 1280 };
     int height{ 720 };
-    bool maximized{ false };
     int alpha{ 255 };//透明度
-    USHORT play{ 192 };
-    USHORT SeekAdd{ 54 };
-    USHORT SeekDec{ 53 };
-    USHORT OpacityAdd{ 56 };
-    USHORT OpacityDec{ 55 };
-    USHORT show{ 57 };
-    std::wstring url{ L"https://www.bilibili.com/" };
+    virtual ~Appdata() = default; // ⭐关键
 };
+
+struct MainWindowData : Appdata
+{ 
+    bool maximized{ false };
+    std::wstring url;
+};
+
+struct ControlWindowData : Appdata
+{
+
+};
+
+using HotKeyMap = std::unordered_map<std::wstring, USHORT>;
+
+inline HotKeyMap g_defaultHotkeys{
+       {L"Opacity_Add", 56},
+       {L"Opacity_Dec", 55},
+       {L"Play", 192},
+       {L"Seek_Add", 54},
+       {L"Seek_Dec", 53},
+       {L"Show_Hide_Window", 57}
+};
+
+inline std::wstring g_defaultWebUrl{ L"https://www.bilibili.com/" };
+

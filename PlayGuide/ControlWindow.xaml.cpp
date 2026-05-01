@@ -76,14 +76,15 @@ namespace winrt::PlayGuide::implementation
 			{
 				auto self = weak_this.get();
 				if (!self) return;
-				self->urlTabView().SelectionChanged([self](IInspectable const&, SelectionChangedEventArgs const&) {
-						auto item = self->urlTabView().SelectedItem()
-							.as<winrt::Microsoft::UI::Xaml::Controls::TabViewItem>();
+				self->urlTabView().SelectionChanged([self](IInspectable const&, SelectionChangedEventArgs const&) 
+					{
+						auto item = self->urlTabView().SelectedItem().as<TabViewItem>();
 						uint32_t id = 0;
 						auto items = self->urlTabView().TabItems();
 						items.IndexOf(item, id);
 						if (item && item.Header().try_as<hstring>() != L"正在加载中...") {
-							self->tabSeletedChangedEvent.Invoke(id);
+							auto value = winrt::unbox_value<uint32_t>(item.Tag());
+							self->tabSeletedChangedEvent.Invoke(value);
 							LOG_INFO << "SelectionChanged Index=" << id << "\n";
 						}
 					});
@@ -97,7 +98,8 @@ namespace winrt::PlayGuide::implementation
 
 							if (items.IndexOf(tab, index))
 							{
-								self->tabCloseEvent.Invoke(index);
+								auto value = winrt::unbox_value<uint32_t>(tab.Tag());
+								self->tabCloseEvent.Invoke(value);
 								items.RemoveAt(index);
 							}
 					});
@@ -106,11 +108,11 @@ namespace winrt::PlayGuide::implementation
 					Microsoft::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs const& args)
 					{
 							auto tabView = self->urlTabView();
-							int count = tabView.TabItems().Size();
 
 							// 创建新 TabViewItem
 							TabViewItem newTab;
 							newTab.IsClosable(false);
+							newTab.Tag(box_value(self->m_nextId));
 							ToolTipService::SetToolTip(
 								newTab,
 								box_value(L"正在加载中...")
@@ -120,11 +122,10 @@ namespace winrt::PlayGuide::implementation
 							tabView.TabItems().Append(newTab);
 							// 获取输入的文本
 							auto url = sender.Text();
-							self->newUrlEnterEvent.Invoke({ count, L"", url.c_str() });
+							self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", url.c_str() });
 					});
 				self->urlTabView().AddTabButtonClick([self](IInspectable const& sender, auto const&) {
 						auto tabView = self->urlTabView();
-						int count = tabView.TabItems().Size();
 
 						// 创建新 TabViewItem
 						TabViewItem newTab;
@@ -133,6 +134,7 @@ namespace winrt::PlayGuide::implementation
 							newTab,
 							box_value(L"正在加载中...")
 						);
+						newTab.Tag(box_value(self->m_nextId));
 						newTab.Header(box_value(L"正在加载中..."));
 						self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 
@@ -141,8 +143,23 @@ namespace winrt::PlayGuide::implementation
 						//tabView.SelectedItem(newTab);
 						//默认导航网页
 						std::wstring defaultUrl = L"https://www.bilibili.com/";
-						self->newUrlEnterEvent.Invoke({ count, L"", defaultUrl.c_str() });
+						self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
 					});
+			});
+		this->m_pipeClientHandleRevoker =
+			PipeClient::Get().handler(auto_revoke, [weak_this](SimpleEvent msg)
+				{
+					if (auto self = weak_this.get())
+					{
+						std::wstring title = Win32Helper::GetWindowTitle(msg.hwnd);
+						if (title != L"PlayGuide")
+							self->HandleEvent(msg.vk);
+					}
+				});
+
+		this->Closed([weak_this](auto&&, auto&&) {
+			if (auto self = weak_this.get())
+				self->SaveWindowStateData();
 			});
 	}
 
@@ -162,15 +179,23 @@ namespace winrt::PlayGuide::implementation
 				self->ExtendsContentIntoTitleBar(true);
 				TabViewItem newTab;
 				newTab.IsClosable(false);
+				newTab.Tag(box_value(self->m_nextId++));
 				newTab.Header(box_value(L"正在加载中..."));
 				self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 				self->urlTabView().TabItems().Append(newTab);
+				auto  controlData = AppDataService::Get().LoadControlData();
+				self->ApplyWindowState(controlData);
 				//设置标题栏拖动区域
 				if (auto appWin = self->AppWindow()) {
 					UINT dpi = GetDpiForWindow(self->m_hwnd);
 					int width = ExpandWidth * dpi / 96.0f;
 					int height = ExpandHeight * dpi / 96.0f;
-					appWin.Resize({ width, height });
+					appWin.MoveAndResize({ controlData.x, controlData.y, width, height });
+					auto side = self->CheckDockSide({ controlData.x, controlData.y, width, height}, self->m_screenCache);
+					if (side != DockSide::None)
+						self->m_hoverTimer.Start();
+
+					//appWin.Resize({ width, height });
 					appWin.TitleBar().SetDragRectangles({ winrt::Windows::Graphics::RectInt32{0, 0, 10000, 40} });
 					appWin.IsShownInSwitchers(false);//不出现在系统任务列表
 				}
@@ -413,25 +438,162 @@ namespace winrt::PlayGuide::implementation
 	}
 	void ControlWindow::SetPageCreatedStateEventRevoker(Event<TabInfo>& event)
 	{
+		std::lock_guard lock(m_mutex);
 		auto weak_this = this->get_weak();
 		pageCreatedStateEventRevoker = event(auto_revoke, [weak_this](TabInfo info) {
+			
 			if (auto self = weak_this.get())
 			{
 				auto items = self->urlTabView().TabItems();
-				if (info.idx >= items.Size())
-					return;
-				auto item = items.GetAt(info.idx).try_as<TabViewItem>();
-				item.IsClosable(true);
-				item.Header(box_value(info.title));
-				ToolTipService::SetToolTip(
-					item,
-					box_value(info.title)
-				);
-				//self->TabViewTitle(info.title.c_str());
-				self->UrlBox().Text(info.url);
-				self->urlTabView().SelectedItem(item);
-				self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Globe);
+				
+				if (auto item = self->FindTabViewItem(info.idx)) {
+
+					item.IsClosable(true);
+					item.Header(box_value(info.title));
+					ToolTipService::SetToolTip(
+						item,
+						box_value(info.title)
+					);
+					//self->TabViewTitle(info.title.c_str());
+					self->UrlBox().Text(info.url);
+					self->urlTabView().SelectedItem(item);
+					self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Globe);
+				}
 			}
 			});
 	}
+
+	void ControlWindow::HandleEvent(UINT msg) noexcept
+	{
+		auto weak_this = this->get_weak();
+		switch (msg)
+		{
+		case WM_OPACITY_ADD:
+		{
+			BYTE alpha = Win32Helper::GetOpacity(m_hwnd) - 10;
+			Win32Helper::SetOpacity(m_hwnd, alpha);
+			break;
+		}
+		case WM_OPACITY_DEC:
+		{
+			byte alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
+			Win32Helper::SetOpacity(m_hwnd, alpha);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	void ControlWindow::ApplyWindowState(const ControlWindowData& state) noexcept
+	{
+		if (!m_hwnd)
+			return;
+
+		// ---- 获取当前显示器工作区（Win32）----
+		HMONITOR monitor = MonitorFromWindow(m_hwnd, MONITOR_DEFAULTTONEAREST);
+
+		MONITORINFO mi{};
+		mi.cbSize = sizeof(mi);
+		GetMonitorInfo(monitor, &mi);
+
+		RECT work = mi.rcWork;
+
+		// ---- 目标窗口区域 ----
+		RECT rc{
+			state.x,
+			state.y,
+			state.x + state.width,
+			state.y + state.height
+		};
+
+		// ---- 检查是否在屏幕内 ----
+		bool outOfBounds =
+			rc.left   < work.left ||
+			rc.top    < work.top ||
+			rc.right  > work.right ||
+			rc.bottom > work.bottom;
+
+		int x, y;
+
+		if (outOfBounds)
+		{
+			// 居中
+			x = work.left + (work.right - work.left - state.width) / 2;
+			y = work.top + (work.bottom - work.top - state.height) / 2;
+		}
+		else
+		{
+			x = rc.left;
+			y = rc.top;
+		}
+
+		// ---- 透明度（Layered）----
+		LONG ex = GetWindowLong(m_hwnd, GWL_EXSTYLE);
+		if (!(ex & WS_EX_LAYERED))
+		{
+			SetWindowLong(m_hwnd, GWL_EXSTYLE, ex | WS_EX_LAYERED);
+		}
+
+		SetLayeredWindowAttributes(
+			m_hwnd,
+			0,
+			static_cast<BYTE>(state.alpha),
+			LWA_ALPHA
+		);
+	}
+
+	void ControlWindow::SaveWindowStateData() noexcept
+	{
+		if (!m_hwnd)
+		{
+			LOG_INFO << "SaveWindowStateData read m_hwnd is nullptr \n";
+			return;
+		}
+
+		ControlWindowData state;
+		//先获取窗口的大小和位置
+
+
+		RECT rc{};
+		::GetWindowRect(m_hwnd, &rc);
+
+		state.x = rc.left;
+		state.y = rc.top;
+		state.width = rc.right - rc.left;
+		state.height = rc.bottom - rc.top;
+
+		//获取窗的最大最小化状态
+		WINDOWPLACEMENT wp{ sizeof(wp) };
+		GetWindowPlacement(m_hwnd, &wp);
+		//窗口的透明度
+		state.alpha = Win32Helper::GetOpacity(m_hwnd);
+
+
+		//热键在后台service进程里写
+		AppDataService::Get().SaveControlData(state);
+
+	}
+
+	TabViewItem ControlWindow::FindTabViewItem(uint32_t idx)
+	{
+		for (const auto& item : this->urlTabView().TabItems())
+		{
+			auto tab = item.try_as<TabViewItem>();
+			if (!tab) continue;
+
+			auto tag = tab.Tag();
+
+			if (tag)
+			{
+				if (winrt::unbox_value<uint32_t>(tag) == idx)
+				{
+					return tab;
+				}
+			}
+		}
+
+		return nullptr;
+	}
 }
+

@@ -12,9 +12,12 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
 
 #include "Event.h"
 #include "Appdata.h"
+#include "PipeClient.h"
+#include "AppDataService.h"
 
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Input;
@@ -22,6 +25,7 @@ using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Microsoft::UI::Dispatching;
+using namespace Microsoft::UI::Xaml::Controls;
 
 namespace winrt::PlayGuide::implementation
 {
@@ -76,6 +80,14 @@ namespace winrt::PlayGuide::implementation
 
         void SetCloseEventInvoker(Event<bool>& event);
         void SetPageCreatedStateEventRevoker(Event<TabInfo>& event);
+        void HandleEvent(UINT msg) noexcept;
+
+        void ApplyWindowState(const ControlWindowData& state) noexcept;
+
+        void SaveWindowStateData() noexcept;
+
+        TabViewItem FindTabViewItem(uint32_t idx);
+
         Event<bool>::EventRevoker visibleInvoker;
         Event<bool>::EventRevoker closeEventRevoker;
         Event<int> tabSeletedChangedEvent;
@@ -83,7 +95,7 @@ namespace winrt::PlayGuide::implementation
         Event<TabInfo>newUrlEnterEvent;
         //Event<bool>::EventRevoker tabClosingStateEventRevoker;
         Event<TabInfo>::EventRevoker pageCreatedStateEventRevoker;
-
+        Event<SimpleEvent>::EventRevoker m_pipeClientHandleRevoker;
     private:
         // 拖拽状态
         bool        m_isDragging{ false };
@@ -104,6 +116,8 @@ namespace winrt::PlayGuide::implementation
         DispatcherQueueTimer m_hoverTimer{ nullptr }; 
         std::chrono::steady_clock::time_point m_lastMoveTime;
         hstring m_title;
+        std::mutex m_mutex;
+        uint32_t m_nextId{ 0 };
     };
 }
 

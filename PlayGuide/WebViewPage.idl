@@ -3,7 +3,7 @@
     [default_interface]
     runtimeclass WebViewPage : Microsoft.UI.Xaml.Controls.Page
     {
-        WebViewPage(String url);
+        WebViewPage(String url, Int32 idx);
         void PlayPause();
         void Seek(Int32 sec);
         void Close();

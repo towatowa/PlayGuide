@@ -36,34 +36,29 @@ namespace winrt::PlayGuide::implementation
 							self->HandleEvent(msg.vk);
 					}
 				});
+
 		this->Closed([weak_this](auto const&, auto const&args)
 			{
-				
-				auto self = weak_this.get();
-				
-				Appdata data = self->CaptureWindowData();
-				AppDataService::Get().SaveState(data);
+				if (auto self = weak_this.get()) {
+					self->SaveWindowStateData();
+					auto pages = self->m_webViewPages;
+					self->m_webViewPages.clear();
 
-				PipeClient::Get().Stop();
-				
-				self->m_alive = false;
-				for (auto& wv : self->m_webViewPages) {
-					auto page = wv.try_as<PlayGuide::WebViewPage>();
-					page.Close();
+					for (auto& wv : pages)
+					{
+						if (auto page = wv.second.try_as<PlayGuide::WebViewPage>())
+						{
+							page.Close();
+						}
+					}
+					self->controlWindowCloseEvent.Invoke(true);
+					LOG_INFO << (L"Window state saved successfully.\n");
 				}
-				self->m_webViewPages.clear();
-				
-				LOG_INFO << (L"Window state saved successfully.\n");
-				Logger::Instance().Stop();
-				//resume_background();
-				self->controlWindowCloseEvent.Invoke(true);
 			});
 		
 		this->Activated([weak_this](auto&&sender, auto&&args) {
 			if (auto self = weak_this.get())
 			{
-				if (!self->m_alive)
-					return;
 				if (self->m_isCmdActived)
 				{
 					self->m_isCmdActived = false;//忽略来自命令的激活
@@ -91,9 +86,9 @@ namespace winrt::PlayGuide::implementation
 		{
 			if (auto self = weak_this.get())
 			{
-				info.idx = self->m_curIndex;
+				//info.idx = self->m_curIndex;
 				self->pageCreatedStateEvent.Invoke(info);
-				self->RootFrame().Content(self->m_webViewPages[self->m_curIndex]);
+				//self->RootFrame().Content(self->m_webViewPages[self->m_curIndex]);
 			}
 		});
 	}
@@ -110,13 +105,10 @@ namespace winrt::PlayGuide::implementation
 				self->AppWindow().TitleBar().SetDragRectangles({ winrt::Windows::Graphics::RectInt32{0, 0, 10000, 40} });
 				if (auto presenter = self->AppWindow().Presenter().as<OverlappedPresenter>())
 					presenter.IsAlwaysOnTop(true);
-				auto state = AppDataService::Get().LoadState();
+				MainWindowData state = AppDataService::Get().LoadMainData();
+
 				self->ApplyWindowState(state);
-				//初始化第一个页面
-				auto firstPage = make<PlayGuide::implementation::WebViewPage>(self->m_url);
-				self->m_webViewPages.push_back(firstPage);
-				self->RootFrame().Content(firstPage);
-				//self->CreateWebViewPage(self->m_url);
+				self->CreateWebViewPage(state.url.c_str(), 0);
 			});
 	}
 
@@ -211,7 +203,7 @@ namespace winrt::PlayGuide::implementation
 		}
 	}
 
-	void MainWindow::ApplyWindowState(const Appdata& state) noexcept
+	void MainWindow::ApplyWindowState(const MainWindowData& state) noexcept
 	{
 		if (!m_hwnd)
 			return;
@@ -290,12 +282,15 @@ namespace winrt::PlayGuide::implementation
 		);
 	}
 
-	Appdata MainWindow::CaptureWindowData() noexcept
+	void MainWindow::SaveWindowStateData() noexcept
 	{
 		if (!m_hwnd)
-			return Appdata{};
+		{
+			LOG_INFO << "SaveWindowStateData read m_hwnd is nullptr \n";
+			return;
+		}
 		
-		Appdata state;
+		MainWindowData state;
         //先获取窗口的大小和位置
 		
 
@@ -315,22 +310,23 @@ namespace winrt::PlayGuide::implementation
 		state.alpha = Win32Helper::GetOpacity(m_hwnd);
 
 		//当前打开的url
-		state.url = this->m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
+        state.url = m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
 
 		//热键在后台service进程里写
-		return state;
+		AppDataService::Get().SaveMainData(state);
+		
 	}
 
-	void MainWindow::CreateWebViewPage(hstring url) noexcept
+	void MainWindow::CreateWebViewPage(hstring url, int idx) noexcept
 	{
 		auto weak_this = this->get_weak();
-		DispatcherQueue().TryEnqueue([weak_this, url]() {
+		DispatcherQueue().TryEnqueue([weak_this, url, idx]() {
 			auto self = weak_this.get();
 			if (!self) return;
-			self->m_webViewPages.emplace_back(make<PlayGuide::implementation::WebViewPage>(url));
+			self->m_webViewPages[idx] = make<PlayGuide::implementation::WebViewPage>(url, idx);
 			//立即切换页面
-			self->RootFrame().Content(self->m_webViewPages.back());
-			self->m_curIndex = self->m_webViewPages.size() - 1;
+			self->RootFrame().Content(self->m_webViewPages[idx]);
+			self->m_curIndex = idx;
 			
 			LOG_INFO << "Created  a page " << std::wstring(url.c_str()) << "\n";
 	     });
@@ -344,12 +340,13 @@ namespace winrt::PlayGuide::implementation
 		DispatcherQueue().TryEnqueue([weak_this, index]() {
 			auto self = weak_this.get();
 			if (!self) return;
-			if (index < 0 || index >= self->m_webViewPages.size())
+			if (index < 0)
 				return;
+
 			if (index == self->m_curIndex)
 				self->RootFrame().Content(nullptr);
-
-			self->m_webViewPages.erase(self->m_webViewPages.begin() + index);
+			self->m_webViewPages[index].try_as<PlayGuide::WebViewPage>().Close();
+			self->m_webViewPages.erase(index);
 			LOG_INFO << "Deleted page " << index << "\n";
 			});
 	}
@@ -380,7 +377,7 @@ namespace winrt::PlayGuide::implementation
 	{
 		newUrlEnterEvent = event(auto_revoke, [this](TabInfo info) {
 			m_curIndex = info.idx;
-			CreateWebViewPage(info.url.c_str());
+			CreateWebViewPage(info.url.c_str(), info.idx);
 			});
 	}
 

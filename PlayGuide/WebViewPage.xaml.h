@@ -21,7 +21,7 @@ namespace winrt::PlayGuide::implementation
     struct WebViewPage : WebViewPageT<WebViewPage>
     {
         WebViewPage();
-        WebViewPage(hstring url);
+        WebViewPage(hstring url, int idx);
 
         hstring Url() noexcept {
             return m_url;
@@ -47,6 +47,7 @@ namespace winrt::PlayGuide::implementation
         static winrt::Microsoft::Web::WebView2::Core::CoreWebView2Environment m_webView2Environment;
         static std::filesystem::path m_localFolder;
         winrt::Microsoft::UI::Xaml::Controls::WebView2 webView{ nullptr };
+        int id{ 0 };
     };
 }
 

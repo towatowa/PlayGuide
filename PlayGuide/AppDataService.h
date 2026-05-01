@@ -3,31 +3,57 @@
 #include "IniHelper.h"
 #include <unordered_map>
 #include <string>
+#include <memory>
+#include <filesystem>
 
 class AppDataService
 {
 public:
-    static AppDataService& Get() {
+    static AppDataService& Get()
+    {
         static AppDataService ins;
         return ins;
     }
+
+    // =========================
+    // 初始化
+    // =========================
     void Initialize(const std::wstring& path);
+    void CreateDefaultConfig(const std::wstring& path);
+    // =========================
+    // Load
+    // =========================
+    MainWindowData LoadMainData() const;
+    ControlWindowData LoadControlData() const;
+    HotKeyMap LoadHotkeys() const;
+    std::vector<std::wstring> LoadUrls() const;
 
-    Appdata LoadState();
-    void SaveState(Appdata const& s);
-
-    std::unordered_map<USHORT, UINT> GetHotkey() const;
-
-    Appdata& State();
+    // =========================
+    // Save
+    // =========================
+    void SaveMainData(const MainWindowData& data);
+    void SaveControlData(const ControlWindowData& data);
+    void SaveHotkeys(const HotKeyMap& hotkeys);
+    void SaveUrls(const std::vector<std::wstring>& data);
+    // =========================
+    // runtime cache
+    // =========================
+    const MainWindowData& GetMainDataCache() const { return m_mainData; }
+    const ControlWindowData& GetControlDataCache() const { return m_controlData; }
+    const HotKeyMap& GetHotKeyMapCache() const { return m_hotkeyMap; };
+    const std::unordered_map<UINT, USHORT>& GetHotKeyCache() const { return m_hotkey; };
 private:
     AppDataService() = default;
-    ~AppDataService() {};
+    ~AppDataService() = default;
 
     AppDataService(const AppDataService&) = delete;
     AppDataService& operator=(const AppDataService&) = delete;
 
 private:
-    Appdata m_state;
-    IniHelper m_ini{ L"config.ini" };
-    std::unordered_map<USHORT, UINT> m_hotkey;
+   
+    MainWindowData m_mainData{};
+    ControlWindowData m_controlData{};
+    HotKeyMap m_hotkeyMap{};
+    std::unordered_map<UINT, USHORT>m_hotkey;
+    std::unique_ptr<IniHelper> m_ini;
 };

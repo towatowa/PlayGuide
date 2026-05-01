@@ -78,7 +78,7 @@ namespace winrt::PlayGuide::implementation
 			self->m_mainWindow = make<MainWindow>(L"https://www.bilibili.com");
 			auto mainWindow = self->m_mainWindow.try_as<MainWindow>();
 			self->closeControlWindowEvent = mainWindow->controlWindowCloseEvent(auto_revoke, [self](bool value) {
-				//self->m_controlWindow.Close();
+				self->m_controlWindow.Close();
 				//winrt::resume_after(std::chrono::milliseconds(1000));
 				self->Exit();
 				});

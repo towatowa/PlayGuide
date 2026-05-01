@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "Appdata.h"
 #include "WebViewPage.xaml.h"
+#include <unordered_map>
 
 using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Dispatching;
@@ -36,16 +37,17 @@ namespace winrt::PlayGuide::implementation
 		void Seek(int sec) noexcept;
 		void ShowHideWindow() noexcept;
 		void HandleEvent(UINT msg) noexcept;
-		void ApplyWindowState(const Appdata&state) noexcept;
-		Appdata CaptureWindowData() noexcept;
+		void ApplyWindowState(const MainWindowData&state) noexcept;
+		void SaveWindowStateData() noexcept;
 
-		void CreateWebViewPage(hstring url) noexcept;
+		void CreateWebViewPage(hstring url, int idx) noexcept;
 		void DeleteWebViewPage(int index) noexcept;
 		void NavigatedTo(int index) noexcept;
 
 		void SetTabCloseEvent(Event<int>& event);
 		void SetNewUrlEnterEvent(Event<TabInfo>& event);
 		void SetTabSeletedChangedEvent(Event<int>& event);
+
 		Event<bool> controlWindowVisible;
 		Event<bool> controlWindowHideEvent;
 		Event<bool> controlWindowCloseEvent;
@@ -63,8 +65,8 @@ namespace winrt::PlayGuide::implementation
 		HWND m_hwnd{ nullptr };
 		bool m_isCmdActived{ false };
 
-		std::vector<IInspectable> m_webViewPages;
-		bool m_alive{ true };
+		//std::vector<IInspectable> m_webViewPages;
+		std::unordered_map<uint32_t, IInspectable>m_webViewPages;
 		int m_curIndex{ 0 };
 	};
 }
