@@ -170,7 +170,7 @@ namespace winrt::PlayGuide::implementation
 					UINT dpi = GetDpiForWindow(self->m_hwnd);
 					int width = ExpandWidth * dpi / 96.0f;
 					int height = ExpandHeight * dpi / 96.0f;
-					appWin.Resize({ 1280, 200 });
+					appWin.Resize({ width, height });
 					appWin.TitleBar().SetDragRectangles({ winrt::Windows::Graphics::RectInt32{0, 0, 10000, 40} });
 					appWin.IsShownInSwitchers(false);//不出现在系统任务列表
 				}

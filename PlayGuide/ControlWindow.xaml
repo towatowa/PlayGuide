@@ -71,7 +71,7 @@
         </Border>
         <!-- 📌 8个Label区域 -->
         <Grid Grid.Row="2"
-              Margin="0,8,0,0">
+              Margin="8,8,8,8">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -82,18 +82,23 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <TextBlock Text="主页" Grid.Column="0" HorizontalAlignment="Left"/>
+            <TextBlock Text="播放/暂停(~)" Grid.Column="1" HorizontalAlignment="Center"/>
+            <TextBlock Text="结束(0)" Grid.Column="2" HorizontalAlignment="Center"/>
+            <TextBlock Text="最大化(1)" Grid.Column="3" HorizontalAlignment="Center"/>
+            <TextBlock Text="快退(5)" Grid.Column="4" HorizontalAlignment="Center"/>
+            <TextBlock Text="快进(6)" Grid.Column="5" HorizontalAlignment="Center"/>
+            <TextBlock Text="透明度-(7)" Grid.Column="6" HorizontalAlignment="Center"/>
+            <TextBlock Text="透明度+(8)" Grid.Column="7" HorizontalAlignment="Center"/>
+            <TextBlock Text="显示/隐藏(9)" Grid.Column="8" HorizontalAlignment="Center"/>
+            <TextBlock Text="设置" Grid.Column="9" HorizontalAlignment="Right"/>
+            <TextBlock Text="关于" Grid.Column="10" HorizontalAlignment="Right"/>
 
-            <TextBlock Text="Home" Grid.Column="0" HorizontalAlignment="Center"/>
-            <TextBlock Text="GitHub" Grid.Column="1" HorizontalAlignment="Center"/>
-            <TextBlock Text="Docs" Grid.Column="2" HorizontalAlignment="Center"/>
-            <TextBlock Text="AI" Grid.Column="3" HorizontalAlignment="Center"/>
-            <TextBlock Text="News" Grid.Column="4" HorizontalAlignment="Center"/>
-            <TextBlock Text="Tools" Grid.Column="5" HorizontalAlignment="Center"/>
-            <TextBlock Text="Settings" Grid.Column="6" HorizontalAlignment="Center"/>
-            <TextBlock Text="More" Grid.Column="7" HorizontalAlignment="Center"/>
-
-        </Grid>
+        </Grid>9
 
     </Grid>
 

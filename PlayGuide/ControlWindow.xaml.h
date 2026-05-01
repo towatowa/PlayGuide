@@ -28,7 +28,7 @@ namespace winrt::PlayGuide::implementation
     // 吸附阈值、展开/收缩尺寸
     constexpr int AdsorbThreshold = 15;
     constexpr int ExpandWidth = 854;
-    constexpr int ExpandHeight = 134;
+    constexpr int ExpandHeight = 120;
     constexpr int DockSnapWidth = 4;
     constexpr int DockSnapHeight = 4;
 

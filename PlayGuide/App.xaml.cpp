@@ -2,7 +2,6 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 #include "ControlWindow.xaml.h"
-#include "WebViewPreloader.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -39,9 +38,17 @@ namespace winrt::PlayGuide::implementation
 	HWND App::GetHwnd(winrt::Microsoft::UI::Xaml::Window const& window)
 	{
 		HWND hwnd{ nullptr };
-
 		auto windowNative = window.as<IWindowNative>();
-		windowNative->get_WindowHandle(&hwnd);
+		// 等到 HWND 真正创建
+		for (int i = 0; i < 50; i++)
+		{
+			windowNative->get_WindowHandle(&hwnd);
+
+			if (hwnd != nullptr)
+				break;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 
 		return hwnd;
 	}
@@ -61,29 +68,29 @@ namespace winrt::PlayGuide::implementation
 			self->m_mainWindow.Activate();
 			});
 		*/
-		auto dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
-		m_mainWindow = make<MainWindow>(L"https://www.bilibili.com");
-		auto mainWindow = m_mainWindow.try_as<MainWindow>();
-		//auto controlWindow = m_controlWindow.try_as<ControlWindow>()
+		//auto dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+		m_controlWindow = make<ControlWindow>();
+		auto controlWindow = m_controlWindow.try_as<ControlWindow>();
+		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
+		m_controlWindow.Activate();
 
-		dispatcherQueue.TryEnqueue([self = get_strong(), mainWindow]() {
-			self->m_controlWindow = make<ControlWindow>();
-			auto controlWindow = self->m_controlWindow.try_as<ControlWindow>();
-			controlWindow->SetVisibleInvoker(mainWindow->controlWindowVisible);
+		m_controlWindow.DispatcherQueue().TryEnqueue([self = get_strong(), controlWindow]() {
+			self->m_mainWindow = make<MainWindow>(L"https://www.bilibili.com");
+			auto mainWindow = self->m_mainWindow.try_as<MainWindow>();
 			self->closeControlWindowEvent = mainWindow->controlWindowCloseEvent(auto_revoke, [self](bool value) {
 				//self->m_controlWindow.Close();
 				//winrt::resume_after(std::chrono::milliseconds(1000));
 				self->Exit();
 				});
+			controlWindow->SetVisibleInvoker(mainWindow->controlWindowVisible);
 			mainWindow->SetTabCloseEvent(controlWindow->tabCloseEvent);
 			mainWindow->SetTabSeletedChangedEvent(controlWindow->tabSeletedChangedEvent);
 			mainWindow->SetNewUrlEnterEvent(controlWindow->newUrlEnterEvent);
 			controlWindow->SetPageCreatedStateEventRevoker(mainWindow->pageCreatedStateEvent);
-
-			mainWindow->MainInitialize(self->GetHwnd(self->m_mainWindow));
 			self->m_mainWindow.Activate();
-			controlWindow->InitializeControl(self->GetHwnd(self->m_controlWindow));
-			self->m_controlWindow.Activate();
+			mainWindow->MainInitialize(self->GetHwnd(self->m_mainWindow));
+			
+			//controlWindow->InitializeControl(self->GetHwnd(self->m_controlWindow));
 			});
 			/*
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
