@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PlayGuide.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PlayGuide"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <StackPanel Padding="40,30,40,40" Spacing="24">
+
+            <!-- 标题 -->
+            <TextBlock Text="设置"
+                       FontSize="28"
+                       FontWeight="SemiBold"/>
+
+            <!-- ================= 常规 ================= -->
+            <TextBlock Text="常规"
+                       FontSize="16"
+                       Opacity="0.7"
+                       Margin="0,10,0,0"/>
+
+            <!-- 语言 -->
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xF2B7;" Grid.Column="0" FontSize="18" Margin="8"/>
+                              
+                    <!-- Global -->
+                    <StackPanel Grid.Column="1" Margin="0,8,0,8">
+                        <TextBlock Text="语言" FontSize="16"/>
+                    </StackPanel>
+
+                    <ComboBox x:Name="LanguageBox"
+                              Grid.Column="2"
+                              Width="180"
+                              HorizontalAlignment="Right">
+                        <ComboBoxItem Content="Windows 默认"/>
+                        <ComboBoxItem Content="简体中文"/>
+                        <ComboBoxItem Content="English"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- 主题 -->
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE793;" Grid.Column="0" FontSize="18" Margin="8"/>
+                    
+                    <TextBlock Grid.Column="1" Text="主题" FontSize="16" Margin="0,8,0,8"/>
+
+                    <ComboBox x:Name="ThemeBox"
+                              Grid.Column="2"
+                              Width="180">
+                        <ComboBoxItem Content="Windows 默认"/>
+                        <ComboBoxItem Content="浅色"/>
+                        <ComboBoxItem Content="深色"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+
+            <!-- 托盘 -->
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <FontIcon Glyph="&#xE9F5;" Grid.Column="0" FontSize="18" Margin="8"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="托盘运行"/>
+                        <TextBlock Text="关闭窗口后仍在后台运行" Opacity="0.6" FontSize="12"/>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="TraySwitch"
+                                  Grid.Column="2"/>
+                </Grid>
+            </Border>
+
+            <!-- ================= 启动 ================= -->
+            <TextBlock Text="启动"
+                       FontSize="16"
+                       Opacity="0.7"
+                       Margin="0,10,0,0"/>
+
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE768;" Grid.Column="0" FontSize="18" Margin="8"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="开机启动"/>
+                        <TextBlock Text="系统启动时自动运行应用" Opacity="0.6" FontSize="12"/>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="AutoStartSwitch"
+                                  Grid.Column="2"/>
+                    <!--/Toggled="AutoStartSwitch_Toggled"/>-->
+                </Grid>
+            </Border>
+
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE72E;" Grid.Column="0" FontSize="18" Margin="8"/>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="管理员运行"/>
+                        <TextBlock Text="部分功能需要权限" Opacity="0.6" FontSize="12"/>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="AdminSwitch"
+                                  Grid.Column="2"/>
+                </Grid>
+            </Border>
+
+            <!-- ================= 性能 ================= -->
+            <TextBlock Text="性能"
+                       FontSize="16"
+                       Opacity="0.7"
+                       Margin="0,10,0,0"/>
+
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE950;" Grid.Column="0" FontSize="18" Margin="8"/>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Intel 小核优先"/>
+                        <TextBlock Text="优先使用 E-Core" Opacity="0.6" FontSize="12"/>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="ECoreSwitch"
+                                  Grid.Column="2"/>
+                </Grid>
+            </Border>
+
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE713;" Grid.Column="0" FontSize="18" Margin="8"/>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="CPU 亲和性优化"/>
+                        <TextBlock Text="默认为亲和最低使用核心和限制核心使用数" Opacity="0.6" FontSize="12"/>
+                    </StackPanel>
+
+                    <ToggleSwitch x:Name="AffinitySwitch"
+                                  Grid.Column="2"/>
+                </Grid>
+            </Border>
+
+            <!-- ================= 输入 ================= -->
+            <TextBlock Text="输入"
+                       FontSize="16"
+                       Opacity="0.7"
+                       Margin="0,10,0,0"/>
+
+            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon Glyph="&#xE765;" Grid.Column="0" FontSize="18" Margin="8"/>
+
+                    <TextBlock Grid.Column="1" Text="按键捕获方式" Margin="0,8,0,10"/>
+
+                    <ComboBox x:Name="KeyCaptureBox"
+                              Grid.Column="2"
+                              Width="200">
+                        <ComboBoxItem Content="Hook (全局钩子)"/>
+                        <ComboBoxItem Content="Raw Input（推荐）"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -9,6 +9,7 @@
 #include <winrt/Microsoft.UI.Interop.h>
 #include "AppDataService.h"
 #include "Win32Helper.h"
+#include "SettingsPage.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -108,7 +109,8 @@ namespace winrt::PlayGuide::implementation
 				MainWindowData state = AppDataService::Get().LoadMainData();
 
 				self->ApplyWindowState(state);
-				self->CreateWebViewPage(state.url.c_str(), 0);
+				//self->CreateWebViewPage(state.url.c_str(), 0);
+				self->RootFrame().Content(make<SettingsPage>());
 			});
 	}
 

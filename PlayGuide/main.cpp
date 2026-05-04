@@ -13,7 +13,6 @@
 #include "WinEventMonitor.h"
 #include <tlhelp32.h>
 #include "Win32Helper.h"
-#include <MddBootstrap.h>
 #include "AppDataService.h"
 
 using namespace winrt;

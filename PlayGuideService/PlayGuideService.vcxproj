@@ -138,7 +138,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\PlayGuide\AppDataService.cpp" />
-    <ClCompile Include="..\PlayGuide\IniHelper.cpp" />
     <ClCompile Include="..\PlayGuide\Logger.cpp" />
     <ClCompile Include="IniHelper.cpp" />
     <ClCompile Include="KeyboardHook.cpp" />
