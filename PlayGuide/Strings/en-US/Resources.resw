@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Abort" xml:space="preserve">
+    <value>Abort</value>
+  </data>
+  <data name="EnableHotkeys_Description" xml:space="preserve">
+    <value>Enable keyboard shortcuts for quick actions.</value>
+  </data>
+  <data name="EnableHotkeys_Name" xml:space="preserve">
+    <value>Enable hotkeys</value>
+  </data>
+  <data name="Hook" xml:space="preserve">
+    <value>Global input capture</value>
+  </data>
+  <data name="Input" xml:space="preserve">
+    <value>Input</value>
+  </data>
+  <data name="IntelCpuUseECore" xml:space="preserve">
+    <value>Prefer E-cores</value>
+  </data>
+  <data name="IntelCpuUseECore_Description" xml:space="preserve">
+    <value>Run tasks on Intel efficiency cores when possible to reduce power consumption.</value>
+  </data>
+  <data name="KeyboardCaptureMethod" xml:space="preserve">
+    <value>Keyboard input method</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Performance" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="RawInput" xml:space="preserve">
+    <value>Raw Input</value>
+  </data>
+  <data name="RunAsAdmin" xml:space="preserve">
+    <value>Always run as administrator</value>
+  </data>
+  <data name="RunAsAdmin_Description" xml:space="preserve">
+    <value>Run the application with elevated privileges.</value>
+  </data>
+  <data name="RunAtStartup" xml:space="preserve">
+    <value>Run at startup</value>
+  </data>
+  <data name="RunAtStartup_Description" xml:space="preserve">
+    <value>Start automatically when Windows starts.</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settins</value>
+  </data>
+  <data name="PlayPause_Name" xml:space="preserve">
+    <value>Play / Pause</value>
+  </data>
+  <data name="StartUp" xml:space="preserve">
+    <value>Start up</value>
+  </data>
+  <data name="SystemTrayRun" xml:space="preserve">
+    <value>Tray operation</value>
+  </data>
+  <data name="SystemTrayRun_Description" xml:space="preserve">
+    <value>It continues to run in the background even after the window is closed.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="PlayPause_Description" xml:space="preserve">
+    <value>Play or pause the current media.</value>
+  </data>
+  <data name="SkipForward_Name" xml:space="preserve">
+    <value>Fast forward</value>
+  </data>
+  <data name="SkipForward_Description" xml:space="preserve">
+    <value>Jump forward in the video.</value>
+  </data>
+  <data name="SkipBackward_Name" xml:space="preserve">
+    <value>Skip backward</value>
+  </data>
+  <data name="SkipBackward_Description" xml:space="preserve">
+    <value>Jump backward in the video.</value>
+  </data>
+  <data name="IncreaseOpacity_Name" xml:space="preserve">
+    <value>Increase opacity</value>
+  </data>
+  <data name="IncreaseOpacity_Description" xml:space="preserve">
+    <value>Increase the window transparency level.</value>
+  </data>
+  <data name="DecreaseOpacity_Name" xml:space="preserve">
+    <value>Decrease opacity</value>
+  </data>
+  <data name="DecreaseOpacity_Description" xml:space="preserve">
+    <value>Decrease the window transparency level.</value>
+  </data>
+  <data name="ShowHideWindow_Name" xml:space="preserve">
+    <value>Toggle window visibility</value>
+  </data>
+  <data name="ShowHideWindow_Description" xml:space="preserve">
+    <value>Toggle between showing and hiding the application window.</value>
+  </data>
+  <data name="MaximizeWindow_Name" xml:space="preserve">
+    <value>Minimize window</value>
+  </data>
+  <data name="MaximizeWindow_Description" xml:space="preserve">
+    <value>Expand the window to full screen size.</value>
+  </data>
+  <data name="HomePage" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>PlayGuide</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>Chinese</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+</root>

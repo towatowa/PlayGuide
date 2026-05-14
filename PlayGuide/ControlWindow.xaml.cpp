@@ -13,6 +13,7 @@
 
 #include "Win32Helper.h"
 #include "Logger.h"
+#include "PipeService.h"
 
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Windowing;
@@ -146,6 +147,7 @@ namespace winrt::PlayGuide::implementation
 						self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
 					});
 			});
+		/*
 		this->m_pipeClientHandleRevoker =
 			PipeClient::Get().handler(auto_revoke, [weak_this](SimpleEvent msg)
 				{
@@ -156,7 +158,8 @@ namespace winrt::PlayGuide::implementation
 							self->HandleEvent(msg.vk);
 					}
 				});
-
+         */
+	   
 		this->Closed([weak_this](auto&&, auto&&) {
 			if (auto self = weak_this.get())
 				self->SaveWindowStateData();
@@ -208,6 +211,9 @@ namespace winrt::PlayGuide::implementation
 					presenter.IsMinimizable(false);
 				}
 				self->m_screenCache = self->GetScreenWorkArea();
+
+				//过滤该窗口自身按键消息
+				PipeService::Get().SendFilterRule(hwnd);
 			});
 	}
 
@@ -468,16 +474,26 @@ namespace winrt::PlayGuide::implementation
 		auto weak_this = this->get_weak();
 		switch (msg)
 		{
-		case WM_OPACITY_ADD:
+		case WM_IncreaseOpacity:
 		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			BYTE alpha = Win32Helper::GetOpacity(m_hwnd) - 10;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
 			break;
 		}
-		case WM_OPACITY_DEC:
+		case WM_DecreaseOpacity:
 		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			byte alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
+			break;
+		}
+		case WM_EnableHotkeys:
+		{
+			AppDataService::Get().ToggleHotkeysEnabled();
+			LOG_INFO << "Hotkeys enabled: " << AppDataService::Get().GetHotkeyEnableState() << "\n";
 			break;
 		}
 		default:
@@ -594,6 +610,13 @@ namespace winrt::PlayGuide::implementation
 		}
 
 		return nullptr;
+	}
+
+	void ControlWindow::SetPipeServiceHandleEvent(Event<UINT>& event)
+	{
+		m_pipeServiceHandleRevoker = event(auto_revoke, [this](UINT msg) {
+			this->HandleEvent(msg);
+		});
 	}
 }
 

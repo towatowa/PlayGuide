@@ -1,0 +1,11 @@
+﻿namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass Loc
+    {
+        static String GetText(Microsoft.UI.Xaml.DependencyObject obj);
+        static void SetText(Microsoft.UI.Xaml.DependencyObject obj, String value);
+
+        static Microsoft.UI.Xaml.DependencyProperty TextProperty{ get; };
+    }
+}

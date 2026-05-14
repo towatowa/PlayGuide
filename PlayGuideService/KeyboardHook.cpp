@@ -1,7 +1,8 @@
 ﻿#include "KeyboardHook.h"
 #include "Appdata.h"
-
+#include <future>
 #include <thread>
+#include "KeyStateTracker.h"
 
 KeyboardHook* KeyboardHook::s_instance = nullptr;
 KeyboardHook::~KeyboardHook()
@@ -83,22 +84,21 @@ void KeyboardHook::Stop()
 
 LRESULT CALLBACK KeyboardHook::HookProc(int code, WPARAM wp, LPARAM lp)
 {
+	
 	if (code != HC_ACTION || !s_instance)
 		return CallNextHookEx(nullptr, code, wp, lp);
 
-	if (wp == WM_KEYUP || wp == WM_SYSKEYUP)
-		return CallNextHookEx(nullptr, code, wp, lp);
 	auto* info = reinterpret_cast<KBDLLHOOKSTRUCT*>(lp);
 
-	USHORT vk = static_cast<USHORT>(info->vkCode);
 	SimpleEvent ev;
-	ev.vk = vk;
-	ev.hwnd = GetForegroundWindow();
-	ev.hwnd = GetAncestor(ev.hwnd, GA_ROOT); // 获取顶层窗口
-
+	ev.vk = static_cast<USHORT>(info->vkCode);
+	ev.action = (wp == WM_KEYDOWN || wp == WM_SYSKEYDOWN) ? KeyAction::KeyDown : KeyAction::KeyUp;
+	//ev.hwnd = GetForegroundWindow();
+	//ev.hwnd = GetAncestor(ev.hwnd, GA_ROOT); // 获取顶层窗口
+    
 	// ⚠ Hook 回调里只做最轻逻辑
 	if (s_instance->m_callback) {
-		s_instance->m_callback(ev);
+           s_instance->m_callback(ev);
 	}
 	return CallNextHookEx(nullptr, code, wp, lp);
 }

@@ -16,6 +16,7 @@ using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Windows::Foundation;
 using namespace Microsoft::Web::WebView2::Core;
 
+
 namespace winrt::PlayGuide::implementation
 {
 	struct MainWindow : MainWindowT<MainWindow>
@@ -33,9 +34,12 @@ namespace winrt::PlayGuide::implementation
 			m_url = value;
 		}
 		void SetHwnd(HWND hwnd) noexcept;
+		//keyboard event
 		void PlayPause() noexcept;
 		void Seek(int sec) noexcept;
 		void ShowHideWindow() noexcept;
+		void MaximizeWindow() noexcept;
+		void ToggleMaximize() noexcept;
 		void HandleEvent(UINT msg) noexcept;
 		void ApplyWindowState(const MainWindowData&state) noexcept;
 		void SaveWindowStateData() noexcept;
@@ -47,6 +51,7 @@ namespace winrt::PlayGuide::implementation
 		void SetTabCloseEvent(Event<int>& event);
 		void SetNewUrlEnterEvent(Event<TabInfo>& event);
 		void SetTabSeletedChangedEvent(Event<int>& event);
+		void SetPipeServiceHandleEvent(Event<UINT>& event);
 
 		Event<bool> controlWindowVisible;
 		Event<bool> controlWindowHideEvent;
@@ -60,7 +65,7 @@ namespace winrt::PlayGuide::implementation
 	private:
 		hstring m_url{ L"https://www.bilibili.com/" };
 
-		Event<SimpleEvent>::EventRevoker m_pipeClientHandleRevoker;
+		Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
 	  
 		HWND m_hwnd{ nullptr };
 		bool m_isCmdActived{ false };
@@ -68,6 +73,7 @@ namespace winrt::PlayGuide::implementation
 		//std::vector<IInspectable> m_webViewPages;
 		std::unordered_map<uint32_t, IInspectable>m_webViewPages;
 		int m_curIndex{ 0 };
+		GUID m_guid{ 0 };
 	};
 }
 

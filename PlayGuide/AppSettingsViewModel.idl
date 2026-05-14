@@ -1,0 +1,28 @@
+﻿import "HotkeyItemViewModel.idl";
+import "OptionItem.idl";
+
+namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass AppSettingsViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        AppSettingsViewModel();
+        Int32 Theme{get; set; };
+        Int32 Language{ get; set; };
+        Boolean AutoStart{ get; set; };
+        Int32 InputType{ get; set; };
+        Boolean IntelCpuUseECore{ get; set; };
+        Boolean RunningAsAdmin{ get; set; };
+        Boolean SystemTrayExecute{ get; set; };
+        Boolean HotkeysEnabled{ get; set; };
+
+        Windows.Foundation.Collections.IObservableVector<HotkeyItemViewModel>Hotkeys{ get; set; };
+        Windows.Foundation.Collections.IObservableVector<OptionItem>LanguageList{ get; };
+        Windows.Foundation.Collections.IObservableVector<OptionItem>ThemeList{ get; };
+        Windows.Foundation.Collections.IObservableVector<OptionItem>InputMethodList{ get; };
+
+        OptionItem SelectedLanguage{ get;set; };
+        OptionItem SelectedTheme{ get;set; };
+        OptionItem SelectedInputMethod{ get;set; };
+    }
+}

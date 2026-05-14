@@ -1,6 +1,6 @@
-#pragma once
-
+﻿#pragma once
 #include "SettingsPage.g.h"
+#include "AppSettingsViewModel.h"
 
 namespace winrt::PlayGuide::implementation
 {
@@ -8,12 +8,23 @@ namespace winrt::PlayGuide::implementation
     {
         SettingsPage()
         {
-            // Xaml objects should not call InitializeComponent during construction.
-            // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
+            m_viewModel = winrt::make<winrt::PlayGuide::implementation::AppSettingsViewModel>();
+            /*
+            DispatcherQueue().TryEnqueue([this](){
+                HotkeyList().ItemsSource(m_viewModel.Hotkeys());
+            });
+            */
+            this->Loaded([this](auto&&, auto&&) {
+                HotkeyList().ItemsSource(m_viewModel.Hotkeys());
+            });
         }
 
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
+        auto ViewModel() noexcept
+        {
+            return m_viewModel;
+        }
+
+        winrt::PlayGuide::AppSettingsViewModel m_viewModel;
     };
 }
 

@@ -1,0 +1,15 @@
+﻿//import "BaseViewModel.idl";
+namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass HotkeyItemViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        HotkeyItemViewModel();
+        HotkeyItemViewModel(String Name, String Description, String Key, String IconGlyph);
+        String Name{ get; set; };
+        String Description{ get; set; };
+        //String Key{ get; set; };
+        String IconGlyph{ get; set; };
+        Windows.Foundation.Collections.IObservableVector<String>SplitKeys{ get; set; };
+    }
+}

@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Abort" xml:space="preserve">
+    <value>关于</value>
+    <comment>关于</comment>
+  </data>
+  <data name="EnableHotkeys_Description" xml:space="preserve">
+    <value>全局监听键盘输入</value>
+  </data>
+  <data name="EnableHotkeys_Name" xml:space="preserve">
+    <value>启用快捷键</value>
+  </data>
+  <data name="Hook" xml:space="preserve">
+    <value>全局钩子</value>
+    <comment>全局键盘钩子</comment>
+  </data>
+  <data name="Input" xml:space="preserve">
+    <value>输入</value>
+  </data>
+  <data name="IntelCpuUseECore" xml:space="preserve">
+    <value>intel 小核优先</value>
+    <comment>设置后应用优先使用E-Core</comment>
+  </data>
+  <data name="IntelCpuUseECore_Description" xml:space="preserve">
+    <value>如果是intel Cpu优先使用能效核</value>
+  </data>
+  <data name="KeyboardCaptureMethod" xml:space="preserve">
+    <value>按键捕获方式</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>常规</value>
+    <comment>常规功能分区</comment>
+  </data>
+  <data name="Performance" xml:space="preserve">
+    <value>性能</value>
+  </data>
+  <data name="RawInput" xml:space="preserve">
+    <value>Raw Input(应用层)</value>
+  </data>
+  <data name="RunAsAdmin" xml:space="preserve">
+    <value>管理员运行</value>
+  </data>
+  <data name="RunAsAdmin_Description" xml:space="preserve">
+    <value>部分功能需要权限</value>
+  </data>
+  <data name="RunAtStartup" xml:space="preserve">
+    <value>开机启动</value>
+  </data>
+  <data name="RunAtStartup_Description" xml:space="preserve">
+    <value>系统启动时自动运行应用</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="PlayPause_Name" xml:space="preserve">
+    <value>开始/暂停 播放</value>
+  </data>
+  <data name="StartUp" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="SystemTrayRun" xml:space="preserve">
+    <value>托盘运行</value>
+    <comment>关闭窗口后仍后台运行</comment>
+  </data>
+  <data name="SystemTrayRun_Description" xml:space="preserve">
+    <value>关闭窗口后仍后台运行</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="PlayPause_Description" xml:space="preserve">
+    <value>可以控制内嵌视频播放</value>
+  </data>
+  <data name="SkipForward_Name" xml:space="preserve">
+    <value>开进</value>
+  </data>
+  <data name="SkipForward_Description" xml:space="preserve">
+    <value>开进 5 秒</value>
+  </data>
+  <data name="SkipBackward_Name" xml:space="preserve">
+    <value>快退</value>
+  </data>
+  <data name="SkipBackward_Description" xml:space="preserve">
+    <value>视频快退 5 秒</value>
+  </data>
+  <data name="IncreaseOpacity_Name" xml:space="preserve">
+    <value>增加透明度</value>
+  </data>
+  <data name="IncreaseOpacity_Description" xml:space="preserve">
+    <value>可以增加窗口的整体透明度</value>
+  </data>
+  <data name="DecreaseOpacity_Name" xml:space="preserve">
+    <value>减少透明度</value>
+  </data>
+  <data name="DecreaseOpacity_Description" xml:space="preserve">
+    <value>可以减少窗口的透明度</value>
+  </data>
+  <data name="ShowHideWindow_Name" xml:space="preserve">
+    <value>显示/隐藏 窗口</value>
+  </data>
+  <data name="ShowHideWindow_Description" xml:space="preserve">
+    <value>可以控制主窗口的显示或者隐藏</value>
+  </data>
+  <data name="MaximizeWindow_Name" xml:space="preserve">
+    <value>最大化窗口</value>
+  </data>
+  <data name="MaximizeWindow_Description" xml:space="preserve">
+    <value>可以控制窗口最大化</value>
+  </data>
+  <data name="HomePage" xml:space="preserve">
+    <value>主页</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>PlayGuide</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+    <comment>English</comment>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+</root>

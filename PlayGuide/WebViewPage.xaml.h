@@ -13,6 +13,7 @@ using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
 using namespace Windows::Foundation;
 
+
 // 只声明，不创建实体
 extern Event<TabInfo> g_webViewComplatedEvent;
 

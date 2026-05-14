@@ -92,3 +92,70 @@ namespace utils
     }
 
 }
+
+namespace keyutils
+{
+    inline int ModifierVkToIndex(const USHORT& vk)
+    {
+        switch (vk)
+        {
+            // Control -> index 0 (不区分左右)
+        case VK_LCONTROL:
+        case VK_RCONTROL:
+        case VK_CONTROL:    return 0;
+
+            // Shift -> index 2 (不区分左右)
+        case VK_LSHIFT:
+        case VK_RSHIFT:
+        case VK_SHIFT:      return 2;
+
+            // Alt (Menu) -> index 4 (不区分左右)
+        case VK_LMENU:
+        case VK_RMENU:
+        case VK_MENU:       return 1;
+        
+            // Win -> index 6 (不区分左右)
+        case VK_LWIN:
+        case VK_RWIN:       return 3;
+
+        default: return -1;
+        }
+    }
+   
+    inline USHORT IndexToModifierVk(int index)
+    {
+        switch (index)
+        {
+        case 0: return VK_CONTROL;
+        case 2: return VK_SHIFT;
+        case 1: return VK_MENU;
+        case 3: return VK_LWIN;
+        default: return -1;
+        }
+    }
+    inline std::vector<USHORT> ParseModifierMask(uint8_t mask)
+    {
+        std::vector<USHORT> mods;
+        for (int i = 0; i < 8; i ++)
+        {
+            if (mask & (1 << i))
+            {
+                USHORT vk = IndexToModifierVk(i);
+                mods.push_back(vk);
+            }
+        }
+        return mods;
+    }
+
+    inline uint8_t BuildModifierMask(const std::vector<USHORT>& mods)
+    {
+        uint8_t mask = 0;
+        for (USHORT vk : mods)
+        {
+            int idx = ModifierVkToIndex(vk);
+            if (idx >= 0)
+                mask |= (1 << idx);
+        }
+        return mask;
+    }
+}

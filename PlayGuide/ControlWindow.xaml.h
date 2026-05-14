@@ -16,7 +16,7 @@
 
 #include "Event.h"
 #include "Appdata.h"
-#include "PipeClient.h"
+//#include "PipeClient.h"
 #include "AppDataService.h"
 
 using namespace winrt::Microsoft::UI::Xaml;
@@ -88,6 +88,8 @@ namespace winrt::PlayGuide::implementation
 
         TabViewItem FindTabViewItem(uint32_t idx);
 
+        void SetPipeServiceHandleEvent(Event<UINT>& event);
+
         Event<bool>::EventRevoker visibleInvoker;
         Event<bool>::EventRevoker closeEventRevoker;
         Event<int> tabSeletedChangedEvent;
@@ -95,7 +97,7 @@ namespace winrt::PlayGuide::implementation
         Event<TabInfo>newUrlEnterEvent;
         //Event<bool>::EventRevoker tabClosingStateEventRevoker;
         Event<TabInfo>::EventRevoker pageCreatedStateEventRevoker;
-        Event<SimpleEvent>::EventRevoker m_pipeClientHandleRevoker;
+        Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
     private:
         // 拖拽状态
         bool        m_isDragging{ false };

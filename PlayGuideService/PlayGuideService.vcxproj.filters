@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PipeServer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="KeyboardHook.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -36,11 +33,17 @@
     <ClCompile Include="IniHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\PlayGuide\KeyStateTracker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayGuide\KeyMapping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayGuide\PipeService.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PipeServer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="InputEvent.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -66,6 +69,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\PlayGuide\Logger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayGuide\KeyStateTracker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayGuide\KeyMapping.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayGuide\PipeService.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

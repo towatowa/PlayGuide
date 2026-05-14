@@ -2,13 +2,14 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 #include "ControlWindow.xaml.h"
-
-using namespace winrt;
-using namespace Microsoft::UI::Xaml;
-
+#include "PipeService.h"
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 
+#include "LocalizationHelper.h"
+
+using namespace winrt;
+using namespace Microsoft::UI::Xaml;
 using winrt::Microsoft::UI::Xaml::Media::MicaBackdrop;
 using winrt::Microsoft::UI::Xaml::Media::DesktopAcrylicBackdrop;
 
@@ -58,17 +59,8 @@ namespace winrt::PlayGuide::implementation
 	/// <param name="e">Details about the launch request and process.</param>
 	void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
 	{
-		/*
-		// 获取当前线程的 DispatcherQueue
-		
-		dispatcherQueue.TryEnqueue([self = this->get_strong()]() {
-			self->m_mainWindow = make<MainWindow>(L"https://www.bilibili.com");
-			auto mainWindow = self->m_mainWindow.try_as<MainWindow>();
-			//mainWindow->MainInitialize(self->GetHwnd(self->m_mainWindow));
-			self->m_mainWindow.Activate();
-			});
-		*/
-		//auto dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+		LocalizationHelper::Get().Initialize();
+		//LocalizationHelper::Get().SetLanguage(L"en-US");
 		m_controlWindow = make<ControlWindow>();
 		auto controlWindow = m_controlWindow.try_as<ControlWindow>();
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
@@ -89,14 +81,13 @@ namespace winrt::PlayGuide::implementation
 			controlWindow->SetPageCreatedStateEventRevoker(mainWindow->pageCreatedStateEvent);
 			self->m_mainWindow.Activate();
 			mainWindow->MainInitialize(self->GetHwnd(self->m_mainWindow));
+
+			PipeService::Get().SetHotkeyMsgHandler([self](UINT msg) {
+				self->pipeServiceHandleEvent.Invoke(msg);
+				});
 			
-			//controlWindow->InitializeControl(self->GetHwnd(self->m_controlWindow));
-			});
-			/*
-		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
-		m_controlWindow.Activate();
-		mainWindow->MainInitialize(GetHwnd(m_mainWindow));
-		m_mainWindow.Activate();
-		*/
+			mainWindow->SetPipeServiceHandleEvent(self->pipeServiceHandleEvent);
+			controlWindow->SetPipeServiceHandleEvent(self->pipeServiceHandleEvent);
+		 });
 	}
 }

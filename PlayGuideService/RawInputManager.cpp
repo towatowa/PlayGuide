@@ -1,5 +1,6 @@
 ﻿#include <vector>
 #include "RawInputManager.h"
+#include <future>
 
 RawInputManager* RawInputManager::s_instance = nullptr;
 RawInputManager::RawInputManager()
@@ -117,10 +118,11 @@ void RawInputManager::HandleRawInput(HRAWINPUT hRaw)
 
 	SimpleEvent ev{};
 	ev.vk = kb.VKey;
-	ev.hwnd= GetForegroundWindow();
-	ev.hwnd = GetAncestor(ev.hwnd, GA_ROOT); // 获取顶层窗口
+	ev.action = (kb.Flags & RI_KEY_BREAK) ? KeyAction::KeyUp : KeyAction::KeyDown;
+	//ev.hwnd= GetForegroundWindow();
+	//ev.hwnd = GetAncestor(ev.hwnd, GA_ROOT); // 获取顶层窗口
 	if (m_callback)
-		m_callback(ev);
+		    s_instance->m_callback(ev);
 }
 
 LRESULT CALLBACK RawInputManager::WndProc(

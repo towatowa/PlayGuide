@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+﻿// Microsoft Visual C++ generated resource script.
 //
 #pragma code_page(65001)
 
@@ -26,25 +26,24 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
-    "resource.h\0"
+"resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
-    "#include ""winres.h""\r\n"
-    "\0"
+"#include ""winres.h""\r\n"
+"\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
-    "\r\n"
-    "\0"
+"\r\n"
+"\0"
 END
 
 #endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -58,15 +57,44 @@ IDI_ICON1               ICON                    "Assets\\AppIcon.ico"
 #endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
-
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
 
-
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION 1, 0, 0, 0        // 这里是文件版本（必须用逗号隔开）
+PRODUCTVERSION 1, 0, 0, 0     // 这里是产品版本
+    FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+    FILEFLAGS 0x1L
+#else
+    FILEFLAGS 0x0L
+#endif
+    FILEOS 0x40004L
+    FILETYPE 0x1L
+    FILESUBTYPE 0x0L
+    BEGIN
+        BLOCK "StringFileInfo"
+            BEGIN
+                BLOCK "080404b0"    // 简体中文 (0804) + Unicode (04b0)
+                    BEGIN
+                       VALUE "CompanyName", "https://github.com/towatowa"
+                       VALUE "FileDescription", ""
+                       VALUE "FileVersion", "1.0.0.0"
+                       VALUE "InternalName", "PlayGuide.exe"
+                       VALUE "LegalCopyright", "Copyright (C) 2026"
+                       VALUE "OriginalFilename", "PlayGuide.exe"
+                       VALUE "ProductName", "PlayGuide"
+                       VALUE "ProductVersion", "1.0.0.0"
+                    END
+                 END
+             BLOCK "VarFileInfo"
+         BEGIN
+    VALUE "Translation", 0x804, 1200
+END
+END

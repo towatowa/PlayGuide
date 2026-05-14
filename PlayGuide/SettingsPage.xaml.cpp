@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "SettingsPage.xaml.h"
 #if __has_include("SettingsPage.g.cpp")
 #include "SettingsPage.g.cpp"
@@ -12,13 +12,5 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::PlayGuide::implementation
 {
-    int32_t SettingsPage::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void SettingsPage::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
+   
 }

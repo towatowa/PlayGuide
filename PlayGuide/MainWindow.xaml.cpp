@@ -4,12 +4,13 @@
 #include "MainWindow.g.cpp"
 #endif
 #include "Logger.h"
-#include "PipeClient.h"
+//#include "PipeClient.h"
 //#include <shobjidl.h>
 #include <winrt/Microsoft.UI.Interop.h>
 #include "AppDataService.h"
 #include "Win32Helper.h"
 #include "SettingsPage.xaml.h"
+#include "PipeService.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -21,12 +22,15 @@ namespace winrt::PlayGuide::implementation
 {
 	MainWindow::MainWindow(const hstring& url)
 	{
+		CoCreateGuid(&m_guid);//创建身份标识，用于管道通信时区分窗口身份
+		
 		if (!url.empty())
 		{
 			m_url = url;
 		}
 		auto weak_this = get_weak();
 		
+		/*
 		this->m_pipeClientHandleRevoker =
 			PipeClient::Get().handler(auto_revoke, [weak_this](SimpleEvent msg)
 				{
@@ -37,6 +41,7 @@ namespace winrt::PlayGuide::implementation
 							self->HandleEvent(msg.vk);
 					}
 				});
+		*/
 
 		this->Closed([weak_this](auto const&, auto const&args)
 			{
@@ -111,6 +116,7 @@ namespace winrt::PlayGuide::implementation
 				self->ApplyWindowState(state);
 				//self->CreateWebViewPage(state.url.c_str(), 0);
 				self->RootFrame().Content(make<SettingsPage>());
+				PipeService::Get().SendFilterRule(hwnd);
 			});
 	}
 
@@ -157,48 +163,99 @@ namespace winrt::PlayGuide::implementation
 			//controlWindowVisible.Invoke(true);//主窗口命令显示时不显示
 		}
 	}
+	void MainWindow::MaximizeWindow() noexcept
+	{
+		this->AppWindow().SetPresenter(AppWindowPresenterKind::FullScreen);
+	}
+	void MainWindow::ToggleMaximize() noexcept
+	{
+		auto presenter = this->AppWindow().Presenter().as<OverlappedPresenter>();
+
+		if (presenter.State() == OverlappedPresenterState::Maximized)
+		{
+			presenter.Restore();
+		}
+		else
+		{
+			presenter.Maximize();
+		}
+	}
 	void MainWindow::HandleEvent(UINT msg) noexcept
 	{
 		auto weak_this = this->get_weak();
 		switch (msg)
 		{
-		case WM_PLAY:
+		case WM_EnableHotkeys:
+			break;
+		case WM_PlayPause:
+		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
-                    self->PlayPause();
+					self->PlayPause();
 				}
 				});
 			break;
-		case WM_SEEK_ADD:
+		}
+		case WM_SkipForward:
+		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
 					self->Seek(5);
 				});
 			break;
-		case WM_SEEK_DEC:
+		}
+		case WM_SkipBackward:
+		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
-				if(auto self = weak_this.get())
+				if (auto self = weak_this.get())
 					self->Seek(-5);
 				});
 			break;
-		case WM_SHOW_HIDE_WINDOW:
+		}
+		case WM_ShowHideWindow:
+		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
 					self->ShowHideWindow();
 				}
 				});
 			break;
-		case WM_OPACITY_ADD:
+		}
+		case WM_IncreaseOpacity:
 		{
-			BYTE alpha = Win32Helper::GetOpacity(m_hwnd) - 10;
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
+			int alpha = (int)Win32Helper::GetOpacity(m_hwnd) - 10;
+			if (alpha < 45) alpha = 45;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
 			break;
 		}
-		case WM_OPACITY_DEC:
+		case WM_DecreaseOpacity:
 		{
-			byte alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
+			int alpha = (int)Win32Helper::GetOpacity(m_hwnd) + 10;
+			if(alpha >= 255) alpha = 255;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
 			break;
+		}
+		case WM_MaximizeWindow:
+		{
+			if (!AppDataService::Get().GetHotkeyEnableState())
+				break;
+			DispatcherQueue().TryEnqueue([weak_this]() {
+				if (auto self = weak_this.get()) {
+					self->ToggleMaximize();
+				}
+			});
 		}
 		default:
 			break;
@@ -389,5 +446,12 @@ namespace winrt::PlayGuide::implementation
 		{
 			NavigatedTo(idx);
 		});
+	}
+
+	void MainWindow::SetPipeServiceHandleEvent(Event<UINT>& event)
+	{
+		m_pipeServiceHandleRevoker = event(auto_revoke, [this](UINT msg) {
+			this->HandleEvent(msg);
+			});
 	}
 }

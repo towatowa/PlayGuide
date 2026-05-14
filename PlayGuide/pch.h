@@ -45,3 +45,5 @@ DECLARE_INTERFACE_IID_(IWindowNative, IUnknown, "EECDBF0E-BAE9-4CB6-A68E-9598E1C
 #pragma comment(lib, "Comctl32.lib")
 
 using namespace winrt;
+
+//#include "winrt/PlayGuide.h"

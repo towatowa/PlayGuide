@@ -1,4 +1,5 @@
 ﻿#include "AppDataService.h"
+#include "KeyMapping.h"
 
 void AppDataService::Initialize(const std::wstring& path)
 {
@@ -11,15 +12,12 @@ void AppDataService::Initialize(const std::wstring& path)
 	m_controlData = LoadControlData();
 	m_hotkeyMap = LoadHotkeys();
 
-	m_hotkey =
+	int idx = 1;
+	for (auto& key : g_keys)
 	{
-		{ m_hotkeyMap[L"Opacity_Add"],         WM_OPACITY_ADD},   // OPACITY_ADD
-		{ m_hotkeyMap[L"Opacity_Dec"],         WM_OPACITY_DEC },   // OPACITY_DEC
-		{ m_hotkeyMap[L"Play"],                WM_PLAY, },       // Play
-		{ m_hotkeyMap[L"Seek_Add"],            WM_SEEK_ADD },   // SeekAdd
-        { m_hotkeyMap[L"Seek_Dec"],            WM_SEEK_DEC},   // SeekDec
-		{ m_hotkeyMap[L"Show_Hide_Window"],    WM_SHOW_HIDE_WINDOW }    // Show or hide window
-	};
+		m_hotkey[m_hotkeyMap[key]] = WM_USER + idx;
+		idx++;
+	}
 }
 
 void AppDataService::SaveMainData(const MainWindowData& data)
@@ -52,7 +50,7 @@ void AppDataService::SaveHotkeys(const HotKeyMap& hotkeys)
 		m_ini->WriteString(
 			L"Hotkey",
 			key,
-			std::to_wstring(value)
+			value.GetString()
 		);
 	}
 }
@@ -68,24 +66,30 @@ void AppDataService::SaveUrls(const std::vector<std::wstring>& data)
 	}
 }
 
+void AppDataService::SaveAppSettings() const
+{
+
+}
+
+void AppDataService::SaveAppSettings(const AppSettings* settings) const
+{
+	m_ini->WriteInt(L"AppSettings", L"Theme", (int)settings->theme);
+	m_ini->WriteInt(L"AppSettings", L"Language", (int)settings->language);
+	m_ini->WriteInt(L"AppSettings", L"AutoStart", settings->autoStart ? 1 : 0);
+	m_ini->WriteInt(L"AppSettings", L"SystemTrayExecute", settings->systemTrayExecute ? 1 : 0);
+	m_ini->WriteInt(L"AppSettings", L"AdminRunning", settings->adminRunning ? 1 : 0);
+	m_ini->WriteInt(L"AppSettings", L"IntelCpuUseECore", settings->intelCpuUseECore ? 1 : 0);
+	m_ini->WriteInt(L"AppSettings", L"InputType", (int)settings->inputType);
+}
+
 HotKeyMap AppDataService::LoadHotkeys() const
 {
 	HotKeyMap map;
 
-	std::wstring keys[] = {
-		L"Opacity_Add",
-		L"Opacity_Dec",
-		L"Play",
-		L"Seek_Add",
-		L"Seek_Dec",
-		L"Show_Hide_Window"
-	};
-
-	for (auto& k : keys)
+	for (auto& k : g_keys)
 	{
-		UINT val = m_ini->ReadInt(L"Hotkey", k, 0);
-
-		map[k] = val;
+		auto val = m_ini->ReadString(L"Hotkey", k, L"");
+		map[k] = Key(val);
 	}
 
 	return map;
@@ -200,10 +204,12 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	ControlWindowData controlData{};
 	controlData.width = 854;
 	controlData.height = 120;
+	AppSettings settings{};
 	// =========================
 	// 写入
 	// =========================
 	SaveMainData(mainData);
 	SaveControlData(controlData);
 	SaveHotkeys(g_defaultHotkeys);
+	SaveAppSettings(&settings);
 }

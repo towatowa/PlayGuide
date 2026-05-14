@@ -1,9 +1,11 @@
+﻿import "AppSettingsViewModel.idl";
+
 namespace PlayGuide
 {
     [default_interface]
     runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page
     {
         SettingsPage();
-        Int32 MyProperty;
+        AppSettingsViewModel ViewModel{ get; };
     }
 }

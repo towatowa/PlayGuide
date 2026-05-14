@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1721\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1721\build\Microsoft.Windows.SDK.BuildTools.props')" />
   <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <Import Project="..\packages\Microsoft.WindowsAppSDK.1.8.260317003\build\native\Microsoft.WindowsAppSDK.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.1.8.260317003\build\native\Microsoft.WindowsAppSDK.props')" />
   <Import Project="..\packages\Microsoft.WindowsAppSDK.WinUI.1.8.260224000\build\native\Microsoft.WindowsAppSDK.WinUI.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.1.8.260224000\build\native\Microsoft.WindowsAppSDK.WinUI.props')" />
-  <!-- <Import Project="..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.props')" /> -->
+  <Import Project="..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.props')" />
   <Import Project="..\packages\Microsoft.WindowsAppSDK.Runtime.1.8.260317003\build\native\Microsoft.WindowsAppSDK.Runtime.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Runtime.1.8.260317003\build\native\Microsoft.WindowsAppSDK.Runtime.props')" />
   <Import Project="..\packages\Microsoft.WindowsAppSDK.Foundation.1.8.260222000\build\native\Microsoft.WindowsAppSDK.Foundation.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.1.8.260222000\build\native\Microsoft.WindowsAppSDK.Foundation.props')" />
   <Import Project="..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.1.8.260125001\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.1.8.260125001\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props')" />
@@ -15,7 +15,7 @@
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <MinimalCoreWin>true</MinimalCoreWin>
-    <ProjectGuid>{493B1D6D-294E-4FB8-A65F-84F55A38DFA4}</ProjectGuid>
+    <ProjectGuid>{ec68b658-d489-40db-a424-7bcf180741ca}</ProjectGuid>
     <ProjectName>PlayGuide</ProjectName>
     <RootNamespace>PlayGuide</RootNamespace>
     <!--
@@ -36,10 +36,15 @@
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>true</WinUISDKReferences>
     <EnableMsixTooling>false</EnableMsixTooling>
-    <SelfContained>true</SelfContained>
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!--
+	<EnableWinUIAppToolbar>false</EnableWinUIAppToolbar>
+	 -->
+    <!--
+        Self contained framework enables us to run
+        in environments without deploying SDKs
+      -->
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
-	<CppWinRTEnabled>true</CppWinRTEnabled>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -90,7 +95,17 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <PackageCertificateThumbprint>A8B7EE1C8B24DE1C8F7A3FFAD4915D609C6B02F5</PackageCertificateThumbprint>
+    <AppInstallerUri>C:\Program Files</AppInstallerUri>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -130,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppDataService.h" />
-    <ClInclude Include="AppSettingsViewModel.h" />
     <ClInclude Include="ControlWindow.xaml.h">
       <DependentUpon>ControlWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -138,11 +152,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="HotkeyItemViewModel.h" />
     <ClInclude Include="IniHelper.h" />
-    <ClInclude Include="KeyMapping.h" />
-    <ClInclude Include="LocalizationHelper.h" />
-    <ClInclude Include="Loc.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="OptionItem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -151,15 +161,13 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="PipeClient.h" />
-    <ClInclude Include="PipeSendQueue.h" />
-    <ClInclude Include="PipeService.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SettingsPage.xaml.h">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="AppSettingsViewModel.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="ViewModelBase.h" />
     <ClInclude Include="WebView2Manager.h" />
     <ClInclude Include="WebViewPage.xaml.h">
       <DependentUpon>WebViewPage.xaml</DependentUpon>
@@ -168,7 +176,6 @@
     <ClInclude Include="Win32Helper.h" />
     <ClInclude Include="Appdata.h" />
     <ClInclude Include="WinEventMonitor.h" />
-    <ClInclude Include="WorkerQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -194,7 +201,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="AppSettingsViewModel.cpp" />
     <ClCompile Include="ControlWindow.xaml.cpp">
       <DependentUpon>ControlWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -208,11 +214,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="KeyMapping.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="LocalizationHelper.cpp" />
-    <ClCompile Include="Loc.cpp" />
     <ClCompile Include="Logger.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -222,7 +223,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OptionItem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -235,14 +235,11 @@
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="PipeClient.cpp" />
-    <ClCompile Include="PipeSendQueue.cpp" />
-    <ClCompile Include="PipeService.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="SettingsPage.xaml.cpp">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="AppSettingsViewModel.cpp" />
     <ClCompile Include="WebViewPage.xaml.cpp">
       <DependentUpon>WebViewPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -256,12 +253,10 @@
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="HotkeyItemViewModel.idl" />
-    <Midl Include="Loc.idl" />
     <Midl Include="MainWindow.idl">
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Midl>
-    <Midl Include="OptionItem.idl" />
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -315,10 +310,6 @@
       <Project>{a602b243-8b30-4de7-bbf9-afb117bba19b}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Strings\en-US\Resources.resw" />
-    <PRIResource Include="Strings\zh-CN\Resources.resw" />
-  </ItemGroup>
   <PropertyGroup>
     <NeutralLanguage>zh-CN</NeutralLanguage>
     <SatelliteResourceLanguages>zh-CN;en-US</SatelliteResourceLanguages>
@@ -334,7 +325,10 @@
     <Import Project="..\packages\Microsoft.WindowsAppSDK.DWrite.1.8.25122902\build\Microsoft.WindowsAppSDK.DWrite.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.DWrite.1.8.25122902\build\Microsoft.WindowsAppSDK.DWrite.targets')" />
     <Import Project="..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.1.8.260125001\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.1.8.260125001\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets')" />
     <Import Project="..\packages\Microsoft.WindowsAppSDK.Foundation.1.8.260222000\build\native\Microsoft.WindowsAppSDK.Foundation.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.1.8.260222000\build\native\Microsoft.WindowsAppSDK.Foundation.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.AI.1.8.53\build\native\Microsoft.WindowsAppSDK.AI.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.AI.1.8.53\build\native\Microsoft.WindowsAppSDK.AI.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.ML.1.8.2141\build\native\Microsoft.WindowsAppSDK.ML.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.ML.1.8.2141\build\native\Microsoft.WindowsAppSDK.ML.targets')" />
     <Import Project="..\packages\Microsoft.WindowsAppSDK.Runtime.1.8.260317003\build\native\Microsoft.WindowsAppSDK.Runtime.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Runtime.1.8.260317003\build\native\Microsoft.WindowsAppSDK.Runtime.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Widgets.1.8.251231004\build\native\Microsoft.WindowsAppSDK.Widgets.targets')" />
     <Import Project="..\packages\Microsoft.WindowsAppSDK.WinUI.1.8.260224000\build\native\Microsoft.WindowsAppSDK.WinUI.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.1.8.260224000\build\native\Microsoft.WindowsAppSDK.WinUI.targets')" />
     <Import Project="..\packages\Microsoft.WindowsAppSDK.1.8.260317003\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.1.8.260317003\build\native\Microsoft.WindowsAppSDK.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
@@ -342,71 +336,6 @@
     <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\packages\fmt.7.0.1\build\fmt.targets" Condition="Exists('..\packages\fmt.7.0.1\build\fmt.targets')" />
   </ImportGroup>
-  <Target Name="RemoveExtraLanguages" AfterTargets="Build">
-    <ItemGroup>
-      <!-- 1. 定义需要删除的候选文件夹（排除掉你想要的语言） -->
-      <!-- 注意：通过增加反斜杠并配合通配符，确保只选中子文件夹 -->
-      <UnwantedLanguageFolders Include="$([System.IO.Directory]::GetDirectories('$(OutDir)', '*'))" Exclude="$(OutDir)zh-CN;$(OutDir)en-us;$(OutDir)Assets" />
-    </ItemGroup>
-    <!-- 2. 执行删除动作 -->
-    <RemoveDir Directories="@(UnwantedLanguageFolders)" />
-    <!-- 3. (可选) 删除多余的 json 描述文件 -->
-    <ItemGroup>
-      <UnwantedJsonFiles Include="$(OutDir)workloads*.json" />
-    </ItemGroup>
-    <Delete Files="@(UnwantedJsonFiles)" />
-    <Message Text="清理完成：已移除多余语言包和 JSON 文件。" Importance="high" />
-  </Target>
-  <Target Name="ZipReleaseOutput" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <PropertyGroup>
-      <!-- 1. 尝试从项目定义中获取版本，如果没有定义则默认为 1.0.0 -->
-      <AppVersion Condition="'$(Version)' != ''">$(Version)</AppVersion>
-      <AppVersion Condition="'$(AppVersion)' == ''">1.0.0</AppVersion>
-      <!-- 设置压缩包的文件名 -->
-      <TempZipDir>$(OutDir)TempPublish\</TempZipDir>
-      <ZipFileName>$(SolutionDir)Publish\$(ProjectName)_v$(AppVersion)_Release.zip</ZipFileName>
-    </PropertyGroup>
-    <!-- 1. 创建输出目录 -->
-    <MakeDir Directories="$(SolutionDir)Publish" />
-    <!-- 2. 如果已存在同名压缩包则先删除 -->
-    <Delete Files="$(ZipFileName)" Condition="Exists('$(ZipFileName)')" />
-    <!-- 1. 清理并创建临时文件夹 -->
-    <RemoveDir Directories="$(TempZipDir)" />
-    <MakeDir Directories="$(TempZipDir)" />
-    <ItemGroup>
-      <!-- 2. 【关键】选择要包含的文件 -->
-      <!-- 包含所有文件 -->
-      <AllFiles Include="$(OutDir)**\*.*" />
-      <!-- 定义要排除的文件/文件夹 -->
-      <ExcludeFiles Include="$(OutDir)**\*.pdb" />
-      <!-- 排除调试文件 -->
-      <ExcludeFiles Include="$(OutDir)workloads*.json" />
-      <!-- 排除多余 JSON -->
-      <ExcludeFiles Include="$(OutDir)Microsoft.NET.Workload*.json" />
-      <!-- 定义要排除的编译产物 -->
-      <ExcludeFiles Include="$(OutDir)**\*.lib" />
-      <!-- 静态库 (不需要) -->
-      <ExcludeFiles Include="$(OutDir)**\*.exp" />
-      <!-- 导出文件 (不需要) -->
-      <ExcludeFiles Include="$(OutDir)**\*.iobj" />
-      <!-- 增量链接文件 (不需要) -->
-      <ExcludeFiles Include="$(OutDir)**\*.ipdb" />
-      <!-- 增量链接文件 (不需要) -->
-      <ExcludeFiles Include="$(OutDir)**\*.winmd" />
-      <!-- 排除不需要的语言（只保留 zh-CN 和 en-us） -->
-      <!-- 注意：这里的逻辑是先匹配所有子目录，再通过排除项过滤 -->
-      <ExcludeLangs Include="$(OutDir)de\**;$(OutDir)fr\**;$(OutDir)it\**;$(OutDir)ja\**;$(OutDir)ko\**;$(OutDir)ru\**" />
-      <!-- 最终要拷贝的文件清单 -->
-      <FilesToPack Include="@(AllFiles)" Exclude="@(ExcludeFiles);@(ExcludeLangs)" />
-    </ItemGroup>
-    <!-- 3. 执行拷贝 -->
-    <Copy SourceFiles="@(FilesToPack)" DestinationFolder="$(TempZipDir)%(RecursiveDir)" SkipUnchangedFiles="true" />
-    <!-- 4. 执行打包 -->
-    <MakeDir Directories="$(SolutionDir)Publish" />
-    <Delete Files="$(ZipFileName)" />
-    <Exec Command="powershell -Command Compress-Archive -Path $(TempZipDir)\* -DestinationPath $(ZipFileName)" />
-    <!-- 5. 打包完清理临时目录 -->
-    <RemoveDir Directories="$(TempZipDir)" />
-    <Message Text="精简版 ZIP 打包完成: $(ZipFileName)" Importance="high" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
   </Target>
 </Project>

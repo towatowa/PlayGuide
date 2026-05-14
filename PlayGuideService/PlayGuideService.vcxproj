@@ -138,23 +138,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\PlayGuide\AppDataService.cpp" />
+    <ClCompile Include="..\PlayGuide\KeyMapping.cpp" />
+    <ClCompile Include="..\PlayGuide\KeyStateTracker.cpp" />
     <ClCompile Include="..\PlayGuide\Logger.cpp" />
+    <ClCompile Include="..\PlayGuide\PipeService.cpp" />
     <ClCompile Include="IniHelper.cpp" />
     <ClCompile Include="KeyboardHook.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PipeServer.cpp" />
     <ClCompile Include="RawInputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\PlayGuide\Appdata.h" />
     <ClInclude Include="..\PlayGuide\AppDataService.h" />
     <ClInclude Include="..\PlayGuide\IniHelper.h" />
+    <ClInclude Include="..\PlayGuide\KeyMapping.h" />
+    <ClInclude Include="..\PlayGuide\KeyStateTracker.h" />
     <ClInclude Include="..\PlayGuide\Logger.h" />
+    <ClInclude Include="..\PlayGuide\PipeService.h" />
     <ClInclude Include="..\PlayGuide\utils.h" />
+    <ClInclude Include="WorkerQueue.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="KeyboardHook.h" />
     <ClInclude Include="KeyEvent.h" />
-    <ClInclude Include="PipeServer.h" />
     <ClInclude Include="RawInputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

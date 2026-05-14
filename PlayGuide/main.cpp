@@ -14,10 +14,17 @@
 #include <tlhelp32.h>
 #include "Win32Helper.h"
 #include "AppDataService.h"
+#include "PipeService.h"
+#include "WorkerQueue.h"
+// 必须包含这个，非打包资源专用
+#include <winrt/Microsoft.Windows.AppLifecycle.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
+
 
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
-using namespace winrt::Microsoft::Windows::AppLifecycle;
+using namespace Microsoft::Windows::AppLifecycle;
+using namespace Microsoft::Windows::ApplicationModel::Resources;
 
 #include <Windows.h>
 
@@ -135,7 +142,7 @@ int WINAPI wWinMain(
 		return 0; // 当前进程退出
 	}
 
-	FixThreadPoolCrash();
+	//FixThreadPoolCrash();
 	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 	// 堆损坏时终止进程
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, nullptr, 0);
@@ -164,8 +171,19 @@ int WINAPI wWinMain(
 	LOG_INFO << "初始化应用数据成功\n";
 
 	//启动事件监听线程
-	PipeClient::Get().StartAsync();
-
+	//PipeClient::Get().StartAsync();
+	PipeService::Get().StartAsClient();
+	
+	
+	// --------------------------
+	// 🔥 关键：非打包自定义 main 必须手动初始化资源系统
+	// --------------------------
+	if (!AppInstance::GetCurrent().Key().empty())
+	{
+		//auto map = ResourceManager::ResourceManager().MainResourceMap();
+		//auto exePath = ::GetModuleFileName(nullptr, nullptr);
+		
+	}
 	Application::Start(
 		[&](auto&&)
 		{
@@ -174,7 +192,8 @@ int WINAPI wWinMain(
 		});
 	
 	//KillAllWebView2Processes();
-	PipeClient::Get().Stop();
+	//PipeClient::Get().Stop();
+	PipeService::Get().Stop();
 	Logger::Instance().Stop();
 	// Release the DDLM and clean up.
 	//MddBootstrapShutdown();
