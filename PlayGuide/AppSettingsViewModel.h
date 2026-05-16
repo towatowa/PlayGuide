@@ -7,6 +7,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include "OptionItem.h"
 #include "LocalizationHelper.h"
+#include "ThemeService.h"
 
 using namespace winrt;
 using namespace Windows::Foundation::Collections;
@@ -18,12 +19,11 @@ namespace winrt::PlayGuide::implementation
     {
         AppSettingsViewModel()
         {
-            m_pSettings = AppDataService::Get().GetAppSettings();
             m_hotkeys = single_threaded_observable_vector<winrt::PlayGuide::HotkeyItemViewModel>();
 
-            m_pSettings = AppDataService::Get().GetAppSettings();
+            m_pSettings = AppDataService::Get().AppSettingsPtr();
 
-            auto hotkeys = AppDataService::Get().GetHotKeyMapCache();
+            auto hotkeys = AppDataService::Get().HotKeyMapCache();
 
             for (auto& [key, value] : g_hotkeyIconGlyphs)
             {
@@ -43,31 +43,23 @@ namespace winrt::PlayGuide::implementation
 
             //初始化选项列表
             m_languageList = single_threaded_observable_vector<PlayGuide::OptionItem>();
-            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"SystemDefault"), 0));
-            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"Chinese"), 1));
-            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"English"), 2));
+            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(L"SystemDefault", 0));
+            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(L"Chinese", 1));
+            m_languageList.Append(make<PlayGuide::implementation::OptionItem>(L"English", 2));
 
             m_themeList = single_threaded_observable_vector < PlayGuide::OptionItem>();
-            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"SystemDefault"), 0));
-            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"Dark"), 1));
-            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"Light"), 2));
+            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(L"SystemDefault", (int)LocaleTheme::System));
+            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(L"Dark", (int)LocaleTheme::Dark));
+            m_themeList.Append(make<PlayGuide::implementation::OptionItem>(L"Light", (int)LocaleTheme::Light));
 
             m_inputMethodList = single_threaded_observable_vector<PlayGuide::OptionItem>();
            
-            m_inputMethodList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"Hook"), (int)InputType::KeyboardHook));
-            m_inputMethodList.Append(make<PlayGuide::implementation::OptionItem>(
-                LocalizationHelper::Get().String(L"RawInput"), (int)InputType::RawInput));
+            m_inputMethodList.Append(make<PlayGuide::implementation::OptionItem>(L"Hook", (int)InputType::KeyboardHook));
+            m_inputMethodList.Append(make<PlayGuide::implementation::OptionItem>(L"RawInput", (int)InputType::RawInput));
 
-            m_selectedLanguage = m_languageList.GetAt(0);
-            m_selectedTheme = m_themeList.GetAt(0);
-            m_selectedInputMethod = m_themeList.GetAt(0);
+            m_selectedLanguage = m_languageList.GetAt(static_cast<int>(m_pSettings->language));
+            m_selectedTheme = m_themeList.GetAt(static_cast<int>(m_pSettings->theme));
+            m_selectedInputMethod = m_themeList.GetAt(static_cast<int>(m_pSettings->inputType));
         }
     private:
         winrt::event<
@@ -227,14 +219,45 @@ namespace winrt::PlayGuide::implementation
         }
 
         auto SelectedLanguage() noexcept { return m_selectedLanguage; }
-        void SelectedLanguage(PlayGuide::OptionItem const& value) noexcept { m_selectedLanguage = value; }
+        void SelectedLanguage(PlayGuide::OptionItem const& value) noexcept 
+        { 
+            if (m_selectedLanguage.Value() == value.Value())
+                return;
+            m_selectedLanguage = value;
+            auto code = GetLanguageCode(value.Value());
+            LocalizationHelper::Get().SetLanguage(code);
+        }
 
         auto SelectedTheme() noexcept { return m_selectedTheme; }
-        void SelectedTheme(PlayGuide::OptionItem const& value) noexcept { m_selectedTheme = value; }
+        void SelectedTheme(PlayGuide::OptionItem const& value) noexcept 
+        { 
+            if (m_selectedTheme.Value() == value.Value())
+                return;
+            m_selectedTheme = value;
+            ThemeService::SetTheme((LocaleTheme)value.Value());
+            AppDataService::Get().SaveTheme((LocaleTheme)value.Value());
+        }
 
         auto SelectedInputMethod() noexcept { return m_selectedInputMethod; }
         void SelectedInputMethod(PlayGuide::OptionItem const& value) noexcept { m_selectedInputMethod = value; }
+    private:
+        winrt::hstring GetLanguageCode(int32_t index) noexcept
+        {
+            static const std::unordered_map<int32_t, winrt::hstring> languageCodeMap =
+            {
+                { 0, L"" },          // System Default
+                { 1, L"zh-Hans" },
+                { 2, L"en" }
+            };
+            auto it = languageCodeMap.find(index);
 
+            if (it != languageCodeMap.end())
+            {
+                return it->second;
+            }
+
+            return L"";
+        }
     private:
         AppSettings* m_pSettings;
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;

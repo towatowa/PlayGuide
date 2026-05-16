@@ -1,19 +1,21 @@
-#pragma once
+﻿#pragma once
 #include "OptionItem.g.h"
+#include "LocalizationHelper.h"
 
 namespace winrt::PlayGuide::implementation
 {
     struct OptionItem : OptionItemT<OptionItem>
     {
         OptionItem() = default;
-        explicit OptionItem(winrt::hstring const& text, int value) : m_text(text), m_value(value) {};
-        explicit OptionItem(winrt::hstring const& text, int value, winrt::hstring const& description, winrt::hstring const& icon) :
-            m_text(text), m_value(value), m_description(description), m_icon(icon) {
+        explicit OptionItem(hstring const& key, int value) :
+            m_key(key), m_value(value) {};
+        explicit OptionItem(hstring const& key, int value, hstring const& description, winrt::hstring const& icon) :
+            m_key(key), m_value(value), m_description(description), m_icon(icon) {
         };
 
         winrt::hstring Text() noexcept
         {
-            return m_text;
+            return m_text = LocalizationHelper::Get().String(m_key);
         }
 
         void Text(winrt::hstring const& value) noexcept
@@ -52,6 +54,7 @@ namespace winrt::PlayGuide::implementation
         }
 
     private:
+        winrt::hstring m_key{ L"" };
         winrt::hstring m_text{ L"" };
         int m_value{ 0 };
         winrt::hstring m_description{ L"" };

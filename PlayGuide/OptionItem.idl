@@ -1,10 +1,10 @@
-namespace PlayGuide
+﻿namespace PlayGuide
 {
     [default_interface]
     runtimeclass OptionItem
     {
-        OptionItem(String text, Int32 _value);
-        OptionItem(String text, Int32 _value, String description, String icon);
+        OptionItem(String Key, Int32 _value);
+        OptionItem(String Key, Int32 _value, String description, String icon);
         String Text{ get; set; };
         String Description{ get; set; };
         Int32  Value{ get; set; };

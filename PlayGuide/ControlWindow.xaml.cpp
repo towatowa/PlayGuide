@@ -476,7 +476,7 @@ namespace winrt::PlayGuide::implementation
 		{
 		case WM_IncreaseOpacity:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			BYTE alpha = Win32Helper::GetOpacity(m_hwnd) - 10;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
@@ -484,7 +484,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_DecreaseOpacity:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			byte alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
@@ -493,7 +493,7 @@ namespace winrt::PlayGuide::implementation
 		case WM_EnableHotkeys:
 		{
 			AppDataService::Get().ToggleHotkeysEnabled();
-			LOG_INFO << "Hotkeys enabled: " << AppDataService::Get().GetHotkeyEnableState() << "\n";
+			LOG_INFO << "Hotkeys enabled: " << AppDataService::Get().HotkeyEnableState() << "\n";
 			break;
 		}
 		default:

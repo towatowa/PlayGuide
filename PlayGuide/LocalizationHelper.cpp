@@ -1,30 +1,45 @@
 ﻿#include "pch.h"
 #include "LocalizationHelper.h"
+#include <winrt/Microsoft.Windows.Globalization.h>
 
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
 
 winrt::hstring LocalizationHelper::ResolveLanguage(winrt::hstring const& input)
 {
-    // 1. 精确匹配优先
-    for (auto& _lang : g_supportLanguageList)
+    winrt::hstring language = input;
+
+    // 0. 空字符串 -> 系统默认语言
+    if (language.empty())
     {
-        if (input == _lang)
-            return _lang;
+        auto languages =
+            winrt::Microsoft::Windows::Globalization::ApplicationLanguages::Languages();
+
+        if (languages.Size() > 0)
+        {
+            language = languages.GetAt(0);
+        }
+    }
+
+    // 1. 精确匹配
+    for (auto const& lang : g_supportLanguageList)
+    {
+        if (language == lang)
+            return lang;
     }
 
     // 2. 前缀匹配（zh-Hans-CN -> zh-Hans）
-    for(int i = 0; i < g_supportLanguageList.size(); i++)
+    for (auto const& lang : g_supportLanguageList)
     {
-        if (input.starts_with(g_supportLanguageList[i]))
-            return g_supportLanguageList[i];
+        if (language.starts_with(lang))
+            return lang;
     }
 
-    // 3. zh 特殊兜底
-    if (input.starts_with(L"zh"))
+    // 3. zh fallback
+    if (language.starts_with(L"zh"))
     {
         return L"zh-Hans";
     }
 
-    // 4. 最终 fallback
+    // 4. default fallback
     return L"en";
 }

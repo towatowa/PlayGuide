@@ -11,7 +11,7 @@ void AppDataService::Initialize(const std::wstring& path)
 	m_mainData = LoadMainData();
 	m_controlData = LoadControlData();
 	m_hotkeyMap = LoadHotkeys();
-
+	m_settings = LoadSettings();
 	int idx = 1;
 	for (auto& key : g_keys)
 	{
@@ -66,11 +66,6 @@ void AppDataService::SaveUrls(const std::vector<std::wstring>& data)
 	}
 }
 
-void AppDataService::SaveAppSettings() const
-{
-
-}
-
 void AppDataService::SaveAppSettings(const AppSettings* settings) const
 {
 	m_ini->WriteInt(L"AppSettings", L"Theme", (int)settings->theme);
@@ -112,6 +107,37 @@ std::vector<std::wstring> AppDataService::LoadUrls() const
 	}
 
 	return urls;
+}
+
+AppSettings AppDataService::LoadSettings() const
+{
+	AppSettings settings;
+
+	settings.language =
+		static_cast<LocaleLanguage>(
+			m_ini->ReadInt(L"AppSettings", L"Language", 0));
+
+	settings.theme =
+		static_cast<LocaleTheme>(
+			m_ini->ReadInt(L"AppSettings", L"Theme", 0));
+	
+	settings.autoStart =
+		m_ini->ReadInt(L"AppSettings", L"AutoStart", 0) != 0;
+
+	settings.systemTrayExecute =
+		m_ini->ReadInt(L"AppSettings", L"SystemTrayExecute", 0) != 0;
+
+	settings.adminRunning =
+		m_ini->ReadInt(L"AppSettings", L"AdminRunning", 0) != 0;
+
+	settings.intelCpuUseECore =
+		m_ini->ReadInt(L"AppSettings", L"IntelCpuUseECore", 0) != 0;
+
+	settings.inputType =
+		static_cast<::InputType>(
+			m_ini->ReadInt(L"AppSettings", L"InputType", 0));
+
+	return settings;
 }
 
 MainWindowData AppDataService::LoadMainData() const
@@ -212,4 +238,11 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	SaveControlData(controlData);
 	SaveHotkeys(g_defaultHotkeys);
 	SaveAppSettings(&settings);
+}
+
+void AppDataService::SaveTheme(LocaleTheme theme)
+{
+	m_settings.theme = theme;
+	int value = int(theme);
+	SaveSettingItem(L"AppSettings", L"Theme", value);
 }

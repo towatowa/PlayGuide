@@ -7,6 +7,7 @@
 #include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 
 #include "LocalizationHelper.h"
+#include "ThemeService.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -64,7 +65,6 @@ namespace winrt::PlayGuide::implementation
 		m_controlWindow = make<ControlWindow>();
 		auto controlWindow = m_controlWindow.try_as<ControlWindow>();
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
-		m_controlWindow.Activate();
 
 		m_controlWindow.DispatcherQueue().TryEnqueue([self = get_strong(), controlWindow]() {
 			self->m_mainWindow = make<MainWindow>(L"https://www.bilibili.com");
@@ -79,7 +79,6 @@ namespace winrt::PlayGuide::implementation
 			mainWindow->SetTabSeletedChangedEvent(controlWindow->tabSeletedChangedEvent);
 			mainWindow->SetNewUrlEnterEvent(controlWindow->newUrlEnterEvent);
 			controlWindow->SetPageCreatedStateEventRevoker(mainWindow->pageCreatedStateEvent);
-			self->m_mainWindow.Activate();
 			mainWindow->MainInitialize(self->GetHwnd(self->m_mainWindow));
 
 			PipeService::Get().SetHotkeyMsgHandler([self](UINT msg) {
@@ -88,6 +87,13 @@ namespace winrt::PlayGuide::implementation
 			
 			mainWindow->SetPipeServiceHandleEvent(self->pipeServiceHandleEvent);
 			controlWindow->SetPipeServiceHandleEvent(self->pipeServiceHandleEvent);
+
+			ThemeService::RegisterWindow(self->m_controlWindow);
+			ThemeService::RegisterWindow(self->m_mainWindow);
+			auto theme = AppDataService::Get().Theme();
+			ThemeService::SetTheme(theme);
+			self->m_controlWindow.Activate();
+			self->m_mainWindow.Activate();
 		 });
 	}
 }

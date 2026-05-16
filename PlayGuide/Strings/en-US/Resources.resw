@@ -166,7 +166,7 @@
     <value>Start automatically when Windows starts.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Settins</value>
+    <value>Settings</value>
   </data>
   <data name="PlayPause_Name" xml:space="preserve">
     <value>Play / Pause</value>

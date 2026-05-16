@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Loc.h"
 #include "Loc.g.cpp"
 #include "LocalizationHelper.h"
@@ -65,7 +65,8 @@ namespace winrt::PlayGuide::implementation
             auto key = unbox_value<hstring>(value);
 
             // 重新触发 OnTextChanged
-            root.SetValue(TextProperty(), box_value(key));
+            //root.SetValue(TextProperty(), box_value(key));
+            ApplyText(root, key);
         }
 
         // 2. 遍历子节点
@@ -76,6 +77,21 @@ namespace winrt::PlayGuide::implementation
             auto child = Media::VisualTreeHelper::GetChild(root, i);
 
             RefreshTree(child);
+        }
+    }
+
+    void Loc::ApplyText(DependencyObject const& d, hstring const& key)
+    {
+        using namespace Microsoft::UI::Xaml::Controls;
+        auto text = LocalizationHelper::Get().String(key);
+
+        if (auto tb = d.try_as<TextBlock>())
+        {
+            tb.Text(text);
+        }
+        else if (auto btn = d.try_as<Button>())
+        {
+            btn.Content(box_value(text));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SettingsPage.g.h"
 #include "AppSettingsViewModel.h"
+#include "Loc.h"
 
 namespace winrt::PlayGuide::implementation
 {
@@ -14,9 +15,17 @@ namespace winrt::PlayGuide::implementation
                 HotkeyList().ItemsSource(m_viewModel.Hotkeys());
             });
             */
-            this->Loaded([this](auto&&, auto&&) {
-                HotkeyList().ItemsSource(m_viewModel.Hotkeys());
+            auto weak_this = this->get_weak();
+            this->Loaded([weak_this](auto&&, auto&&) {
+                if (auto self = weak_this.get()) 
+                {
+                    self->LanguageComboBox().SelectionChanged([self](auto&&, auto&&) {
+                        Loc::RefreshTree(*self);
+                        });
+                    self->HotkeyList().ItemsSource(self->m_viewModel.Hotkeys());
+                }
             });
+           
         }
 
         auto ViewModel() noexcept

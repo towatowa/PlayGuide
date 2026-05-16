@@ -19,16 +19,16 @@
     <Midl Include="AppSettingsViewModel.idl">
       <Filter>ViewModel</Filter>
     </Midl>
-    <Midl Include="Loc.idl" />
     <Midl Include="OptionItem.idl">
+      <Filter>ViewModel</Filter>
+    </Midl>
+    <Midl Include="Loc.idl">
       <Filter>ViewModel</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="IniHelper.cpp" />
-    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="PipeClient.cpp" />
     <ClCompile Include="Win32Helper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -51,15 +51,24 @@
     <ClCompile Include="LocalizationHelper.cpp">
       <Filter>Language</Filter>
     </ClCompile>
-    <ClCompile Include="Loc.cpp" />
     <ClCompile Include="OptionItem.cpp">
       <Filter>ViewModel</Filter>
+    </ClCompile>
+    <ClCompile Include="Loc.cpp">
+      <Filter>ViewModel</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeService.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="IniHelper.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="IniHelper.h" />
-    <ClInclude Include="Logger.h" />
     <ClInclude Include="PipeClient.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Win32Helper.h" />
@@ -68,9 +77,6 @@
     <ClInclude Include="WebView2Manager.h" />
     <ClInclude Include="Appdata.h">
       <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="AppSettingsViewModel.h">
-      <Filter>ViewModel</Filter>
     </ClInclude>
     <ClInclude Include="HotkeyItemViewModel.h">
       <Filter>ViewModel</Filter>
@@ -93,9 +99,23 @@
     <ClInclude Include="LocalizationHelper.h">
       <Filter>Language</Filter>
     </ClInclude>
-    <ClInclude Include="Loc.h" />
     <ClInclude Include="OptionItem.h">
       <Filter>ViewModel</Filter>
+    </ClInclude>
+    <ClInclude Include="AppSettingsViewModel.h">
+      <Filter>ViewModel</Filter>
+    </ClInclude>
+    <ClInclude Include="Loc.h">
+      <Filter>ViewModel</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeService.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="IniHelper.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

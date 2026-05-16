@@ -56,8 +56,7 @@ public:
             EnsureInit();
             std::lock_guard lock(m_mutex);
             auto path = mapName + L"/" + key;
-
-            auto value = m_mainMap.GetValue(path, m_context);
+            auto value = m_mainMap.TryGetValue(path, m_context);
             if (value)
                 return value.ValueAsString();
         }

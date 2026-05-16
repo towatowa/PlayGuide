@@ -189,7 +189,7 @@ namespace winrt::PlayGuide::implementation
 			break;
 		case WM_PlayPause:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
@@ -200,7 +200,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipForward:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -210,7 +210,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipBackward:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -220,7 +220,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_ShowHideWindow:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
@@ -231,7 +231,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_IncreaseOpacity:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			int alpha = (int)Win32Helper::GetOpacity(m_hwnd) - 10;
 			if (alpha < 45) alpha = 45;
@@ -240,7 +240,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_DecreaseOpacity:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			int alpha = (int)Win32Helper::GetOpacity(m_hwnd) + 10;
 			if(alpha >= 255) alpha = 255;
@@ -249,7 +249,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_MaximizeWindow:
 		{
-			if (!AppDataService::Get().GetHotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {

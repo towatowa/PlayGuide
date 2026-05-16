@@ -70,9 +70,9 @@ int main()
     AppDataService::Get().Initialize((utils::GetExeDir()) / L"config.ini");
 
     //g_inputHandle.store(std::make_shared<RawInputManager>());
-    g_hotkeysMap = std::make_shared<std::unordered_map<Key, UINT>>(AppDataService::Get().GetHotKeyCache());
+    g_hotkeysMap = std::make_shared<std::unordered_map<Key, UINT>>(AppDataService::Get().HotKeyToMsgMapping());
 
-    auto settings = AppDataService::Get().GetAppSettings();
+    auto settings = AppDataService::Get().AppSettingsPtr();
     if (settings->inputType == InputType::KeyboardHook)
         g_inputHandle.store(std::make_shared<KeyboardHook>());
     else if (settings->inputType == InputType::RawInput)

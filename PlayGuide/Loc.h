@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "loc.g.h"
 #include <winrt/Microsoft.UI.Xaml.h>
 
@@ -17,6 +17,7 @@ namespace winrt::PlayGuide::implementation
 
         static void RefreshTree(
             winrt::Microsoft::UI::Xaml::DependencyObject const& root);
+        static void ApplyText(winrt::Microsoft::UI::Xaml::DependencyObject const& d, hstring const& key);
     private:
 
         static void OnTextChanged(

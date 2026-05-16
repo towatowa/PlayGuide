@@ -258,10 +258,10 @@ inline HotKeyMap g_defaultHotkeys
 };
 
 enum class LocaleTheme 
-{
-    Light,
+{  
+    System = 0,
     Dark,
-    System
+    Light,
 };
 
 enum class LocaleLanguage

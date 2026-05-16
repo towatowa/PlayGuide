@@ -7,5 +7,4 @@
 namespace winrt::PlayGuide::implementation
 {
 
-
 }

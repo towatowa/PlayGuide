@@ -27,7 +27,7 @@ public:
 	ControlWindowData LoadControlData() const;
 	HotKeyMap LoadHotkeys() const;
 	std::vector<std::wstring> LoadUrls() const;
-
+	AppSettings LoadSettings() const;
 	// =========================
 	// Save
 	// =========================
@@ -37,24 +37,30 @@ public:
 	void SaveUrls(const std::vector<std::wstring>& data);
 	void SaveAppSettings() const;
 	void SaveAppSettings(const AppSettings* settings) const;
+
+	template<class T>
+	void SaveSettingItem(const std::wstring& section, const std::wstring& key, const T& value);
 	// =========================
 	// runtime cache
 	// =========================
-	const MainWindowData& GetMainDataCache() const { return m_mainData; }
-	const ControlWindowData& GetControlDataCache() const { return m_controlData; }
-	const HotKeyMap& GetHotKeyMapCache() const { return m_hotkeyMap; };
-	const std::unordered_map<Key, UINT>& GetHotKeyCache() const { return m_hotkey; };
-	AppSettings* GetAppSettings() noexcept { return &m_settings; }
+	const MainWindowData& MainDataCache() const { return m_mainData; }
+	const ControlWindowData& ControlDataCache() const { return m_controlData; }
+	const HotKeyMap& HotKeyMapCache() const { return m_hotkeyMap; };
+	const std::unordered_map<Key, UINT>& HotKeyToMsgMapping() const { return m_hotkey; };
+	AppSettings* AppSettingsPtr() noexcept { return &m_settings; }
 
-	InputType GetInputType() const { return m_settings.inputType; }
+	InputType InputType() const { return m_settings.inputType; }
 
-	bool GetHotkeyEnableState() noexcept { return m_hotkeysEnabled; }
+	bool HotkeyEnableState() noexcept { return m_hotkeysEnabled; }
 
 	bool ToggleHotkeysEnabled() noexcept
 	{
 		m_hotkeysEnabled = !m_hotkeysEnabled;
 		return m_hotkeysEnabled;
 	}
+	LocaleTheme Theme() noexcept { return m_settings.theme; }
+	void SaveTheme(LocaleTheme theme);
+
 private:
 	AppDataService() = default;
 	~AppDataService() = default;
@@ -72,3 +78,35 @@ private:
 	AppSettings m_settings{};
 	bool m_hotkeysEnabled{ true };
 };
+
+template<class>
+inline constexpr bool always_false = false;
+
+template<class T>
+void AppDataService::SaveSettingItem(const std::wstring &section, const std::wstring &key, const T &value)
+{
+	if constexpr (std::is_same_v<T, int>)
+	{
+		m_ini->WriteInt(section, key, value);
+	}
+	else if constexpr (std::is_same_v<T, bool>)
+	{
+		m_ini->WriteInt(section, key, value ? 1 : 0);
+	}
+	else if constexpr (std::is_same_v<T, double>)
+	{
+		m_ini->WriteString(section, key, std::to_wstring(value));
+	}
+	else if constexpr (std::is_same_v<T, std::wstring>)
+	{
+		m_ini->WriteString(section, key, value);
+	}
+	else if constexpr (std::is_same_v<T, std::wstring_view>)
+	{
+		m_ini->WriteString(section, key, std::wstring(value));
+	}
+	else
+	{
+		static_assert(always_false<T>, "Unsupported type for SaveSettingItem");
+	}
+}
