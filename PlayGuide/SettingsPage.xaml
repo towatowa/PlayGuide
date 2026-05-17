@@ -92,17 +92,18 @@
 
                     <FontIcon Glyph="&#xE9F5;" Grid.Column="0" FontSize="18" Margin="8" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="托盘运行" />
-                        <TextBlock Text="关闭窗口后仍在后台运行" Opacity="0.6" FontSize="12" />
+                        <TextBlock local:Loc.Text="SystemTrayRun" />
+                        <TextBlock local:Loc.Text="SystemTrayRun_Description" Opacity="0.6" FontSize="12" />
                     </StackPanel>
 
                     <ToggleSwitch x:Name="TraySwitch"
-								  Grid.Column="2" />
+								  Grid.Column="2"
+                                  IsOn="{x:Bind ViewModel.SystemTrayExecute, Mode=TwoWay}"/>
                 </Grid>
             </Border>
 
             <!-- ================= 启动 ================= -->
-            <TextBlock Text="启动"
+            <TextBlock local:Loc.Text="StartUp"
 					   FontSize="16"
 					   Opacity="0.7"
 					   Margin="0,10,0,0" />
@@ -117,13 +118,13 @@
 
                     <FontIcon Glyph="&#xE768;" Grid.Column="0" FontSize="18" Margin="8" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="开机启动" />
-                        <TextBlock Text="系统启动时自动运行应用" Opacity="0.6" FontSize="12" />
+                        <TextBlock local:Loc.Text="RunAtStartUp" />
+                        <TextBlock local:Loc.Text="RunAtStartUp_Description" Opacity="0.6" FontSize="12" />
                     </StackPanel>
 
                     <ToggleSwitch x:Name="AutoStartSwitch"
-								  Grid.Column="2" />
-                    <!--/Toggled="AutoStartSwitch_Toggled" />-->
+								  Grid.Column="2" 
+                                  IsOn="{x:Bind ViewModel.AutoStart, Mode=TwoWay}"/>
                 </Grid>
             </Border>
 

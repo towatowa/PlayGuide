@@ -37,8 +37,8 @@ void AppDataService::SaveMainData(const MainWindowData& data)
 	m_ini->WriteString(L"MainWindow", L"alpha",
 		std::to_wstring(data.alpha));
 
-	m_ini->WriteString(L"MainWindow", L"maximized",
-		std::to_wstring(data.maximized));
+	m_ini->WriteInt(L"MainWindow", L"windowState",
+	   (int)data.windowState);
 	m_ini->WriteString(L"Web", L"url", data.url);
 	//SaveUrls(data.urls);
 }
@@ -149,7 +149,7 @@ MainWindowData AppDataService::LoadMainData() const
 	data.width = m_ini->ReadInt(L"MainWindow", L"width", 1280);
 	data.height = m_ini->ReadInt(L"MainWindow", L"height", 720);
 	data.alpha = m_ini->ReadInt(L"MainWindow", L"alpha", 255);
-	data.maximized = m_ini->ReadInt(L"MainWindow", L"maximized", 0);
+	data.windowState = (WindowState)m_ini->ReadInt(L"MainWindow", L"windowState", (int)WindowState::Normal);
 
 	data.url = m_ini->ReadString(L"Web", L"url", g_defaultWebUrl);
 
@@ -240,9 +240,37 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	SaveAppSettings(&settings);
 }
 
+bool AppDataService::ToggleHotkeysEnabled() noexcept
+{
+	m_hotkeysEnabled = !m_hotkeysEnabled;
+	return m_hotkeysEnabled;
+}
+
 void AppDataService::SaveTheme(LocaleTheme theme)
 {
 	m_settings.theme = theme;
 	int value = int(theme);
 	SaveSettingItem(L"AppSettings", L"Theme", value);
+}
+
+bool AppDataService::ToggleSystemTray() noexcept
+{
+	m_settings.systemTrayExecute = !m_settings.systemTrayExecute;
+	SaveSettingItem(L"AppSettings", L"SystemTrayExecute", m_settings.systemTrayExecute ? 1 : 0);
+	return m_settings.systemTrayExecute;
+}
+
+bool AppDataService::ToggleAutoStart() noexcept
+{
+	m_settings.autoStart = !m_settings.autoStart;
+	SaveSettingItem(L"AppSettings", L"AutoStart", m_settings.autoStart ? 1 : 0);
+	return m_settings.autoStart;
+}
+
+void AppDataService::SetMainWindowState(WindowState state) noexcept
+{
+	if (m_mainData.windowState == state)
+		return;
+	m_mainData.windowState = state;
+	SaveSettingItem(L"MainWindow", L"windowState", (int)state);
 }

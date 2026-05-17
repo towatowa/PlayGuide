@@ -170,6 +170,8 @@ int WINAPI wWinMain(
     AppDataService::Get().Initialize((utils::GetExeDir() / L"config.ini").wstring());
 	LOG_INFO << "初始化应用数据成功\n";
 
+	if (AppDataService::Get().AutoStart())
+		Win32Helper::SetAutoStart(true);
 	//启动事件监听线程
 	//PipeClient::Get().StartAsync();
 	PipeService::Get().StartAsClient();

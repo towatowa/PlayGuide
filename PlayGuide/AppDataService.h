@@ -51,20 +51,23 @@ public:
 
 	InputType InputType() const { return m_settings.inputType; }
 
+	//global hotkey Switch
 	bool HotkeyEnableState() noexcept { return m_hotkeysEnabled; }
-
-	bool ToggleHotkeysEnabled() noexcept
-	{
-		m_hotkeysEnabled = !m_hotkeysEnabled;
-		return m_hotkeysEnabled;
-	}
+	bool ToggleHotkeysEnabled() noexcept;
+	//当前主题
 	LocaleTheme Theme() noexcept { return m_settings.theme; }
 	void SaveTheme(LocaleTheme theme);
-
-private:
+	//system tray
+	bool SystemTray() noexcept { return m_settings.systemTrayExecute; }
+	bool ToggleSystemTray() noexcept;
 	AppDataService() = default;
 	~AppDataService() = default;
-
+	//自启动
+	bool AutoStart() noexcept { return m_settings.autoStart; }
+	bool ToggleAutoStart() noexcept;
+	//主窗口状态
+	WindowState MainWindowState() noexcept { return m_mainData.windowState; }
+	void SetMainWindowState(WindowState state) noexcept;
 	AppDataService(const AppDataService&) = delete;
 	AppDataService& operator=(const AppDataService&) = delete;
 

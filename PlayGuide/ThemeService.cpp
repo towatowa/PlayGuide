@@ -7,18 +7,16 @@ using namespace Microsoft::UI::Xaml;
 
 ElementTheme ThemeService::m_theme = ElementTheme::Default;
 
-std::vector<Window> ThemeService::m_windows;
+std::vector<winrt::weak_ref<Window>> ThemeService::m_windows;
 
 void ThemeService::RegisterWindow(Window const& window)
 {
     m_windows.push_back(window);
-
-    ApplyToWindow(window);
 }
 
-void ThemeService::ApplyToWindow(Window const& window)
+void ThemeService::ApplyToWindow(winrt::weak_ref<Window>& window)
 {
-    if (auto root = window.Content().try_as<FrameworkElement>())
+    if (auto root = window.get().Content().try_as<FrameworkElement>())
     {
         root.RequestedTheme(m_theme);
     }
@@ -43,7 +41,7 @@ void ThemeService::SetTheme(LocaleTheme theme)
         break;
     }
     m_theme = xamlTheme;
-    for (auto const& window : m_windows)
+    for (auto &window : m_windows)
     {
         ApplyToWindow(window);
     }

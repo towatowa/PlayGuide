@@ -229,3 +229,34 @@ std::wstring Win32Helper::GetLocalAppDataPath()
 
     return L"";
 }
+
+void Win32Helper::SetAutoStart(bool enable)
+{
+    const wchar_t* regPath =
+        L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+
+    HKEY hKey;
+
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, regPath, 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS)
+    {
+        if (enable)
+        {
+            wchar_t path[MAX_PATH]{};
+            GetModuleFileNameW(nullptr, path, MAX_PATH);
+
+            RegSetValueExW(
+                hKey,
+                L"PlayGuide",
+                0,
+                REG_SZ,
+                (BYTE*)path,
+                (wcslen(path) + 1) * sizeof(wchar_t));
+        }
+        else
+        {
+            RegDeleteValueW(hKey, L"PlayGuide");
+        }
+
+        RegCloseKey(hKey);
+    }
+}

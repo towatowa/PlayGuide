@@ -27,6 +27,7 @@ public:
     static void SetCurrentDirToExePath();
     static std::filesystem::path GetExeDir();
     static std::wstring GetLocalAppDataPath();
+    static void SetAutoStart(bool enable);
 private:
     static RECT GetWorkArea(HWND hwnd);
     static void ApplyStyle(HWND hwnd, LONG removeStyle); 

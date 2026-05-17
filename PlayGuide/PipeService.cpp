@@ -16,19 +16,35 @@ PipeService::~PipeService()
 
 void PipeService::Stop()
 {
-    m_running = false;
+    if (!m_running) return;
+    m_running = false; // 1. 标记退出状态
 
-    if (m_pipeRead != INVALID_HANDLE_VALUE)
-        CloseHandle(m_pipeRead);
+    // 2. 强行取消 m_pipeRead 上挂起的阻塞 ReadFile 操作
+    if (m_pipeRead != INVALID_HANDLE_VALUE) {
+        ::CancelIoEx(m_pipeRead, nullptr);
+    }
 
-    if (m_pipeWrite != INVALID_HANDLE_VALUE)
-        CloseHandle(m_pipeWrite);
-
-    if (m_readThread.joinable())
+    // 3. 等待读取线程安全退出
+    if (m_readThread.joinable()) {
         m_readThread.join();
+    }
 
-    if (m_writeThread.joinable())
+    // 4. 此时 ReadFile 已退出，句柄锁已释放，可以安全 CloseHandle
+    if (m_pipeRead != INVALID_HANDLE_VALUE) {
+        CloseHandle(m_pipeRead);
+        m_pipeRead = INVALID_HANDLE_VALUE;
+    }
+
+    // 5. 同样的逻辑处理写管道
+    if (m_pipeWrite != INVALID_HANDLE_VALUE) {
+        // 如果是服务端创建的管道，使用 DisconnectNamedPipe 强行断开
+        ::DisconnectNamedPipe(m_pipeWrite);
+        CloseHandle(m_pipeWrite);
+        m_pipeWrite = INVALID_HANDLE_VALUE;
+    }
+    if (m_writeThread.joinable()) {
         m_writeThread.join();
+    }
 
     WorkerQueue<PipeMessage>::Instance().Stop();
 }
@@ -46,6 +62,7 @@ void PipeService::StartAsServer()
 
     m_readThread = std::thread(&PipeService::ReadLoop, this);
     m_writeThread = std::thread(&PipeService::WriteLoop, this);
+    WorkerQueue<PipeMessage>::Instance().Start();
 }
 
 void PipeService::StartAsClient()
@@ -61,6 +78,7 @@ void PipeService::StartAsClient()
 
     m_readThread = std::thread(&PipeService::ReadLoop, this);
     m_writeThread = std::thread(&PipeService::WriteLoop, this);
+    WorkerQueue<PipeMessage>::Instance().Start();
 }
 
 HANDLE PipeService::CreatePipeServer(const wchar_t* name, DWORD access)
@@ -257,6 +275,4 @@ void PipeService::WriteLoop()
 
                 }, msg.data);
         });
-
-    WorkerQueue<PipeMessage>::Instance().Start();
 }

@@ -9,8 +9,8 @@ public:
 
 private:
     static winrt::Microsoft::UI::Xaml::ElementTheme m_theme;
-    static std::vector<winrt::Microsoft::UI::Xaml::Window> m_windows;
+    static std::vector<winrt::weak_ref<winrt::Microsoft::UI::Xaml::Window>> m_windows;
 
     static void ApplyToWindow(
-        winrt::Microsoft::UI::Xaml::Window const& window);
+        winrt::weak_ref<winrt::Microsoft::UI::Xaml::Window>& window);
 };

@@ -298,6 +298,15 @@ struct TabInfo
     std::wstring url{ L"" };
 };
 
+enum class WindowState
+{
+    Normal = 0,
+    Minimized,
+    Maximized,
+    Hidden,   // 隐藏
+    SystemTray //托盘隐藏
+};
+
 struct WindowData
 {
     int x{ 100 };
@@ -305,12 +314,14 @@ struct WindowData
     int width{ 1280 };
     int height{ 720 };
     int alpha{ 255 };//透明度
+    WindowState windowState{ WindowState::Normal };
     virtual ~WindowData() = default; // ⭐关键
 };
 
+
+
 struct MainWindowData : WindowData
 {
-    bool maximized{ false };
     std::wstring url;
 };
 

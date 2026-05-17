@@ -30,7 +30,6 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="PipeClient.cpp" />
-    <ClCompile Include="Win32Helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSettingsViewModel.cpp">
       <Filter>ViewModel</Filter>
@@ -66,12 +65,17 @@
     <ClCompile Include="Logger.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="TrayIconService.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Win32Helper.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="PipeClient.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="Win32Helper.h" />
     <ClInclude Include="WinEventMonitor.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="WebView2Manager.h" />
@@ -95,7 +99,6 @@
       <Filter>Ipc</Filter>
     </ClInclude>
     <ClInclude Include="PipeSendQueue.h" />
-    <ClInclude Include="WorkerQueue.h" />
     <ClInclude Include="LocalizationHelper.h">
       <Filter>Language</Filter>
     </ClInclude>
@@ -116,6 +119,18 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TrayIconService.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Win32Helper.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerQueue.h">
+      <Filter>Ipc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -178,7 +193,7 @@
       <Filter>Strings\en-US</Filter>
     </PRIResource>
     <PRIResource Include="Strings\zh-CN\Resources.resw">
-      <Filter>Strings\zh-CN</Filter>
+      <Filter>utils</Filter>
     </PRIResource>
   </ItemGroup>
 </Project>

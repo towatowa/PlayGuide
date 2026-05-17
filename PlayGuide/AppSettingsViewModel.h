@@ -8,6 +8,8 @@
 #include "OptionItem.h"
 #include "LocalizationHelper.h"
 #include "ThemeService.h"
+#include "TrayIconService.h"
+#include "Win32Helper.h"
 
 using namespace winrt;
 using namespace Windows::Foundation::Collections;
@@ -125,9 +127,13 @@ namespace winrt::PlayGuide::implementation
             return m_pSettings->autoStart;
         }
 
-        void AutoStart(bool v)
+        void AutoStart(bool value)
         {
-            m_pSettings->autoStart = v;
+            if (m_pSettings->autoStart == value)
+                return;
+            if (AppDataService::Get().ToggleAutoStart())
+                Win32Helper::SetAutoStart(true);
+            else Win32Helper::SetAutoStart(false);
             RaisePropertyChanged(L"AutoStart");
         }
 
@@ -189,14 +195,18 @@ namespace winrt::PlayGuide::implementation
 
         bool SystemTrayExecute() noexcept
         {
-            return m_isSystemTrayExecute;
+            return m_pSettings->systemTrayExecute;
         }
 
         void SystemTrayExecute(bool value) noexcept
         {
-            m_isSystemTrayExecute = value;
-            SetProperty(m_isSystemTrayExecute, value, L"SystemTrayExecute");
-            //RaisePropertyChanged(L"SystemTrayExecute");
+            if (m_pSettings->systemTrayExecute != value)
+            {
+                if (AppDataService::Get().ToggleSystemTray())
+                    TrayIconService::Get().Show();
+                else TrayIconService::Get().Hide();
+                SetProperty(m_isSystemTrayExecute, value, L"SystemTrayExecute");
+            }
         }
 
         IObservableVector<PlayGuide::OptionItem> LanguageList() noexcept

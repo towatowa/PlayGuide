@@ -14,9 +14,9 @@ namespace winrt::PlayGuide::implementation
         HWND GetHwnd(winrt::Microsoft::UI::Xaml::Window const& window);
 
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
-        Event<bool>::EventRevoker closeControlWindowEvent;
-        Event<UINT> pipeServiceHandleEvent;
 
+        Event<UINT> pipeServiceHandleEvent;
+        Event<>::EventRevoker processExitEventRevoker;
     private:
         winrt::Microsoft::UI::Xaml::Window m_mainWindow{ nullptr };
         winrt::Microsoft::UI::Xaml::Window m_controlWindow{ nullptr };

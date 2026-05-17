@@ -159,11 +159,6 @@ namespace winrt::PlayGuide::implementation
 					}
 				});
          */
-	   
-		this->Closed([weak_this](auto&&, auto&&) {
-			if (auto self = weak_this.get())
-				self->SaveWindowStateData();
-			});
 	}
 
 	void ControlWindow::InitializeControl(HWND hwnd)
@@ -403,7 +398,7 @@ namespace winrt::PlayGuide::implementation
 			{
 				//winrt::resume_background();
 				if (auto self = weak_this.get()) {
-					if (isVisible && !self->m_isActive)
+					if (isVisible/* && !self->m_isActive*/)
 					{
 						//self->AppWindow().Show();
 						self->m_isActive = true;
@@ -412,7 +407,7 @@ namespace winrt::PlayGuide::implementation
 						LOG_DEBUG << L"[ControlWindow]接收到窗口显示信号\n";
 						//self->m_hideTimer.Start();
 					}
-					else if (self->m_isActive && !self->m_isEntered)
+					else if (/*self->m_isActive &&*/ !self->m_isEntered)
 					{
 						//self->AppWindow().Hide();
 						self->m_isActive = false;
@@ -617,6 +612,20 @@ namespace winrt::PlayGuide::implementation
 		m_pipeServiceHandleRevoker = event(auto_revoke, [this](UINT msg) {
 			this->HandleEvent(msg);
 		});
+	}
+
+	void ControlWindow::SetSystemTrayClickEventRevoker(Event<>& event)
+	{
+		m_systemTrayClickEventRevoker = event(auto_revoke, [this]() {
+			AppWindow().Show();
+		});
+	}
+
+	void ControlWindow::SetSystemTrayShowWindowRevoker(Event<>& event)
+	{
+		m_systemTrayShowWindowRevoker = event(auto_revoke, [this]() {
+			AppWindow().Show();
+			});
 	}
 }
 

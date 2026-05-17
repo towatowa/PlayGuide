@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="AppDataService.h" />
     <ClInclude Include="AppSettingsViewModel.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="ThemeService.h" />
     <ClInclude Include="ControlWindow.xaml.h">
       <DependentUpon>ControlWindow.xaml</DependentUpon>
@@ -159,6 +160,7 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="TrayIconService.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="ViewModelBase.h" />
     <ClInclude Include="WebView2Manager.h" />
@@ -212,6 +214,7 @@
     </ClCompile>
     <ClCompile Include="KeyMapping.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="LocalizationHelper.cpp" />
     <ClCompile Include="Loc.cpp" />
@@ -240,11 +243,13 @@
     <ClCompile Include="PipeSendQueue.cpp" />
     <ClCompile Include="PipeService.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SettingsPage.xaml.cpp">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="TrayIconService.cpp" />
     <ClCompile Include="WebViewPage.xaml.cpp">
       <DependentUpon>WebViewPage.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -52,6 +52,9 @@ namespace winrt::PlayGuide::implementation
 		void SetNewUrlEnterEvent(Event<TabInfo>& event);
 		void SetTabSeletedChangedEvent(Event<int>& event);
 		void SetPipeServiceHandleEvent(Event<UINT>& event);
+		void SetSystemTrayClickEventRevoker(Event<>& event);
+
+		void SetSystemTrayShowWindowRevoker(Event<>& event);
 
 		Event<bool> controlWindowVisible;
 		Event<bool> controlWindowHideEvent;
@@ -66,14 +69,14 @@ namespace winrt::PlayGuide::implementation
 		hstring m_url{ L"https://www.bilibili.com/" };
 
 		Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
-	  
+		Event<>::EventRevoker m_systemTrayClickEventRevoker;
+		Event<>::EventRevoker m_systemTrayShowWindowRevoker;
 		HWND m_hwnd{ nullptr };
-		bool m_isCmdActived{ false };
-
 		//std::vector<IInspectable> m_webViewPages;
 		std::unordered_map<uint32_t, IInspectable>m_webViewPages;
 		int m_curIndex{ 0 };
-		GUID m_guid{ 0 };
+
+		WindowState m_curWinState{ WindowState::Normal };
 	};
 }
 

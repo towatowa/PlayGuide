@@ -90,6 +90,10 @@ namespace winrt::PlayGuide::implementation
 
         void SetPipeServiceHandleEvent(Event<UINT>& event);
 
+        void SetSystemTrayClickEventRevoker(Event<>& event);
+
+        void SetSystemTrayShowWindowRevoker(Event<>& event);
+
         Event<bool>::EventRevoker visibleInvoker;
         Event<bool>::EventRevoker closeEventRevoker;
         Event<int> tabSeletedChangedEvent;
@@ -98,6 +102,9 @@ namespace winrt::PlayGuide::implementation
         //Event<bool>::EventRevoker tabClosingStateEventRevoker;
         Event<TabInfo>::EventRevoker pageCreatedStateEventRevoker;
         Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
+        Event<>::EventRevoker m_systemTrayClickEventRevoker;
+        Event<>::EventRevoker m_systemTrayShowWindowRevoker;
+       
     private:
         // 拖拽状态
         bool        m_isDragging{ false };

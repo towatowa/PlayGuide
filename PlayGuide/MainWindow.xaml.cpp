@@ -11,6 +11,8 @@
 #include "Win32Helper.h"
 #include "SettingsPage.xaml.h"
 #include "PipeService.h"
+#include "TrayIconService.h"
+#include "Global.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -21,9 +23,7 @@ using namespace Microsoft::UI::Xaml;
 namespace winrt::PlayGuide::implementation
 {
 	MainWindow::MainWindow(const hstring& url)
-	{
-		CoCreateGuid(&m_guid);//创建身份标识，用于管道通信时区分窗口身份
-		
+	{	
 		if (!url.empty())
 		{
 			m_url = url;
@@ -46,7 +46,6 @@ namespace winrt::PlayGuide::implementation
 		this->Closed([weak_this](auto const&, auto const&args)
 			{
 				if (auto self = weak_this.get()) {
-					self->SaveWindowStateData();
 					auto pages = self->m_webViewPages;
 					self->m_webViewPages.clear();
 
@@ -57,44 +56,35 @@ namespace winrt::PlayGuide::implementation
 							page.Close();
 						}
 					}
-					self->controlWindowCloseEvent.Invoke(true);
+					self->RootFrame().Content(nullptr);
 					LOG_INFO << (L"Window state saved successfully.\n");
 				}
 			});
 		
+		
 		this->Activated([weak_this](auto&&sender, auto&&args) {
 			if (auto self = weak_this.get())
 			{
-				if (self->m_isCmdActived)
-				{
-					self->m_isCmdActived = false;//忽略来自命令的激活
-					return;
-				}
-					
 				switch (args.WindowActivationState())
 				{
 				case WindowActivationState::CodeActivated:
 				//case WindowActivationState::PointerActivated:
 					LOG_DEBUG << L"主窗口激活\n";
-						// 鼠标/触摸点击激活
 					self->controlWindowVisible.Invoke(true);
 					break;
 				case WindowActivationState::Deactivated:
 					LOG_DEBUG << L"主窗口失活\n";
-					// 窗口失去焦点（失活）
 					self->controlWindowVisible.Invoke(false);
-					
 					break;
 				}
 			}
 			});
+
 		webViewComplatedEventRevoker = g_webViewComplatedEvent(auto_revoke, [weak_this](TabInfo info) 
 		{
 			if (auto self = weak_this.get())
 			{
-				//info.idx = self->m_curIndex;
 				self->pageCreatedStateEvent.Invoke(info);
-				//self->RootFrame().Content(self->m_webViewPages[self->m_curIndex]);
 			}
 		});
 	}
@@ -103,8 +93,11 @@ namespace winrt::PlayGuide::implementation
 	void MainWindow::MainInitialize(HWND hwnd)
 	{
 		m_hwnd = hwnd;
-		DispatcherQueue().TryEnqueue([self = get_strong(), hwnd]()
+		DispatcherQueue().TryEnqueue([weak_this = get_weak(), hwnd]()
 			{
+				auto self = weak_this.get();
+				if (self == nullptr)
+					return;
 				self->AppWindow().SetIcon(L"Assets\\AppIcon.ico");
 				self->ExtendsContentIntoTitleBar(true);
 				//设置标题栏拖动区域
@@ -117,6 +110,35 @@ namespace winrt::PlayGuide::implementation
 				//self->CreateWebViewPage(state.url.c_str(), 0);
 				self->RootFrame().Content(make<SettingsPage>());
 				PipeService::Get().SendFilterRule(hwnd);
+				int cx = GetSystemMetrics(SM_CXSMICON);
+				int cy = GetSystemMetrics(SM_CYSMICON);
+#include "resource.h"
+				HICON hIcon = reinterpret_cast<HICON>(
+					::LoadImageW(
+						::GetModuleHandleW(nullptr),
+						MAKEINTRESOURCEW(IDI_ICON1),
+						IMAGE_ICON,
+						cx,
+						cy,
+						LR_DEFAULTCOLOR));
+
+				TrayIconService::Get().Initialize(hwnd, hIcon, L"PlayGuide");
+				if(AppDataService::Get().SystemTray())
+				    TrayIconService::Get().Show();
+
+				//重载appwindow().closing事件以实现窗口行为控制
+				self->AppWindow().Closing([self](auto&&, auto&& args) {
+					if (AppDataService::Get().SystemTray()) {
+						args.Cancel(true);
+						self->AppWindow().Hide();
+						self->m_curWinState = WindowState::SystemTray;
+						return;
+					}
+					else {
+						g_processExitEvent.Invoke();
+						return;
+					}
+				 });
 			});
 	}
 
@@ -155,17 +177,19 @@ namespace winrt::PlayGuide::implementation
 			AppWindow().Hide();
 			//主窗口命令隐藏,则隐藏控制窗口
 			controlWindowVisible.Invoke(false);
+			m_curWinState = WindowState::Hidden;
 		}
 		else
 		{
-			m_isCmdActived = true;
 			AppWindow().Show();
 			//controlWindowVisible.Invoke(true);//主窗口命令显示时不显示
+			m_curWinState = WindowState::Normal;
 		}
 	}
 	void MainWindow::MaximizeWindow() noexcept
 	{
 		this->AppWindow().SetPresenter(AppWindowPresenterKind::FullScreen);
+		m_curWinState = WindowState::Maximized;
 	}
 	void MainWindow::ToggleMaximize() noexcept
 	{
@@ -174,10 +198,12 @@ namespace winrt::PlayGuide::implementation
 		if (presenter.State() == OverlappedPresenterState::Maximized)
 		{
 			presenter.Restore();
+			m_curWinState = WindowState::Normal;
 		}
 		else
 		{
 			presenter.Maximize();
+			m_curWinState = WindowState::Maximized;
 		}
 	}
 	void MainWindow::HandleEvent(UINT msg) noexcept
@@ -315,15 +341,24 @@ namespace winrt::PlayGuide::implementation
 			state.height,
 			SWP_NOZORDER | SWP_NOACTIVATE
 		);
-
-		// ---- 最大化 ----
-		if (state.maximized)
+		m_curWinState = state.windowState;
+		switch (state.windowState)
 		{
+		case WindowState::Maximized:
 			ShowWindow(m_hwnd, SW_MAXIMIZE);
-		}
-		else
-		{
+			break;
+
+		case WindowState::Minimized:
+			ShowWindow(m_hwnd, SW_MINIMIZE);
+			break;
+		case WindowState::SystemTray:
+			ShowWindow(m_hwnd, SW_HIDE);
+			break;
+		case WindowState::Hidden:
+		case WindowState::Normal:
+		default:
 			ShowWindow(m_hwnd, SW_RESTORE);
+			break;
 		}
 
 		// ---- 透明度（Layered）----
@@ -350,9 +385,6 @@ namespace winrt::PlayGuide::implementation
 		}
 		
 		MainWindowData state;
-        //先获取窗口的大小和位置
-		
-
 		RECT rc{};
 		GetWindowRect(m_hwnd, &rc);
 
@@ -362,14 +394,12 @@ namespace winrt::PlayGuide::implementation
 		state.height = rc.bottom - rc.top;
 
 		//获取窗的最大最小化状态
-		WINDOWPLACEMENT wp{ sizeof(wp) };
-		GetWindowPlacement(m_hwnd, &wp);
-		state.maximized = (wp.showCmd == SW_MAXIMIZE);
+		state.windowState = m_curWinState;
 		//窗口的透明度
 		state.alpha = Win32Helper::GetOpacity(m_hwnd);
 
 		//当前打开的url
-        state.url = m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
+        //state.url = m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
 
 		//热键在后台service进程里写
 		AppDataService::Get().SaveMainData(state);
@@ -454,4 +484,19 @@ namespace winrt::PlayGuide::implementation
 			this->HandleEvent(msg);
 			});
 	}
+
+	void MainWindow::SetSystemTrayClickEventRevoker(Event<>& event)
+	{
+		m_systemTrayClickEventRevoker = event(auto_revoke, [this]() {
+			AppWindow().Show();
+			});
+	}
+
+	void MainWindow::SetSystemTrayShowWindowRevoker(Event<>& event)
+	{
+		m_systemTrayShowWindowRevoker = event(auto_revoke, [this]() {
+			AppWindow().Show();
+			});
+	}
 }
+
