@@ -16,6 +16,9 @@ namespace PlayGuide
         Boolean SystemTrayExecute{ get; set; };
         Boolean HotkeysEnabled{ get; set; };
 
+        Microsoft.UI.Xaml.Visibility HasRestartReason(String key);
+        Boolean IsIntelCpu();
+
         Windows.Foundation.Collections.IObservableVector<HotkeyItemViewModel>Hotkeys{ get; set; };
         Windows.Foundation.Collections.IObservableVector<OptionItem>LanguageList{ get; };
         Windows.Foundation.Collections.IObservableVector<OptionItem>ThemeList{ get; };

@@ -60,11 +60,18 @@ public:
 	//system tray
 	bool SystemTray() noexcept { return m_settings.systemTrayExecute; }
 	bool ToggleSystemTray() noexcept;
+	bool RunAsAdmin() noexcept { return m_settings.adminRunning; }
+	bool ToggleRunAsAdmin() noexcept;
+
 	AppDataService() = default;
 	~AppDataService() = default;
 	//自启动
 	bool AutoStart() noexcept { return m_settings.autoStart; }
 	bool ToggleAutoStart() noexcept;
+	//cpu亲和性优化
+	bool IntelCpuUseEcore() noexcept { return m_settings.intelCpuUseECore; }
+	bool ToggleIntelCpuUseEcore() noexcept;
+
 	//主窗口状态
 	WindowState MainWindowState() noexcept { return m_mainData.windowState; }
 	void SetMainWindowState(WindowState state) noexcept;

@@ -129,23 +129,45 @@
             </Border>
 
             <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <StackPanel Spacing="6">
 
-                    <FontIcon Glyph="&#xE72E;" Grid.Column="0" FontSize="18" Margin="8" />
+                    <!-- 原设置项 -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="管理员运行" />
-                        <TextBlock Text="部分功能需要权限" Opacity="0.6" FontSize="12" />
-                    </StackPanel>
+                        <FontIcon Glyph="&#xE72E;"
+                      Grid.Column="0"
+                      FontSize="18"
+                      Margin="8" />
 
-                    <ToggleSwitch x:Name="AdminSwitch"
-								  Grid.Column="2" />
-                </Grid>
+                        <StackPanel Grid.Column="1">
+
+                            <TextBlock local:Loc.Text="RunAsAdmin" />
+
+                            <TextBlock local:Loc.Text="RunAsAdmin_Description"
+                           Opacity="0.6"
+                           FontSize="12" />
+
+                        </StackPanel>
+
+                        <ToggleSwitch x:Name="AdminSwitch"
+                          Grid.Column="2"
+                          IsOn="{x:Bind ViewModel.RunningAsAdmin, Mode=TwoWay}" />
+                    </Grid>
+
+                    <TextBlock local:Loc.Text="RunAsAdminNeedRestart"
+                               FontSize="12" 
+                               Margin="40,0,0,0"
+                               Visibility="{x:Bind ViewModel.HasRestartReason('RunAsAdmin'), Mode=OneWay}">
+                        <TextBlock.Foreground>
+                            <SolidColorBrush Color="Red"/>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </StackPanel>
             </Border>
 
             <!-- ================= 性能 ================= -->
@@ -155,6 +177,7 @@
 					   Margin="0,10,0,0" />
 
             <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -163,14 +186,26 @@
                     <StackPanel Orientation="Horizontal" Grid.Column="0">
                         <FontIcon Glyph="&#xE950;" FontSize="18" Margin="8" />
                         <StackPanel>
-                            <TextBlock Text="Intel 小核优先" />
-                            <TextBlock Text="优先使用 E-Core" Opacity="0.6" FontSize="12" />
+                            <TextBlock local:Loc.Text="IntelCpuUseECore" />
+                            <TextBlock local:Loc.Text="IntelCpuUseECore_Description" Opacity="0.6" FontSize="12" />
                         </StackPanel>
                     </StackPanel>
                     <ToggleSwitch x:Name="ECoreSwitch"
 								  Grid.Column="1"
-                                  HorizontalAlignment="Right" />
+                                  HorizontalAlignment="Right" 
+                                  IsEnabled="{x:Bind ViewModel.IsIntelCpu(), Mode=OneTime}"
+                                  IsOn="{x:Bind ViewModel.IntelCpuUseECore, Mode=TwoWay}"/>
                 </Grid>
+                    <!--
+                    <TextBlock local:Loc.Text="RunAsAdminNeedRestart"
+                               FontSize="12" 
+                               Margin="40,0,0,0"
+                               Visibility="{x:Bind ViewModel.HasRestartReason('IntelCpuUseECore'), Mode=OneWay}">
+                               <TextBlock.Foreground>
+                                   <SolidColorBrush Color="Red"/>
+                               </TextBlock.Foreground>
+                    </TextBlock>-->
+                </StackPanel>
             </Border>
 
             <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Visibility="Collapsed">

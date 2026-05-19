@@ -3,6 +3,22 @@
 //#include <shlobj.h>
 #include <filesystem>
 #include <shlobj.h>
+#include <shellapi.h>
+#include <intrin.h>
+#include <vector>
+#include "Logger.h"
+#pragma comment(lib, "Shell32.lib")
+
+
+
+
+
+using PFN_GetSystemCpuSetInformation = DWORD(WINAPI*)(
+    PSYSTEM_CPU_SET_INFORMATION,
+    DWORD,
+    PDWORD,
+    HANDLE
+    );
 
 class Win32Helper
 {
@@ -27,6 +43,14 @@ public:
     static void SetCurrentDirToExePath();
     static std::filesystem::path GetExeDir();
     static std::wstring GetLocalAppDataPath();
+    static bool IsRunningAsAdmin();
+    static void RestartAsAdmin();
+    static bool IsIntelHybridCPU();
+    static bool SetThreadToEfficientCores();
+    static void ClearCpuAffinity();
+    static void TestEfficientThread();
+    static bool SetThreadToEfficientCoresV2();
+    static void ClearCpuAffinityV2();
     static void SetAutoStart(bool enable);
 private:
     static RECT GetWorkArea(HWND hwnd);

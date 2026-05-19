@@ -252,4 +252,7 @@
   <data name="System" xml:space="preserve">
     <value>系统</value>
   </data>
+  <data name="RunAsAdminNeedRestart" xml:space="preserve">
+    <value>修改后需要重启应用才能生效设置</value>
+  </data>
 </root>

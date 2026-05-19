@@ -352,8 +352,8 @@ namespace winrt::PlayGuide::implementation
 			ShowWindow(m_hwnd, SW_MINIMIZE);
 			break;
 		case WindowState::SystemTray:
-			ShowWindow(m_hwnd, SW_HIDE);
-			break;
+			//ShowWindow(m_hwnd, SW_HIDE);
+			//break;
 		case WindowState::Hidden:
 		case WindowState::Normal:
 		default:

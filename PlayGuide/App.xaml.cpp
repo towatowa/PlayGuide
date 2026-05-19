@@ -124,6 +124,5 @@ namespace winrt::PlayGuide::implementation
 
 		mainWindow->MainInitialize(GetHwnd(m_mainWindow));
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
-
 	}
 }

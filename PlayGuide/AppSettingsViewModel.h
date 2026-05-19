@@ -10,6 +10,7 @@
 #include "ThemeService.h"
 #include "TrayIconService.h"
 #include "Win32Helper.h"
+#include <unordered_set>
 
 using namespace winrt;
 using namespace Windows::Foundation::Collections;
@@ -173,24 +174,40 @@ namespace winrt::PlayGuide::implementation
 
         bool RunningAsAdmin() noexcept
         {
-            return m_isRunningAsAdmin;
+            return m_pSettings->adminRunning;
         }
 
         void RunningAsAdmin(bool value) noexcept
         {
-            m_isRunningAsAdmin = value;
-            SetProperty(m_isRunningAsAdmin, value, L"RunningAsAdmin");
+            if (m_pSettings->adminRunning == value)
+                return;
+            if (AppDataService::Get().ToggleRunAsAdmin())
+                m_restartReason.insert(L"RunAsAdmin");
+            else m_restartReason.erase(L"RunAsAdmin");
+
+            RaisePropertyChanged(L"HasRestartReason");
         }
       
         bool IntelCpuUseECore() noexcept
         {
-            return m_isIntelCpuUseECore;
+            return m_pSettings->intelCpuUseECore;
         }
 
         void IntelCpuUseECore(bool value) noexcept
         {
-            m_isIntelCpuUseECore = value;
-            SetProperty(m_isIntelCpuUseECore, value, L"IntelCpuUseECore");
+            if (m_pSettings->intelCpuUseECore == value)
+                return;
+            if (AppDataService::Get().ToggleIntelCpuUseEcore()) 
+            {
+                //m_restartReason.insert(L"IntelCpuUseECore");
+                if (Win32Helper::SetThreadToEfficientCores())
+                    LOG_INFO << "SetThreadToEfficientCores successfull.\n";
+                //Win32Helper::TestEfficientThread();
+            }
+            else
+            {
+                Win32Helper::ClearCpuAffinity();
+            }
         }
 
         bool SystemTrayExecute() noexcept
@@ -250,6 +267,11 @@ namespace winrt::PlayGuide::implementation
 
         auto SelectedInputMethod() noexcept { return m_selectedInputMethod; }
         void SelectedInputMethod(PlayGuide::OptionItem const& value) noexcept { m_selectedInputMethod = value; }
+
+        Microsoft::UI::Xaml::Visibility HasRestartReason(hstring const& key) noexcept { return m_restartReason.contains(key) ? Microsoft::UI::Xaml::Visibility::Visible : Microsoft::UI::Xaml::Visibility::Collapsed; }
+
+        bool IsIntelCpu() noexcept { return Win32Helper::IsIntelHybridCPU(); }
+
     private:
         winrt::hstring GetLanguageCode(int32_t index) noexcept
         {
@@ -273,7 +295,6 @@ namespace winrt::PlayGuide::implementation
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;
 
         bool m_hotkeysEnabled{ true };
-        bool m_isRunningAsAdmin{ false };
         bool m_isIntelCpuUseECore{ false };
         bool m_isSystemTrayExecute{ true };
 
@@ -284,6 +305,8 @@ namespace winrt::PlayGuide::implementation
         PlayGuide::OptionItem m_selectedLanguage{ nullptr };
         PlayGuide::OptionItem m_selectedTheme{ nullptr };
         PlayGuide::OptionItem m_selectedInputMethod{ nullptr };
+
+        std::unordered_set<hstring>m_restartReason;
 };
 }
 

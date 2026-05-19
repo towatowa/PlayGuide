@@ -115,17 +115,12 @@ static void FixThreadPoolCrash() noexcept {
 }
 
 int WINAPI wWinMain(
+	HINSTANCE hInstance,
 	HINSTANCE,
-	HINSTANCE,
-	PWSTR,
-	int)
+	PWSTR lpCmdLine,
+	int nCmdShow)
 {
-	/*
-	const UINT32 majorMinorVersion{ 0x00010008 };
-	PCWSTR versionTag{ L"" };
-	const PACKAGE_VERSION minVersion{};
-	const HRESULT hr{ MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
-	*/
+	
 	// ==============================
    // ✔ 单例关键逻辑
    // ==============================
@@ -170,22 +165,26 @@ int WINAPI wWinMain(
     AppDataService::Get().Initialize((utils::GetExeDir() / L"config.ini").wstring());
 	LOG_INFO << "初始化应用数据成功\n";
 
+	std::wstring cmd(lpCmdLine ? lpCmdLine : L"");
+
+	bool isElevatedLaunch =
+		cmd.find(L"--elevated") != std::wstring::npos;
+	if (AppDataService::Get().RunAsAdmin() && !Win32Helper::IsRunningAsAdmin())
+	{
+		if (!isElevatedLaunch)
+		{
+			Win32Helper::RestartAsAdmin();
+			return 0; //必须退出，避免双进程
+		}
+	}
 	if (AppDataService::Get().AutoStart())
 		Win32Helper::SetAutoStart(true);
+	if (AppDataService::Get().IntelCpuUseEcore() && Win32Helper::IsIntelHybridCPU())
+		if (Win32Helper::SetThreadToEfficientCores())
+			LOG_INFO << "SetThreadToEfficientCores successfull.\n";
 	//启动事件监听线程
-	//PipeClient::Get().StartAsync();
 	PipeService::Get().StartAsClient();
 	
-	
-	// --------------------------
-	// 🔥 关键：非打包自定义 main 必须手动初始化资源系统
-	// --------------------------
-	if (!AppInstance::GetCurrent().Key().empty())
-	{
-		//auto map = ResourceManager::ResourceManager().MainResourceMap();
-		//auto exePath = ::GetModuleFileName(nullptr, nullptr);
-		
-	}
 	Application::Start(
 		[&](auto&&)
 		{
@@ -193,11 +192,7 @@ int WINAPI wWinMain(
             static auto app = make<PlayGuide::implementation::App>();
 		});
 	
-	//KillAllWebView2Processes();
-	//PipeClient::Get().Stop();
 	PipeService::Get().Stop();
 	Logger::Instance().Stop();
-	// Release the DDLM and clean up.
-	//MddBootstrapShutdown();
 	return 0;
 }

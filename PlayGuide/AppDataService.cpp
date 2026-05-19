@@ -260,11 +260,25 @@ bool AppDataService::ToggleSystemTray() noexcept
 	return m_settings.systemTrayExecute;
 }
 
+bool AppDataService::ToggleRunAsAdmin() noexcept
+{
+	m_settings.adminRunning = !m_settings.adminRunning;
+	SaveSettingItem(L"AppSettings", L"AdminRunning", m_settings.adminRunning ? 1 : 0);
+	return m_settings.adminRunning;
+}
+
 bool AppDataService::ToggleAutoStart() noexcept
 {
 	m_settings.autoStart = !m_settings.autoStart;
 	SaveSettingItem(L"AppSettings", L"AutoStart", m_settings.autoStart ? 1 : 0);
 	return m_settings.autoStart;
+}
+
+bool AppDataService::ToggleIntelCpuUseEcore() noexcept
+{
+	m_settings.intelCpuUseECore = !m_settings.intelCpuUseECore;
+	SaveSettingItem(L"AppSettings", L"IntelCpuUseECore", m_settings.intelCpuUseECore ? 1 : 0);
+	return m_settings.intelCpuUseECore;
 }
 
 void AppDataService::SetMainWindowState(WindowState state) noexcept
