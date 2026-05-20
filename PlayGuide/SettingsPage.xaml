@@ -208,26 +208,6 @@
                 </StackPanel>
             </Border>
 
-            <Border Padding="16" CornerRadius="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Visibility="Collapsed">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <FontIcon Glyph="&#xE713;" Grid.Column="0" FontSize="18" Margin="8" />
-
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="CPU 亲和性优化" />
-                        <TextBlock Text="默认为亲和最低使用核心和限制核心使用数" Opacity="0.6" FontSize="12" />
-                    </StackPanel>
-
-                    <ToggleSwitch x:Name="AffinitySwitch"
-								  Grid.Column="2" />
-                </Grid>
-            </Border>
-
             <!-- ================= 输入 ================= -->
             <TextBlock Text="输入"
 					   FontSize="16"
