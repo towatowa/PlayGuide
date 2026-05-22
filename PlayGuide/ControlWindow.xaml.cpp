@@ -146,20 +146,13 @@ namespace winrt::PlayGuide::implementation
 						std::wstring defaultUrl = L"https://www.bilibili.com/";
 						self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
 					});
+				PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+
+				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
 			});
-		/*
-		this->m_pipeClientHandleRevoker =
-			PipeClient::Get().handler(auto_revoke, [weak_this](SimpleEvent msg)
-				{
-					if (auto self = weak_this.get())
-					{
-						std::wstring title = Win32Helper::GetWindowTitle(msg.hwnd);
-						if (title != L"PlayGuide")
-							self->HandleEvent(msg.vk);
-					}
-				});
-         */
+	  
 	}
+
 
 	void ControlWindow::InitializeControl(HWND hwnd)
 	{
@@ -626,6 +619,49 @@ namespace winrt::PlayGuide::implementation
 		m_systemTrayShowWindowRevoker = event(auto_revoke, [this]() {
 			AppWindow().Show();
 			});
+	}
+
+	void ControlWindow::SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&)
+	{
+
+	}
+	void ControlWindow::AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&)
+	{
+	}
+
+	void ControlWindow::HotkeyLabels_SizeChanged(
+		winrt::Windows::Foundation::IInspectable const&,
+		winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e)
+	{
+		// 1. 获取 ListView 当前的总可用宽度
+		double totalWidth = e.NewSize().Width;
+
+		// 2. 获取你绑定的快捷键列表数量
+		auto items = HotkeyLabels().ItemsSource();
+		if (!items) return;
+
+		// 假设你的数据源可以通过某个集合获取数量，比如总共有 count 个
+		PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+		uint32_t count = vm.Hotkeys().Size();
+
+		if (count == 0) return;
+
+		// 3. 计算每个子项应该分到的绝对平均宽度
+		double averageWidth = totalWidth / count;
+
+		// 4. 遍历当前已经渲染出来的 ListViewItem 容器，强制设置它们的宽度
+		for (uint32_t i = 0; i < count; i++)
+		{
+			auto container = HotkeyLabels().ContainerFromIndex(i);
+			if (container)
+			{
+				if (auto listViewItem = container.as<winrt::Microsoft::UI::Xaml::Controls::ListViewItem>())
+				{
+					// 迫使每个列表项均分宽度
+					listViewItem.Width(averageWidth);
+				}
+			}
+		}
 	}
 }
 

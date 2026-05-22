@@ -114,14 +114,14 @@ namespace winrt::PlayGuide::implementation
 					//co_return;
 				}
 			});
-
+		
 		//主题服务
 		ThemeService::RegisterWindow(m_controlWindow);
 		ThemeService::RegisterWindow(m_mainWindow);
 		auto theme = AppDataService::Get().Theme();
 		ThemeService::SetTheme(theme);
 
-
+		
 		mainWindow->MainInitialize(GetHwnd(m_mainWindow));
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));
 	}

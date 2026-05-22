@@ -15,5 +15,6 @@ namespace PlayGuide
         void SetHotkey(String Key);
         String id();
         String Key();
+        String FormattedKey();
     }
 }

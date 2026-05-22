@@ -18,6 +18,7 @@
 #include "Appdata.h"
 //#include "PipeClient.h"
 #include "AppDataService.h"
+#include "AppSettingsViewModel.h"
 
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Input;
@@ -48,7 +49,6 @@ namespace winrt::PlayGuide::implementation
     struct ControlWindow : ControlWindowT<ControlWindow>
     {
         ControlWindow();
-
         void InitializeControl(HWND hwnd);
         
         RectInt32 GetScreenWorkArea() noexcept {
@@ -104,7 +104,10 @@ namespace winrt::PlayGuide::implementation
         Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
         Event<>::EventRevoker m_systemTrayClickEventRevoker;
         Event<>::EventRevoker m_systemTrayShowWindowRevoker;
-       
+
+        void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);
+        void AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&);
+        void HotkeyLabels_SizeChanged(IInspectable const&, SizeChangedEventArgs const& e);
     private:
         // 拖拽状态
         bool        m_isDragging{ false };

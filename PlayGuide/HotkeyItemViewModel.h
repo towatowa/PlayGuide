@@ -100,6 +100,11 @@ namespace winrt::PlayGuide::implementation
             SetProperty(m_key, value, L"Key");
         }
 
+        winrt::hstring FormattedKey() noexcept
+        {
+            return L"[" + m_key + L"]";
+        }
+
         winrt::hstring IconGlyph()
         {
             return m_icon;

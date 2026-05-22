@@ -13,7 +13,7 @@ namespace winrt::PlayGuide::implementation
     {
         SettingsPage()
         {
-            m_viewModel = winrt::make<winrt::PlayGuide::implementation::AppSettingsViewModel>();
+            m_viewModel = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
             /*
             DispatcherQueue().TryEnqueue([this](){
                 HotkeyList().ItemsSource(m_viewModel.Hotkeys());

@@ -18,8 +18,29 @@ using namespace Windows::Foundation::Collections;
 namespace winrt::PlayGuide::implementation
 {
     struct AppSettingsViewModel :  AppSettingsViewModelT<AppSettingsViewModel>
-    //winrt::implements<AppSettingsViewModel, IAppSettingsViewModel, winrt::Microsoft::UI::Xaml::Data::INotifyPropertyChanged>
     {
+        // 单例核心：获取唯一实例
+        static com_ptr<AppSettingsViewModel> Instance()
+        {
+            static std::mutex mutex;
+            static com_ptr<AppSettingsViewModel> instance;
+
+            // 双重检查锁定，线程安全
+            if (!instance)
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                if (!instance)
+                {
+                    instance = make_self<AppSettingsViewModel>();
+                }
+            }
+            return instance;
+        }
+
+        // 禁止拷贝和赋值（单例必须）
+        AppSettingsViewModel(AppSettingsViewModel const&) = delete;
+        AppSettingsViewModel& operator=(AppSettingsViewModel const&) = delete;
+
         AppSettingsViewModel()
         {
             m_hotkeys = single_threaded_observable_vector<winrt::PlayGuide::HotkeyItemViewModel>();

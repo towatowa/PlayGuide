@@ -1,4 +1,5 @@
-﻿#include <winrt/Microsoft.UI.Xaml.h>
+﻿#pragma once
+#include <winrt/Microsoft.UI.Xaml.h>
 #include <Appdata.h>
 
 class ThemeService
