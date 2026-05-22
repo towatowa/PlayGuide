@@ -1,5 +1,6 @@
 ﻿#include "AppDataService.h"
 #include "KeyMapping.h"
+#include "PipeService.h"
 
 void AppDataService::Initialize(const std::wstring& path)
 {
@@ -75,6 +76,18 @@ void AppDataService::SaveAppSettings(const AppSettings* settings) const
 	m_ini->WriteInt(L"AppSettings", L"AdminRunning", settings->adminRunning ? 1 : 0);
 	m_ini->WriteInt(L"AppSettings", L"IntelCpuUseECore", settings->intelCpuUseECore ? 1 : 0);
 	m_ini->WriteInt(L"AppSettings", L"InputType", (int)settings->inputType);
+}
+
+void AppDataService::SaveHotkey(std::wstring_view id, std::wstring_view key)
+{
+	auto newKey = Key(key);
+	auto oldKey = m_hotkeyMap[id.data()];
+	m_hotkeyMap[id.data()] = newKey;
+	auto msg = m_hotkey[oldKey];
+	m_hotkey.erase(oldKey);
+	m_hotkey[newKey] = msg;
+	PipeService::Get().SendHotkeyEdit(msg, newKey);
+	m_ini->WriteString(L"Hotkey", id.data(), key.data());
 }
 
 HotKeyMap AppDataService::LoadHotkeys() const
@@ -287,4 +300,10 @@ void AppDataService::SetMainWindowState(WindowState state) noexcept
 		return;
 	m_mainData.windowState = state;
 	SaveSettingItem(L"MainWindow", L"windowState", (int)state);
+}
+
+void AppDataService::SaveLanguage(LocaleLanguage language)
+{
+	m_settings.language = language;
+	SaveSettingItem(L"AppSettings", L"Language", (int)language);
 }

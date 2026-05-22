@@ -26,24 +26,7 @@ namespace winrt::PlayGuide::implementation
 
             m_pSettings = AppDataService::Get().AppSettingsPtr();
 
-            auto hotkeys = AppDataService::Get().HotKeyMapCache();
-
-            for (auto& [key, value] : g_hotkeyIconGlyphs)
-            {
-                auto it = hotkeys.find(key);
-                if (it != hotkeys.end())
-                {
-                    auto item = winrt::make<HotkeyItemViewModel>(
-                        LocalizationHelper::Get().String(winrt::hstring(key + L"_Name")),
-                        LocalizationHelper::Get().String(winrt::hstring(key + L"_Description")),
-                        it->second.GetString().c_str(),
-                        value.c_str(),
-                        key.c_str()
-                    );
-
-                    m_hotkeys.Append(item);
-                }
-            }
+            UpdateHotkeysList();
 
             //初始化选项列表
             m_languageList = single_threaded_observable_vector<PlayGuide::OptionItem>();
@@ -63,7 +46,7 @@ namespace winrt::PlayGuide::implementation
 
             m_selectedLanguage = m_languageList.GetAt(static_cast<int>(m_pSettings->language));
             m_selectedTheme = m_themeList.GetAt(static_cast<int>(m_pSettings->theme));
-            m_selectedInputMethod = m_themeList.GetAt(static_cast<int>(m_pSettings->inputType));
+            m_selectedInputMethod = m_inputMethodList.GetAt(static_cast<int>(m_pSettings->inputType));
         }
     private:
         winrt::event<
@@ -120,7 +103,7 @@ namespace winrt::PlayGuide::implementation
 
         void Language(int value)
         {
-            m_pSettings->language = (LocaleLanguage) value;
+            m_pSettings->language = (LocaleLanguage)value;
             RaisePropertyChanged(L"Language");
         }
 
@@ -254,6 +237,12 @@ namespace winrt::PlayGuide::implementation
             m_selectedLanguage = value;
             auto code = GetLanguageCode(value.Value());
             LocalizationHelper::Get().SetLanguage(code);
+            UpdateHotkeysList();//更新列表
+            RaisePropertyChanged(L"SeletedTheme");
+            RaisePropertyChanged(L"SelectedInputMethod");
+            RaisePropertyChanged(L"TrayOnText");
+            RaisePropertyChanged(L"TrayOffText");
+            AppDataService::Get().SaveLanguage((LocaleLanguage)value.Value());
         }
 
         auto SelectedTheme() noexcept { return m_selectedTheme; }
@@ -274,6 +263,10 @@ namespace winrt::PlayGuide::implementation
         bool IsIntelCpu() noexcept { return Win32Helper::IsIntelHybridCPU(); }
 
         PlayGuide::HotkeyItemViewModel CurrentEditingHotkey() noexcept { return m_currentEditing; }
+
+        hstring TrayOnText() noexcept { return LocalizationHelper::Get().String(L"On"); }
+        hstring TrayOffText() noexcept { return LocalizationHelper::Get().String(L"Off"); }
+
     private:
         winrt::hstring GetLanguageCode(int32_t index) noexcept
         {
@@ -292,6 +285,7 @@ namespace winrt::PlayGuide::implementation
 
             return L"";
         }
+
     private:
         AppSettings* m_pSettings;
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;
@@ -307,6 +301,7 @@ namespace winrt::PlayGuide::implementation
         std::unordered_set<hstring>m_restartReason;
 
         PlayGuide::HotkeyItemViewModel m_currentEditing{ nullptr };
+        void UpdateHotkeysList() noexcept;
 };
 }
 

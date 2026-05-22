@@ -42,7 +42,7 @@ namespace winrt::PlayGuide::implementation
         void HotkeyCaptureBorder_KeyDown(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
         void HotkeyFlyout_Closed(IInspectable const&, IInspectable const&);
         void SaveCapture_Click(IInspectable const&, RoutedEventArgs const&);
-        void CommitHotkey();
+        fire_and_forget CommitHotkey();
         void CancelCapture_Click(IInspectable const&, RoutedEventArgs const&);
         PlayGuide::HotkeyItemViewModel m_currentEditing{ nullptr };
 

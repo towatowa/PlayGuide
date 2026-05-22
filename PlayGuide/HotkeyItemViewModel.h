@@ -16,7 +16,7 @@ namespace winrt::PlayGuide::implementation
         winrt::hstring m_description;
         winrt::hstring m_key;
         winrt::hstring m_icon;
-        winrt::hstring m_iniKey{L""};
+        winrt::hstring m_id{L""};
         IObservableVector<winrt::hstring>m_splitKeys{ single_threaded_observable_vector<winrt::hstring>() };
         winrt::Windows::Foundation::Collections::IObservableVector<hstring> m_recordingKeys
         {
@@ -30,7 +30,7 @@ namespace winrt::PlayGuide::implementation
             winrt::hstring const& key,
             winrt::hstring const& icon,
             winrt::hstring const& iniKeyName)
-            : m_name(name), m_description(description), m_key(key), m_icon(icon), m_iniKey(iniKeyName)
+            : m_name(name), m_description(description), m_key(key), m_icon(icon), m_id(iniKeyName)
         { 
             auto keys = SplitString(key);
             for (auto key : keys)
@@ -128,7 +128,7 @@ namespace winrt::PlayGuide::implementation
             return m_recordingKeys;
         }
 
-        fire_and_forget SetHotkey(hstring const& key) noexcept
+        void SetHotkey(hstring const& key) noexcept
         {
             m_key = key;
             RaisePropertyChanged(L"Key");
@@ -143,10 +143,9 @@ namespace winrt::PlayGuide::implementation
             }
             m_splitKeys = newVector;
             RaisePropertyChanged(L"SplitKeys");
-            
-            AppDataService::Get().SaveSettingItem(L"Hotkey", m_iniKey.c_str(), key.c_str());
-            co_return;
         }
+
+        winrt::hstring id() noexcept { return m_id; }
     };
 }
 

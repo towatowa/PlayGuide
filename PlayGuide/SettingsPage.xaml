@@ -131,7 +131,9 @@
                     <ToggleSwitch
                         x:Name="TraySwitch"
                         Grid.Column="2"
-                        IsOn="{x:Bind ViewModel.SystemTrayExecute, Mode=TwoWay}" />
+                        IsOn="{x:Bind ViewModel.SystemTrayExecute, Mode=TwoWay}"
+                        OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                        OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                 </Grid>
             </Border>
 
@@ -169,7 +171,9 @@
                     <ToggleSwitch
                         x:Name="AutoStartSwitch"
                         Grid.Column="2"
-                        IsOn="{x:Bind ViewModel.AutoStart, Mode=TwoWay}" />
+                        IsOn="{x:Bind ViewModel.AutoStart, Mode=TwoWay}"
+                        OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                        OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                 </Grid>
             </Border>
 
@@ -207,7 +211,9 @@
                         <ToggleSwitch
                             x:Name="AdminSwitch"
                             Grid.Column="2"
-                            IsOn="{x:Bind ViewModel.RunningAsAdmin, Mode=TwoWay}" />
+                            IsOn="{x:Bind ViewModel.RunningAsAdmin, Mode=TwoWay}"
+                            OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                            OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                     </Grid>
 
                     <TextBlock
@@ -257,7 +263,9 @@
                             Grid.Column="1"
                             HorizontalAlignment="Right"
                             IsEnabled="{x:Bind ViewModel.IsIntelCpu(), Mode=OneTime}"
-                            IsOn="{x:Bind ViewModel.IntelCpuUseECore, Mode=TwoWay}" />
+                            IsOn="{x:Bind ViewModel.IntelCpuUseECore, Mode=TwoWay}"
+                            OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                            OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                     </Grid>
                     <!--
                     <TextBlock local:Loc.Text="RunAsAdminNeedRestart"
@@ -274,9 +282,9 @@
             <!--  ================= 输入 =================  -->
             <TextBlock
                 Margin="0,10,0,0"
+                local:Loc.Text="Input"
                 FontSize="16"
-                Opacity="0.7"
-                Text="输入" />
+                Opacity="0.7" />
 
             <Border
                 Padding="16"
@@ -298,24 +306,29 @@
                     <TextBlock
                         Grid.Column="1"
                         Margin="0,8,0,8"
-                        Text="按键捕获方式" />
+                        local:Loc.Text="KeyboardCaptureMethod" />
 
                     <ComboBox
                         x:Name="KeyCaptureBox"
                         Grid.Column="2"
                         Width="200"
-                        HorizontalAlignment="Right">
-                        <ComboBoxItem Content="Hook (全局钩子)" />
-                        <ComboBoxItem Content="Raw Input（推荐）" />
+                        HorizontalAlignment="Right"
+                        ItemsSource="{x:Bind ViewModel.InputMethodList}"
+                        SelectedItem="{x:Bind ViewModel.SelectedInputMethod, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:OptionItem">
+                                <TextBlock Text="{x:Bind Text}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
             </Border>
             <!--  ================= 输入 =================  -->
             <TextBlock
                 Margin="0,10,0,0"
+                local:Loc.Text="KeyboardShortcuts"
                 FontSize="16"
-                Opacity="0.7"
-                Text="快捷键设置" />
+                Opacity="0.7" />
             <Border
                 Padding="16"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -343,7 +356,8 @@
                             Grid.Column="1"
                             Margin="0,0,-75,0"
                             HorizontalAlignment="Right"
-                            IsEnabled="{x:Bind ViewModel.HotkeysEnabled, Mode=TwoWay}" />
+                            IsEnabled="True"
+                            IsOn="{x:Bind ViewModel.HotkeysEnabled, Mode=OneWay}" />
                     </Grid>
 
                     <!--  分割线  -->
@@ -412,17 +426,20 @@
                                     </ItemsControl>
 
                                     <!--  修改按钮  -->
-                                    <Button Grid.Column="2"
+                                    <Button
+                                        Grid.Column="2"
                                         Margin="0,10,0,10"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
-                                        Content="修改">
+                                        local:Loc.Text="Modify">
                                         <Button.Flyout>
                                             <Flyout Opening="HotkeyFlyout_Opening">
-                                                <StackPanel Width="320" Spacing="12"
-                                                            KeyDown="HotkeyCaptureBorder_KeyDown">
+                                                <StackPanel
+                                                    Width="320"
+                                                    KeyDown="HotkeyCaptureBorder_KeyDown"
+                                                    Spacing="12">
 
-                                                    <TextBlock FontWeight="SemiBold" Text="按下新的快捷键" />
+                                                    <TextBlock local:Loc.Text="PresssKeys" FontWeight="SemiBold" />
 
                                                     <!--  捕获区域  -->
                                                     <Border
@@ -432,8 +449,7 @@
                                                         BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
                                                         BorderThickness="1"
                                                         CornerRadius="8"
-                                                        IsTabStop="True"
-                                                        >
+                                                        IsTabStop="True">
 
                                                         <!--  和列表完全一致  -->
                                                         <ItemsControl ItemsSource="{x:Bind RecordingKeys, Mode=OneWay}">
@@ -445,11 +461,8 @@
                                                             </ItemsControl.ItemsPanel>
 
                                                             <ItemsControl.ItemTemplate>
-
                                                                 <DataTemplate x:DataType="x:String">
-
                                                                     <StackPanel Orientation="Horizontal" Spacing="4">
-
                                                                         <Border
                                                                             MinWidth="28"
                                                                             Padding="8,2"
@@ -457,16 +470,13 @@
                                                                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                                             BorderThickness="1"
                                                                             CornerRadius="4">
-
                                                                             <TextBlock
                                                                                 HorizontalAlignment="Center"
                                                                                 FontSize="12"
                                                                                 FontWeight="SemiBold"
                                                                                 Text="{x:Bind}" />
                                                                         </Border>
-
                                                                     </StackPanel>
-
                                                                 </DataTemplate>
 
                                                             </ItemsControl.ItemTemplate>
@@ -475,16 +485,16 @@
 
                                                     </Border>
                                                     <StackPanel Orientation="Horizontal">
-                                                    <Button x:Name="CancelCaptureButton"
-                                                        FontSize="12"
-                                                        Opacity="0.6"
-                                                        Content="取消"
-                                                        Click="CancelCapture_Click"/>
-                                                    <Button x:Name="SaveCaptureButton"
-                                                            FontSize="12"
-                                                            Opacity="0.6"
-                                                            Content="保存"
-                                                            Click="SaveCapture_Click"/>
+                                                        <Button
+                                                            x:Name="CancelCaptureButton"
+                                                            local:Loc.Text="Cancel"
+                                                            Click="CancelCapture_Click"
+                                                            FontSize="12" />
+                                                        <Button
+                                                            x:Name="SaveCaptureButton"
+                                                            local:Loc.Text="Save"
+                                                            Click="SaveCapture_Click"
+                                                            FontSize="12" />
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Flyout>

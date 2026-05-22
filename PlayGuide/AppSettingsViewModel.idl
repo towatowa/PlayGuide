@@ -27,5 +27,7 @@ namespace PlayGuide
         OptionItem SelectedLanguage{ get;set; };
         OptionItem SelectedTheme{ get;set; };
         OptionItem SelectedInputMethod{ get;set; };
+        String TrayOnText{ get; };
+        String TrayOffText{ get; };
     }
 }

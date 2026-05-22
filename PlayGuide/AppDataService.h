@@ -37,6 +37,7 @@ public:
 	void SaveUrls(const std::vector<std::wstring>& data);
 	void SaveAppSettings() const;
 	void SaveAppSettings(const AppSettings* settings) const;
+	void SaveHotkey(std::wstring_view key, std::wstring_view value);
 
 	template<class T>
 	void SaveSettingItem(const std::wstring& section, const std::wstring& key, const T& value);
@@ -75,6 +76,9 @@ public:
 	//主窗口状态
 	WindowState MainWindowState() noexcept { return m_mainData.windowState; }
 	void SetMainWindowState(WindowState state) noexcept;
+
+	//语言
+	void SaveLanguage(LocaleLanguage language);
 	AppDataService(const AppDataService&) = delete;
 	AppDataService& operator=(const AppDataService&) = delete;
 

@@ -193,7 +193,7 @@
       <Filter>Strings\en-US</Filter>
     </PRIResource>
     <PRIResource Include="Strings\zh-CN\Resources.resw">
-      <Filter>utils</Filter>
+      <Filter>Strings\zh-CN</Filter>
     </PRIResource>
   </ItemGroup>
 </Project>

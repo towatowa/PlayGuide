@@ -5,6 +5,7 @@
 #endif
 #include "KeyMapping.h"
 #include "utils.h"
+#include "PipeService.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -88,10 +89,10 @@ namespace winrt::PlayGuide::implementation
         m_flyout.Hide();
     }
 
-    void SettingsPage::CommitHotkey()
+    fire_and_forget SettingsPage::CommitHotkey()
     {
         if (!m_currentEditing)
-            return;
+            co_return;
 
         std::wstring result;
 
@@ -104,8 +105,11 @@ namespace winrt::PlayGuide::implementation
 
             result += keys.GetAt(i);
         }
-
+        Key key(m_currentEditing.Key());
         m_currentEditing.SetHotkey(hstring(result));
+        co_await resume_background();
+        AppDataService::Get().SaveHotkey(m_currentEditing.id().c_str(), result);
+        co_return;
     }
 
     void SettingsPage::CancelCapture_Click(

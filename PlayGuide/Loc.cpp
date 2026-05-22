@@ -50,6 +50,11 @@ namespace winrt::PlayGuide::implementation
         {
             btn.Content(box_value(text));
         }
+        else if (auto ts = d.try_as< Microsoft::UI::Xaml::Controls::ToggleSwitch>())
+        {
+            ts.OnContent(box_value(text));
+            ts.OffContent(box_value(text));
+        }
     }
 
     void Loc::RefreshTree(DependencyObject const& root)
@@ -92,6 +97,11 @@ namespace winrt::PlayGuide::implementation
         else if (auto btn = d.try_as<Button>())
         {
             btn.Content(box_value(text));
+        }
+        else if (auto ts = d.try_as< Microsoft::UI::Xaml::Controls::ToggleSwitch>())
+        {
+            ts.OnContent(box_value(text));
+            ts.OffContent(box_value(text));
         }
     }
 }

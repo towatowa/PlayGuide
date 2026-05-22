@@ -255,4 +255,25 @@
   <data name="RunAsAdminNeedRestart" xml:space="preserve">
     <value>修改后需要重启应用才能生效设置</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Modify" xml:space="preserve">
+    <value>修改</value>
+  </data>
+  <data name="PresssKeys" xml:space="preserve">
+    <value>请按下新的按键</value>
+  </data>
+  <data name="KeyboardShortcuts" xml:space="preserve">
+    <value>快捷键设置</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>开</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>关</value>
+  </data>
 </root>
