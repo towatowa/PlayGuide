@@ -37,7 +37,8 @@ namespace winrt::PlayGuide::implementation
                         LocalizationHelper::Get().String(winrt::hstring(key + L"_Name")),
                         LocalizationHelper::Get().String(winrt::hstring(key + L"_Description")),
                         it->second.GetString().c_str(),
-                        value.c_str()
+                        value.c_str(),
+                        key.c_str()
                     );
 
                     m_hotkeys.Append(item);
@@ -162,14 +163,15 @@ namespace winrt::PlayGuide::implementation
 
         bool HotkeysEnabled() noexcept
         {
-             return m_hotkeysEnabled;
+             return AppDataService::Get().HotkeyEnableState();
         }
 
         void HotkeysEnabled(bool value) noexcept
         {
-            m_hotkeysEnabled = value;
-            SetProperty(m_hotkeysEnabled, value, L"HotkeysEnabled");
-            //RaisePropertyChanged(L"HotkeysEnabled");
+            auto state = AppDataService::Get().HotkeyEnableState();
+            if (state == value)
+                return;
+            AppDataService::Get().ToggleHotkeysEnabled();
         }
 
         bool RunningAsAdmin() noexcept
@@ -222,7 +224,6 @@ namespace winrt::PlayGuide::implementation
                 if (AppDataService::Get().ToggleSystemTray())
                     TrayIconService::Get().Show();
                 else TrayIconService::Get().Hide();
-                SetProperty(m_isSystemTrayExecute, value, L"SystemTrayExecute");
             }
         }
 
@@ -272,6 +273,7 @@ namespace winrt::PlayGuide::implementation
 
         bool IsIntelCpu() noexcept { return Win32Helper::IsIntelHybridCPU(); }
 
+        PlayGuide::HotkeyItemViewModel CurrentEditingHotkey() noexcept { return m_currentEditing; }
     private:
         winrt::hstring GetLanguageCode(int32_t index) noexcept
         {
@@ -294,10 +296,6 @@ namespace winrt::PlayGuide::implementation
         AppSettings* m_pSettings;
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;
 
-        bool m_hotkeysEnabled{ true };
-        bool m_isIntelCpuUseECore{ false };
-        bool m_isSystemTrayExecute{ true };
-
         IObservableVector<winrt::PlayGuide::OptionItem> m_languageList{ nullptr };
         IObservableVector<winrt::PlayGuide::OptionItem> m_themeList{ nullptr };
         IObservableVector<winrt::PlayGuide::OptionItem> m_inputMethodList{ nullptr };
@@ -307,6 +305,8 @@ namespace winrt::PlayGuide::implementation
         PlayGuide::OptionItem m_selectedInputMethod{ nullptr };
 
         std::unordered_set<hstring>m_restartReason;
+
+        PlayGuide::HotkeyItemViewModel m_currentEditing{ nullptr };
 };
 }
 

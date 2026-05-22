@@ -3,6 +3,10 @@
 #include "AppSettingsViewModel.h"
 #include "Loc.h"
 
+using namespace winrt;
+using namespace Microsoft::UI::Xaml;
+using namespace Microsoft::UI::Xaml::Controls;
+
 namespace winrt::PlayGuide::implementation
 {
     struct SettingsPage : SettingsPageT<SettingsPage>
@@ -34,6 +38,16 @@ namespace winrt::PlayGuide::implementation
         }
 
         winrt::PlayGuide::AppSettingsViewModel m_viewModel;
+        void HotkeyFlyout_Opening(IInspectable const& sender, IInspectable const&);
+        void HotkeyCaptureBorder_KeyDown(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
+        void HotkeyFlyout_Closed(IInspectable const&, IInspectable const&);
+        void SaveCapture_Click(IInspectable const&, RoutedEventArgs const&);
+        void CommitHotkey();
+        void CancelCapture_Click(IInspectable const&, RoutedEventArgs const&);
+        PlayGuide::HotkeyItemViewModel m_currentEditing{ nullptr };
+
+        Button m_hotkeyButton{ nullptr };
+        Flyout m_flyout{ nullptr };
     };
 }
 

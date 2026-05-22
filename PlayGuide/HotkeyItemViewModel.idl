@@ -5,11 +5,13 @@ namespace PlayGuide
     runtimeclass HotkeyItemViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         HotkeyItemViewModel();
-        HotkeyItemViewModel(String Name, String Description, String Key, String IconGlyph);
+        HotkeyItemViewModel(String Name, String Description, String Key, String IconGlyph, String iniKeyName);
         String Name{ get; set; };
         String Description{ get; set; };
         //String Key{ get; set; };
         String IconGlyph{ get; set; };
         Windows.Foundation.Collections.IObservableVector<String>SplitKeys{ get; set; };
+        Windows.Foundation.Collections.IObservableVector<String>RecordingKeys{ get; };
+        void SetHotkey(String Key);
     }
 }
