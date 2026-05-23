@@ -307,3 +307,12 @@ void AppDataService::SaveLanguage(LocaleLanguage language)
 	m_settings.language = language;
 	SaveSettingItem(L"AppSettings", L"Language", (int)language);
 }
+
+void AppDataService::SaveInputMethod(::InputType type) noexcept
+{
+	m_settings.inputType = type;
+	SaveSettingItem(L"AppSettings", L"InputType", (int)type);
+	PipeService::Get().SendInputMethod(static_cast<uint32_t>(type));//通知服务端更改
+}
+
+

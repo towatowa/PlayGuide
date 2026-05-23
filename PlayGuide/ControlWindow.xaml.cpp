@@ -14,6 +14,9 @@
 #include "Win32Helper.h"
 #include "Logger.h"
 #include "PipeService.h"
+#include "Loc.h"
+#include "global.h"
+#include "LocalizationHelper.h"
 
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Windowing;
@@ -146,11 +149,21 @@ namespace winrt::PlayGuide::implementation
 						std::wstring defaultUrl = L"https://www.bilibili.com/";
 						self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
 					});
-				PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
-
-				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+				
 			});
-	  
+		m_languageChangedEventRevoker = g_languageChanged(auto_revoke, [weak_this]() {
+			if (auto self = weak_this.get()) {
+				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
+				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
+				//self->RecalcHotkeyLayout();
+			}
+			});
+		m_hotkeyChangedEventRevoker = g_hotkeyChanged(auto_revoke, [weak_this]() {
+			if (auto self = weak_this.get()) {
+				PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+			}
+			});
 	}
 
 
@@ -168,12 +181,7 @@ namespace winrt::PlayGuide::implementation
 				//去掉标题栏和边框
 				Win32Helper::RemoveFrame(hwnd);
 				self->ExtendsContentIntoTitleBar(true);
-				TabViewItem newTab;
-				newTab.IsClosable(false);
-				newTab.Tag(box_value(self->m_nextId++));
-				newTab.Header(box_value(L"正在加载中..."));
-				self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
-				self->urlTabView().TabItems().Append(newTab);
+
 				auto  controlData = AppDataService::Get().LoadControlData();
 				self->ApplyWindowState(controlData);
 				//设置标题栏拖动区域
@@ -202,6 +210,10 @@ namespace winrt::PlayGuide::implementation
 
 				//过滤该窗口自身按键消息
 				PipeService::Get().SendFilterRule(hwnd);
+
+				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
+				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
+				//self->RecalcHotkeyLayout();
 			});
 	}
 
@@ -430,11 +442,11 @@ namespace winrt::PlayGuide::implementation
 			}
 			});
 	}
-	void ControlWindow::SetPageCreatedStateEventRevoker(Event<TabInfo>& event)
+	void ControlWindow::SetPageCreatedStateEventRevoker(Event<const TabInfo&>& event)
 	{
 		std::lock_guard lock(m_mutex);
 		auto weak_this = this->get_weak();
-		pageCreatedStateEventRevoker = event(auto_revoke, [weak_this](TabInfo info) {
+		pageCreatedStateEventRevoker = event(auto_revoke, [weak_this](const TabInfo &info) {
 			
 			if (auto self = weak_this.get())
 			{
@@ -633,21 +645,21 @@ namespace winrt::PlayGuide::implementation
 		winrt::Windows::Foundation::IInspectable const&,
 		winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e)
 	{
+		
 		// 1. 获取 ListView 当前的总可用宽度
-		double totalWidth = e.NewSize().Width;
+     	double totalWidth = e.NewSize().Width;
 
-		// 2. 获取你绑定的快捷键列表数量
+		// 2. 获取绑定的快捷键列表数量
 		auto items = HotkeyLabels().ItemsSource();
 		if (!items) return;
 
-		// 假设你的数据源可以通过某个集合获取数量，比如总共有 count 个
-		PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
-		uint32_t count = vm.Hotkeys().Size();
+		// 假设数据源可以通过某个集合获取数量，比如总共有 count 个
+		uint32_t count = ViewModel().Hotkeys().Size();
 
 		if (count == 0) return;
 
 		// 3. 计算每个子项应该分到的绝对平均宽度
-		double averageWidth = totalWidth / count;
+		double averageWidth = totalWidth / count - 1;
 
 		// 4. 遍历当前已经渲染出来的 ListViewItem 容器，强制设置它们的宽度
 		for (uint32_t i = 0; i < count; i++)
@@ -659,6 +671,32 @@ namespace winrt::PlayGuide::implementation
 				{
 					// 迫使每个列表项均分宽度
 					listViewItem.Width(averageWidth);
+				}
+			}
+		}
+		//RecalcHotkeyLayout();
+	}
+
+	void ControlWindow::RecalcHotkeyLayout()
+	{
+		double width = HotkeyLabels().ActualWidth();
+		UINT dpi = GetDpiForWindow(m_hwnd);
+		width = width * dpi / 96.f;
+
+		auto count = ViewModel().Hotkeys().Size();
+
+		if (count == 0) return;
+
+		double itemWidth = width / count;
+		for (uint32_t i = 0; i < count; i++)
+		{
+			auto container = HotkeyLabels().ContainerFromIndex(i);
+			if (container)
+			{
+				if (auto listViewItem = container.as<winrt::Microsoft::UI::Xaml::Controls::ListViewItem>())
+				{
+					// 迫使每个列表项均分宽度
+					listViewItem.Width(itemWidth);
 				}
 			}
 		}

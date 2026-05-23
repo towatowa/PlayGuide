@@ -79,9 +79,13 @@ public:
 
 	//语言
 	void SaveLanguage(LocaleLanguage language);
+	LocaleLanguage Language() const { return m_settings.language; }
+
 	AppDataService(const AppDataService&) = delete;
 	AppDataService& operator=(const AppDataService&) = delete;
 
+	//按键捕获方法
+	void SaveInputMethod(::InputType type) noexcept;
 private:
 
 	MainWindowData m_mainData{};

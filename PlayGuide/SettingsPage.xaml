@@ -366,7 +366,8 @@
                         Margin="0,8"
                         Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-                    <ListView x:Name="HotkeyList" IsItemClickEnabled="False">
+                    <ListView x:Name="HotkeyList" IsItemClickEnabled="False"
+                              ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
 
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="local:HotkeyItemViewModel">

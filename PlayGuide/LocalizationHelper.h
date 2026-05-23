@@ -5,12 +5,20 @@
 #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 #include <winrt/Microsoft.Windows.Globalization.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
+#include "Appdata.h"
 
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
 
 inline std::vector<winrt::hstring>g_supportLanguageList = {
     L"en",
     L"zh-Hans"
+};
+
+const std::unordered_map<int32_t, winrt::hstring> g_languageCodeMap =
+{
+    { 0, L"" },          // System Default
+    { 1, L"zh-Hans" },
+    { 2, L"en" }
 };
 
 class LocalizationHelper
@@ -69,12 +77,19 @@ public:
         return L"[" + key + L"]";
     }
 
-    void SetLanguage(winrt::hstring const& languageCode)
+    bool SetLanguage(LocaleLanguage id)
     {
         try
         {
             std::lock_guard lock(m_mutex);
-            auto language = ResolveLanguage(languageCode);
+            auto it = g_languageCodeMap.find(int32_t(id));
+            if (it == g_languageCodeMap.end())
+                return false;
+            auto language = ResolveLanguage(it->second);
+
+            if (m_curLanguage == language)
+                return false;
+
             winrt::Microsoft::Windows::Globalization::ApplicationLanguages::
                 PrimaryLanguageOverride(language);
 
@@ -82,13 +97,14 @@ public:
             {
                 m_context = m_resourceManager.CreateResourceContext();
             }
-
-            LOG_INFO << "Language changed: " << winrt::to_string(languageCode);
+            m_curLanguage = language;
+            LOG_INFO << "Language changed: " << winrt::to_string(language);
         }
         catch (winrt::hresult_error const& e)
         {
             LOG_ERROR << "SetLanguage failed: " << winrt::to_string(e.message());
         }
+        return true;
     }
 
     void RestartApp()
@@ -107,13 +123,12 @@ private:
             Initialize();
     }
 
-    
-
 private:
     std::mutex m_mutex;
 
     ResourceManager m_resourceManager{ nullptr };
     ResourceMap      m_mainMap{ nullptr };
     ResourceContext   m_context{ nullptr };
+    hstring m_curLanguage{ L"" };
 };
 

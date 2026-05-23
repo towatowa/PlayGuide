@@ -65,6 +65,9 @@ namespace winrt::PlayGuide::implementation
 		auto weak_this = get_weak();
 		//本地化服务
 		LocalizationHelper::Get().Initialize();
+		//语言
+		LocalizationHelper::Get().SetLanguage(AppDataService::Get().Language());
+
 		m_controlWindow = make<ControlWindow>();
 		auto controlWindow = m_controlWindow.try_as<ControlWindow>();
 
@@ -120,7 +123,6 @@ namespace winrt::PlayGuide::implementation
 		ThemeService::RegisterWindow(m_mainWindow);
 		auto theme = AppDataService::Get().Theme();
 		ThemeService::SetTheme(theme);
-
 		
 		mainWindow->MainInitialize(GetHwnd(m_mainWindow));
 		controlWindow->InitializeControl(GetHwnd(m_controlWindow));

@@ -6,6 +6,21 @@
 
 namespace winrt::PlayGuide::implementation
 {
+    void AppSettingsViewModel::UpdateHotkey(hstring const& key, hstring const& value) noexcept
+    {
+        int i = 0;
+        for (; i < m_hotkeys.Size(); i++)
+        {
+            if (m_hotkeys.GetAt(i).id() == key)
+                break;
+        }
+        if (i != m_hotkeys.Size())
+        {
+            auto newItem = m_hotkeys.GetAt(i);
+            newItem.Key(value);
+            //m_hotkeys.SetAt(i, newItem);
+        }
+    }
     void AppSettingsViewModel::UpdateHotkeysList() noexcept
     {
         //auto hotkeysList = single_threaded_observable_vector<winrt::PlayGuide::HotkeyItemViewModel>();

@@ -32,7 +32,7 @@ namespace winrt::PlayGuide::implementation
 {
     // 吸附阈值、展开/收缩尺寸
     constexpr int AdsorbThreshold = 15;
-    constexpr int ExpandWidth = 854;
+    constexpr int ExpandWidth = 860;
     constexpr int ExpandHeight = 120;
     constexpr int DockSnapWidth = 4;
     constexpr int DockSnapHeight = 4;
@@ -49,6 +49,8 @@ namespace winrt::PlayGuide::implementation
     struct ControlWindow : ControlWindowT<ControlWindow>
     {
         ControlWindow();
+        PlayGuide::AppSettingsViewModel ViewModel() noexcept{ return AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+        }
         void InitializeControl(HWND hwnd);
         
         RectInt32 GetScreenWorkArea() noexcept {
@@ -79,7 +81,7 @@ namespace winrt::PlayGuide::implementation
         void SetVisibleInvoker(Event<bool>& event);
 
         void SetCloseEventInvoker(Event<bool>& event);
-        void SetPageCreatedStateEventRevoker(Event<TabInfo>& event);
+        void SetPageCreatedStateEventRevoker(Event<const TabInfo&>& event);
         void HandleEvent(UINT msg) noexcept;
 
         void ApplyWindowState(const ControlWindowData& state) noexcept;
@@ -98,16 +100,19 @@ namespace winrt::PlayGuide::implementation
         Event<bool>::EventRevoker closeEventRevoker;
         Event<int> tabSeletedChangedEvent;
         Event<int> tabCloseEvent;
-        Event<TabInfo>newUrlEnterEvent;
+        Event<const TabInfo&>newUrlEnterEvent;
         //Event<bool>::EventRevoker tabClosingStateEventRevoker;
-        Event<TabInfo>::EventRevoker pageCreatedStateEventRevoker;
+        Event<const TabInfo&>::EventRevoker pageCreatedStateEventRevoker;
         Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
         Event<>::EventRevoker m_systemTrayClickEventRevoker;
         Event<>::EventRevoker m_systemTrayShowWindowRevoker;
+        Event<>::EventRevoker m_languageChangedEventRevoker;
+        Event<>::EventRevoker m_hotkeyChangedEventRevoker;
 
         void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void HotkeyLabels_SizeChanged(IInspectable const&, SizeChangedEventArgs const& e);
+        void RecalcHotkeyLayout();
     private:
         // 拖拽状态
         bool        m_isDragging{ false };

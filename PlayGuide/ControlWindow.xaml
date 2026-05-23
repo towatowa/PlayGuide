@@ -76,14 +76,14 @@
             <!--  左侧 About  -->
             <Button
                 Grid.Column="0"
-                Margin="8,0,0,8"
+                Margin="8,8,0,8"
                 HorizontalAlignment="Left"
                 Background="Transparent"
                 BorderThickness="0"
                 Click="AboutButton_Clicked">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <FontIcon Glyph="&#xE946;" />
-                    <TextBlock local:Loc.Text="Abort" />
+                    <TextBlock x:Name="Abort" />
                 </StackPanel>
             </Button>
 
@@ -91,7 +91,7 @@
             <ListView
                 x:Name="HotkeyLabels"
                 Grid.Column="1"
-                Margin="8,0,8,8"
+                Margin="0,0,0,0"
                 Padding="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
@@ -99,7 +99,8 @@
                 Background="Transparent"
                 BorderThickness="0"
                 SelectionMode="None"
-                SizeChanged="HotkeyLabels_SizeChanged">
+                SizeChanged="HotkeyLabels_SizeChanged"
+                ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
                 <!--  关键点 1：监听尺寸变化  -->
 
                 <ListView.ItemContainerStyle>
@@ -142,13 +143,13 @@
             <!--  右侧 Settings  -->
             <Button
                 Grid.Column="2"
-                Margin="8,0,8, 6"
+                Margin="0,8,8,8"
                 Background="Transparent"
                 BorderThickness="0"
                 Click="SettingsButton_Clicked">
-                <StackPanel Orientation="Horizontal" Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6" >
                     <FontIcon Glyph="&#xE713;" />
-                    <TextBlock local:Loc.Text="Settings" />
+                    <TextBlock x:Name="Setting"/>
                 </StackPanel>
             </Button>
 

@@ -13,7 +13,6 @@ namespace winrt::PlayGuide::implementation
     {
         SettingsPage()
         {
-            m_viewModel = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
             /*
             DispatcherQueue().TryEnqueue([this](){
                 HotkeyList().ItemsSource(m_viewModel.Hotkeys());
@@ -26,7 +25,8 @@ namespace winrt::PlayGuide::implementation
                     self->LanguageComboBox().SelectionChanged([self](auto&&, auto&&) {
                         Loc::RefreshTree(*self);
                         });
-                    self->HotkeyList().ItemsSource(self->m_viewModel.Hotkeys());
+                    //auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+                    //self->HotkeyList().ItemsSource(vm.Hotkeys());
                 }
             });
            
@@ -34,10 +34,9 @@ namespace winrt::PlayGuide::implementation
 
         auto ViewModel() noexcept
         {
-            return m_viewModel;
+            return AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
         }
 
-        winrt::PlayGuide::AppSettingsViewModel m_viewModel;
         void HotkeyFlyout_Opening(IInspectable const& sender, IInspectable const&);
         void HotkeyCaptureBorder_KeyDown(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
         void HotkeyFlyout_Closed(IInspectable const&, IInspectable const&);

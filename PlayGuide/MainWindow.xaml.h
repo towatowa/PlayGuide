@@ -49,7 +49,7 @@ namespace winrt::PlayGuide::implementation
 		void NavigatedTo(int index) noexcept;
 
 		void SetTabCloseEvent(Event<int>& event);
-		void SetNewUrlEnterEvent(Event<TabInfo>& event);
+		void SetNewUrlEnterEvent(Event<const TabInfo&>& event);
 		void SetTabSeletedChangedEvent(Event<int>& event);
 		void SetPipeServiceHandleEvent(Event<UINT>& event);
 		void SetSystemTrayClickEventRevoker(Event<>& event);
@@ -61,10 +61,10 @@ namespace winrt::PlayGuide::implementation
 		Event<bool> controlWindowCloseEvent;
 		//tabview event
 		Event<int>::EventRevoker  tabCloseEvent;
-		Event<TabInfo>::EventRevoker  newUrlEnterEvent;
+		Event<const TabInfo&>::EventRevoker  newUrlEnterEvent;
 		Event<int>::EventRevoker  tabSeletedChangedEvent;
-		Event<TabInfo> pageCreatedStateEvent;
-		Event<TabInfo>::EventRevoker webViewComplatedEventRevoker;
+		Event<const TabInfo&> pageCreatedStateEvent;
+		Event<const TabInfo&>::EventRevoker webViewComplatedEventRevoker;
 	private:
 		hstring m_url{ L"https://www.bilibili.com/" };
 

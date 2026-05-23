@@ -1,9 +1,12 @@
-﻿namespace PlayGuide
+﻿import "AppSettingsViewModel.idl";
+
+namespace PlayGuide
 {
     [default_interface]
     runtimeclass ControlWindow : Microsoft.UI.Xaml.Window
     {
         ControlWindow();
+        AppSettingsViewModel ViewModel{ get; };
         void Grid_PointerPressed(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
         void Grid_PointerMoved(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
         void Grid_PointerReleased(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);

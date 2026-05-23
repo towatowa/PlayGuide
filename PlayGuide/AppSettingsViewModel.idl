@@ -29,5 +29,7 @@ namespace PlayGuide
         OptionItem SelectedInputMethod{ get;set; };
         String TrayOnText{ get; };
         String TrayOffText{ get; };
+
+        void UpdateHotkey(String key, String value);
     }
 }

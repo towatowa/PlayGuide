@@ -6,6 +6,7 @@
 #include "KeyMapping.h"
 #include "utils.h"
 #include "PipeService.h"
+#include "Global.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -107,8 +108,11 @@ namespace winrt::PlayGuide::implementation
         }
         Key key(m_currentEditing.Key());
         m_currentEditing.SetHotkey(hstring(result));
+        g_hotkeyChanged.Invoke();
+        //AppSettingsViewModel::Instance()->UpdateHotkey(m_currentEditing.id(), result.c_str());
         co_await resume_background();
         AppDataService::Get().SaveHotkey(m_currentEditing.id().c_str(), result);
+        
         co_return;
     }
 

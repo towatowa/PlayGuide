@@ -80,7 +80,7 @@ namespace winrt::PlayGuide::implementation
 			}
 			});
 
-		webViewComplatedEventRevoker = g_webViewComplatedEvent(auto_revoke, [weak_this](TabInfo info) 
+		webViewComplatedEventRevoker = g_webViewComplatedEvent(auto_revoke, [weak_this](const TabInfo &info) 
 		{
 			if (auto self = weak_this.get())
 			{
@@ -462,9 +462,9 @@ namespace winrt::PlayGuide::implementation
 		});
 	}
 
-	void MainWindow::SetNewUrlEnterEvent(Event<TabInfo>& event)
+	void MainWindow::SetNewUrlEnterEvent(Event<const TabInfo&>& event)
 	{
-		newUrlEnterEvent = event(auto_revoke, [this](TabInfo info) {
+		newUrlEnterEvent = event(auto_revoke, [this](const TabInfo &info) {
 			m_curIndex = info.idx;
 			CreateWebViewPage(info.url.c_str(), info.idx);
 			});

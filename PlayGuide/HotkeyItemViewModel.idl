@@ -6,15 +6,15 @@ namespace PlayGuide
     {
         HotkeyItemViewModel();
         HotkeyItemViewModel(String Name, String Description, String Key, String IconGlyph, String id);
-        String Name{ get; set; };
-        String Description{ get; set; };
+        String Name{ get; };
+        String Description{ get;};
         //String Key{ get; set; };
-        String IconGlyph{ get; set; };
-        Windows.Foundation.Collections.IObservableVector<String>SplitKeys{ get; set; };
+        String IconGlyph{ get;};
+        Windows.Foundation.Collections.IObservableVector<String>SplitKeys{ get; };
         Windows.Foundation.Collections.IObservableVector<String>RecordingKeys{ get; };
         void SetHotkey(String Key);
         String id();
-        String Key();
+        String Key{ get; set; };
         String FormattedKey();
     }
 }

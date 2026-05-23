@@ -11,6 +11,8 @@
 #include "TrayIconService.h"
 #include "Win32Helper.h"
 #include <unordered_set>
+#include "Event.h"
+#include "Global.h"
 
 using namespace winrt;
 using namespace Windows::Foundation::Collections;
@@ -69,6 +71,7 @@ namespace winrt::PlayGuide::implementation
             m_selectedTheme = m_themeList.GetAt(static_cast<int>(m_pSettings->theme));
             m_selectedInputMethod = m_inputMethodList.GetAt(static_cast<int>(m_pSettings->inputType));
         }
+
     private:
         winrt::event<
             winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
@@ -154,7 +157,7 @@ namespace winrt::PlayGuide::implementation
             return (int)m_pSettings->inputType;
         }
 
-        IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> Hotkeys() noexcept
+        auto Hotkeys() noexcept
         {
             return m_hotkeys;
         }
@@ -256,13 +259,15 @@ namespace winrt::PlayGuide::implementation
             if (m_selectedLanguage.Value() == value.Value())
                 return;
             m_selectedLanguage = value;
-            auto code = GetLanguageCode(value.Value());
-            LocalizationHelper::Get().SetLanguage(code);
-            UpdateHotkeysList();//更新列表
-            RaisePropertyChanged(L"SeletedTheme");
-            RaisePropertyChanged(L"SelectedInputMethod");
-            RaisePropertyChanged(L"TrayOnText");
-            RaisePropertyChanged(L"TrayOffText");
+            if (LocalizationHelper::Get().SetLanguage((LocaleLanguage)value.Value())) //语言改变
+            {
+                UpdateHotkeysList();//更新列表
+                RaisePropertyChanged(L"SeletedTheme");
+                RaisePropertyChanged(L"SelectedInputMethod");
+                RaisePropertyChanged(L"TrayOnText");
+                RaisePropertyChanged(L"TrayOffText");
+                g_languageChanged.Invoke();
+            }
             AppDataService::Get().SaveLanguage((LocaleLanguage)value.Value());
         }
 
@@ -277,7 +282,13 @@ namespace winrt::PlayGuide::implementation
         }
 
         auto SelectedInputMethod() noexcept { return m_selectedInputMethod; }
-        void SelectedInputMethod(PlayGuide::OptionItem const& value) noexcept { m_selectedInputMethod = value; }
+        void SelectedInputMethod(PlayGuide::OptionItem const& value) noexcept 
+        { 
+            if (m_selectedInputMethod.Value() == value.Value())
+                return;
+            m_selectedInputMethod = value;
+            AppDataService::Get().SaveInputMethod((::InputType)value.Value());
+        }
 
         Microsoft::UI::Xaml::Visibility HasRestartReason(hstring const& key) noexcept { return m_restartReason.contains(key) ? Microsoft::UI::Xaml::Visibility::Visible : Microsoft::UI::Xaml::Visibility::Collapsed; }
 
@@ -288,24 +299,7 @@ namespace winrt::PlayGuide::implementation
         hstring TrayOnText() noexcept { return LocalizationHelper::Get().String(L"On"); }
         hstring TrayOffText() noexcept { return LocalizationHelper::Get().String(L"Off"); }
 
-    private:
-        winrt::hstring GetLanguageCode(int32_t index) noexcept
-        {
-            static const std::unordered_map<int32_t, winrt::hstring> languageCodeMap =
-            {
-                { 0, L"" },          // System Default
-                { 1, L"zh-Hans" },
-                { 2, L"en" }
-            };
-            auto it = languageCodeMap.find(index);
-
-            if (it != languageCodeMap.end())
-            {
-                return it->second;
-            }
-
-            return L"";
-        }
+        void UpdateHotkey(hstring const& key, hstring const& value) noexcept;
 
     private:
         AppSettings* m_pSettings;

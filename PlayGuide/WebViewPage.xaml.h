@@ -15,7 +15,7 @@ using namespace Windows::Foundation;
 
 
 // 只声明，不创建实体
-extern Event<TabInfo> g_webViewComplatedEvent;
+extern Event<const TabInfo&> g_webViewComplatedEvent;
 
 namespace winrt::PlayGuide::implementation
 {
