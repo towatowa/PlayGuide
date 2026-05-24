@@ -80,31 +80,67 @@ namespace winrt::PlayGuide::implementation
 			{
 				auto self = weak_this.get();
 				if (!self) return;
-				self->urlTabView().SelectionChanged([self](IInspectable const&, SelectionChangedEventArgs const&) 
+				self->urlTabView().SelectionChanged([self](IInspectable const&, SelectionChangedEventArgs const&args) 
 					{
-						auto item = self->urlTabView().SelectedItem().as<TabViewItem>();
-						uint32_t id = 0;
-						auto items = self->urlTabView().TabItems();
-						items.IndexOf(item, id);
-						if (item && item.Header().try_as<hstring>() != L"正在加载中...") {
-							auto value = winrt::unbox_value<uint32_t>(item.Tag());
-							self->tabSeletedChangedEvent.Invoke(value);
-							LOG_INFO << "SelectionChanged Index=" << id << "\n";
-						}
+						if (args.AddedItems().Size() == 0)
+							return;
+
+						auto item =
+							args.AddedItems().GetAt(0).try_as<TabViewItem>();
+
+						if (!item)
+							return;
+
+						auto tag = item.Tag();
+
+						if (!tag)
+							return;
+
+						auto value = winrt::unbox_value<uint32_t>(tag);
+
+						self->tabSeletedChangedEvent.Invoke(value);
+						LOG_INFO << "SelectionChanged Index=" << value << "\n";
 					});
+
 				self->urlTabView().TabCloseRequested([self](winrt::Microsoft::UI::Xaml::Controls::TabView const& sender,
 					winrt::Microsoft::UI::Xaml::Controls::TabViewTabCloseRequestedEventArgs const& args) {
 							self->m_isClosingTab = true;
 							auto items = sender.TabItems();
-							auto tab = args.Tab(); // ✔ 关键：要拿关闭的 Tab
-							if (items.Size() == 1) return;//只有一个不关闭
-							uint32_t index = 0;
+							auto tab = args.Tab(); //拿关闭的 Tab
 
-							if (items.IndexOf(tab, index))
+							uint32_t index= 0;
+							if (!items.IndexOf(tab, index))
+								return;
+
+							
+							// 删除前决定新的选中目标
+							TabViewItem nextTab{ nullptr };
+
+							if (items.Size() > 1)
 							{
-								auto value = winrt::unbox_value<uint32_t>(tab.Tag());
-								self->tabCloseEvent.Invoke(value);
-								items.RemoveAt(index);
+								// 优先选右边
+								if (index + 1 < items.Size())
+								{
+									nextTab =
+										items.GetAt(index + 1).as<TabViewItem>();
+								}
+								else
+								{
+									// 否则选左边
+									nextTab =
+										items.GetAt(index - 1).as<TabViewItem>();
+								}
+							}
+							// 删除当前 tab
+							items.RemoveAt(index);
+							self->tabCloseEvent.Invoke(unbox_value<uint32_t>(tab.Tag()));
+							// 手动切换
+							if (nextTab)
+							{
+								self->urlTabView().SelectedItem(nextTab);
+							}
+							else {
+								self->tabSeletedChangedEvent.Invoke(65535);
 							}
 					});
 				
@@ -155,15 +191,15 @@ namespace winrt::PlayGuide::implementation
 			if (auto self = weak_this.get()) {
 				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
-				//self->RecalcHotkeyLayout();
 			}
 			});
 		m_hotkeyChangedEventRevoker = g_hotkeyChanged(auto_revoke, [weak_this]() {
 			if (auto self = weak_this.get()) {
-				PlayGuide::AppSettingsViewModel vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
 				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
 			}
 			});
+
 	}
 
 
@@ -213,8 +249,10 @@ namespace winrt::PlayGuide::implementation
 
 				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
-				//self->RecalcHotkeyLayout();
+				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
+				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
 			});
+
 	}
 
 	DockSide ControlWindow::CheckDockSide(const RectInt32& windowBounds, const RectInt32& screen) noexcept
@@ -635,6 +673,71 @@ namespace winrt::PlayGuide::implementation
 
 	void ControlWindow::SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&)
 	{
+		//遍历tabviewitems，查看是否已经打开设置页面，如果没有打开就新建tabviewitem
+		auto tabView = urlTabView();
+		// 1. 先检查是否已经打开设置页
+		for (auto const& obj : tabView.TabItems())
+		{
+			auto tab = obj.try_as<Microsoft::UI::Xaml::Controls::TabViewItem>();
+
+			if (!tab)
+				continue;
+
+			// 通过 Tag 判断
+			auto tag = tab.Tag();
+
+			if (tag)
+			{
+				auto idx = winrt::unbox_value_or<uint32_t>(tag, 65535);
+
+				if (idx == 0)
+				{
+					// 已存在 -> 直接切换
+					tabView.SelectedItem(tab);
+					return;
+				}
+			}
+		}
+		// 2. 不存在则创建 Settings Tab
+		Microsoft::UI::Xaml::Controls::TabViewItem settingsTab;
+
+		settingsTab.IsClosable(true);
+
+		//settingsTab.Header(box_value(LocalizationHelper::Get().String(L"Settings")));
+
+		settingsTab.Tag(box_value(uint32_t(0)));
+
+		ToolTipService::SetToolTip(
+			settingsTab,
+			box_value(LocalizationHelper::Get().String(L"Settings"))
+		);
+
+		// 设置图标
+		 // ===== Header =====
+
+		Microsoft::UI::Xaml::Controls::StackPanel headerPanel;
+		headerPanel.Orientation(
+			Microsoft::UI::Xaml::Controls::Orientation::Horizontal);
+
+		headerPanel.Spacing(6);
+
+		// 图标
+		Microsoft::UI::Xaml::Controls::FontIcon icon;
+		icon.Glyph(L"\uE713"); // 设置图标
+
+		// 文本
+		Microsoft::UI::Xaml::Controls::TextBlock text;
+		text.Text(LocalizationHelper::Get().String(L"Settings"));
+
+		headerPanel.Children().Append(icon);
+		headerPanel.Children().Append(text);
+
+		settingsTab.Header(headerPanel);
+
+		// 添加并选中
+		tabView.TabItems().Append(settingsTab);
+
+		tabView.SelectedItem(settingsTab);
 
 	}
 	void ControlWindow::AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&)

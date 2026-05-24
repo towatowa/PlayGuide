@@ -134,7 +134,7 @@ namespace winrt::PlayGuide::implementation
         std::chrono::steady_clock::time_point m_lastMoveTime;
         hstring m_title;
         std::mutex m_mutex;
-        uint32_t m_nextId{ 0 };
+        uint32_t m_nextId{ 2 };
     };
 }
 

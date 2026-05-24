@@ -72,9 +72,9 @@ namespace winrt::PlayGuide::implementation
 		Event<>::EventRevoker m_systemTrayClickEventRevoker;
 		Event<>::EventRevoker m_systemTrayShowWindowRevoker;
 		HWND m_hwnd{ nullptr };
-		//std::vector<IInspectable> m_webViewPages;
-		std::unordered_map<uint32_t, IInspectable>m_webViewPages;
-		int m_curIndex{ 0 };
+		//std::vector<IInspectable> m_pages;
+		std::unordered_map<uint32_t, IInspectable>m_pages;
+		uint32_t m_curIndex{ 65535 };
 
 		WindowState m_curWinState{ WindowState::Normal };
 	};

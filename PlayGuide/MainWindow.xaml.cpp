@@ -46,8 +46,8 @@ namespace winrt::PlayGuide::implementation
 		this->Closed([weak_this](auto const&, auto const&args)
 			{
 				if (auto self = weak_this.get()) {
-					auto pages = self->m_webViewPages;
-					self->m_webViewPages.clear();
+					auto pages = self->m_pages;
+					self->m_pages.clear();
 
 					for (auto& wv : pages)
 					{
@@ -108,7 +108,8 @@ namespace winrt::PlayGuide::implementation
 
 				self->ApplyWindowState(state);
 				//self->CreateWebViewPage(state.url.c_str(), 0);
-				self->RootFrame().Content(make<SettingsPage>());
+				self->m_pages[0] = make<SettingsPage>();//0 idx 为设置页
+				//self->RootFrame().Content(make<SettingsPage>());
 				PipeService::Get().SendFilterRule(hwnd);
 				int cx = GetSystemMetrics(SM_CXSMICON);
 				int cy = GetSystemMetrics(SM_CYSMICON);
@@ -157,13 +158,13 @@ namespace winrt::PlayGuide::implementation
 
 	void MainWindow::PlayPause() noexcept
 	{
-		auto page = this->m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>();
+		auto page = this->m_pages[m_curIndex].try_as<PlayGuide::WebViewPage>();
 		page.PlayPause();
 	}
 
 	void MainWindow::Seek(int sec) noexcept
 	{
-		auto page = this->m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>();
+		auto page = this->m_pages[m_curIndex].try_as<PlayGuide::WebViewPage>();
 		page.Seek(sec);
 		//webView().ExecuteScriptAsync(js);
 	}
@@ -215,7 +216,7 @@ namespace winrt::PlayGuide::implementation
 			break;
 		case WM_PlayPause:
 		{
-			if (!AppDataService::Get().HotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
@@ -226,7 +227,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipForward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -236,7 +237,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipBackward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState())
+			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -399,7 +400,7 @@ namespace winrt::PlayGuide::implementation
 		state.alpha = Win32Helper::GetOpacity(m_hwnd);
 
 		//当前打开的url
-        //state.url = m_webViewPages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
+        //state.url = m_pages[m_curIndex].try_as<PlayGuide::WebViewPage>().GetUrl();
 
 		//热键在后台service进程里写
 		AppDataService::Get().SaveMainData(state);
@@ -412,9 +413,9 @@ namespace winrt::PlayGuide::implementation
 		DispatcherQueue().TryEnqueue([weak_this, url, idx]() {
 			auto self = weak_this.get();
 			if (!self) return;
-			self->m_webViewPages[idx] = make<PlayGuide::implementation::WebViewPage>(url, idx);
+			self->m_pages[idx] = make<PlayGuide::implementation::WebViewPage>(url, idx);
 			//立即切换页面
-			self->RootFrame().Content(self->m_webViewPages[idx]);
+			self->RootFrame().Content(self->m_pages[idx]);
 			self->m_curIndex = idx;
 			
 			LOG_INFO << "Created  a page " << std::wstring(url.c_str()) << "\n";
@@ -423,8 +424,6 @@ namespace winrt::PlayGuide::implementation
 
 	void MainWindow::DeleteWebViewPage(int index) noexcept
 	{
-		if (index == 0) return;
-
 		auto weak_this = this->get_weak();
 		DispatcherQueue().TryEnqueue([weak_this, index]() {
 			auto self = weak_this.get();
@@ -434,21 +433,23 @@ namespace winrt::PlayGuide::implementation
 
 			if (index == self->m_curIndex)
 				self->RootFrame().Content(nullptr);
-			self->m_webViewPages[index].try_as<PlayGuide::WebViewPage>().Close();
-			self->m_webViewPages.erase(index);
+			if (index > 1) {
+				self->m_pages[index].try_as<PlayGuide::WebViewPage>().Close();
+				self->m_pages.erase(index);
+			}
+		   
 			LOG_INFO << "Deleted page " << index << "\n";
 			});
 	}
 
 	void MainWindow::NavigatedTo(int index) noexcept
 	{
-		if (index == m_curIndex)
-			return;
+		m_curIndex = index;
 		auto weak_this = this->get_weak();
 		DispatcherQueue().TryEnqueue([weak_this, index]() {
 			auto self = weak_this.get();
 			if (!self) return;
-			self->RootFrame().Content(self->m_webViewPages[index]);
+			self->RootFrame().Content(self->m_pages[index]);
 			self->m_curIndex = index;
 			
 			LOG_INFO << "Navigated to page " << index << "\n";

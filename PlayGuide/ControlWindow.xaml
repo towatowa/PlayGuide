@@ -76,8 +76,7 @@
             <!--  左侧 About  -->
             <Button
                 Grid.Column="0"
-                Margin="8,8,0,8"
-                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
                 Background="Transparent"
                 BorderThickness="0"
                 Click="AboutButton_Clicked">
@@ -99,8 +98,7 @@
                 Background="Transparent"
                 BorderThickness="0"
                 SelectionMode="None"
-                SizeChanged="HotkeyLabels_SizeChanged"
-                ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
+                SizeChanged="HotkeyLabels_SizeChanged">
                 <!--  关键点 1：监听尺寸变化  -->
 
                 <ListView.ItemContainerStyle>
@@ -143,7 +141,7 @@
             <!--  右侧 Settings  -->
             <Button
                 Grid.Column="2"
-                Margin="0,8,8,8"
+                VerticalAlignment="Center"
                 Background="Transparent"
                 BorderThickness="0"
                 Click="SettingsButton_Clicked">
