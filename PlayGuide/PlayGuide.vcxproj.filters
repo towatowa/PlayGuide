@@ -12,6 +12,9 @@
     <Page Include="WebViewPage.xaml">
       <Filter>Pages</Filter>
     </Page>
+    <Page Include="AboutPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />

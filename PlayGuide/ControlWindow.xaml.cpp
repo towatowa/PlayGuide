@@ -155,9 +155,9 @@ namespace winrt::PlayGuide::implementation
 							newTab.Tag(box_value(self->m_nextId));
 							ToolTipService::SetToolTip(
 								newTab,
-								box_value(L"正在加载中...")
+								box_value(LocalizationHelper::Get().String(L"Loading"))
 							);
-							newTab.Header(box_value(L"正在加载中..."));
+							newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
 							self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 							tabView.TabItems().Append(newTab);
 							// 获取输入的文本
@@ -172,10 +172,10 @@ namespace winrt::PlayGuide::implementation
 						newTab.IsClosable(false);
 						ToolTipService::SetToolTip(
 							newTab,
-							box_value(L"正在加载中...")
+							box_value(LocalizationHelper::Get().String(L"Loading"))
 						);
 						newTab.Tag(box_value(self->m_nextId));
-						newTab.Header(box_value(L"正在加载中..."));
+						newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
 						self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 
 						// 添加并选中
@@ -189,7 +189,7 @@ namespace winrt::PlayGuide::implementation
 			});
 		m_languageChangedEventRevoker = g_languageChanged(auto_revoke, [weak_this]() {
 			if (auto self = weak_this.get()) {
-				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
+				self->About().Text(LocalizationHelper::Get().String(L"About"));
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
 			}
 			});
@@ -197,6 +197,27 @@ namespace winrt::PlayGuide::implementation
 			if (auto self = weak_this.get()) {
 				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
 				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+			}
+			});
+
+		m_newWindowRequestedEventRevoker = g_newWindowRequested(auto_revoke, [weak_this](const TabInfo& info) {
+			if (auto self = weak_this.get())
+			{
+				auto tabView = self->urlTabView();
+
+				// 创建新 TabViewItem
+				TabViewItem newTab;
+				newTab.IsClosable(false);
+				newTab.Tag(box_value(self->m_nextId));
+				ToolTipService::SetToolTip(
+					newTab,
+					box_value(LocalizationHelper::Get().String(L"Loading"))
+				);
+				newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+				self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
+				tabView.TabItems().Append(newTab);
+				
+				self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", info.url });
 			}
 			});
 
@@ -247,7 +268,7 @@ namespace winrt::PlayGuide::implementation
 				//过滤该窗口自身按键消息
 				PipeService::Get().SendFilterRule(hwnd);
 
-				self->Abort().Text(LocalizationHelper::Get().String(L"Abort"));
+				self->About().Text(LocalizationHelper::Get().String(L"About"));
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
 				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
 				self->HotkeyLabels().ItemsSource(vm.Hotkeys());

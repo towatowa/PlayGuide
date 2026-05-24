@@ -41,6 +41,8 @@ namespace winrt::PlayGuide::implementation
 
         void CreateWebView();
 
+        winrt::hstring UnwrapJsString(winrt::hstring const& json);
+
     private:
         hstring m_url{ L"" };
         HWND m_hwnd{ nullptr };

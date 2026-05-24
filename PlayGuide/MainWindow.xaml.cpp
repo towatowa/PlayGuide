@@ -216,7 +216,7 @@ namespace winrt::PlayGuide::implementation
 			break;
 		case WM_PlayPause:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
+			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex <= 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
@@ -227,7 +227,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipForward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
+			if (!AppDataService::Get().HotkeyEnableState() || m_curIndex <= 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -237,7 +237,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_SkipBackward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex > 1)
+			if (!AppDataService::Get().HotkeyEnableState() || m_curIndex <= 1)
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())

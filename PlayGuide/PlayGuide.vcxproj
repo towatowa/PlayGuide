@@ -137,6 +137,10 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AboutPage.xaml.h">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="AppDataService.h" />
     <ClInclude Include="AppSettingsViewModel.h" />
     <ClInclude Include="Global.h" />
@@ -183,6 +187,9 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="AboutPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ControlWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -195,6 +202,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AboutPage.xaml.cpp">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="AppDataService.cpp">
       <UndefineAllPreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</UndefineAllPreprocessorDefinitions>
       <UndefinePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
@@ -265,6 +276,10 @@
     <ClCompile Include="Win32Helper.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="AboutPage.idl">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="AppSettingsViewModel.idl" />
     <Midl Include="ControlWindow.idl">
       <DependentUpon>ControlWindow.xaml</DependentUpon>

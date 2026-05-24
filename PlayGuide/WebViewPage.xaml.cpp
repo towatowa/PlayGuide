@@ -6,6 +6,8 @@
 #include "Logger.h"
 #include <winrt/Windows.Storage.h>
 #include "Win32Helper.h"
+#include "Global.h"
+#include <winrt/Windows.Data.Json.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -19,6 +21,7 @@ namespace winrt::PlayGuide::implementation
 {
 	decltype(WebViewPage::m_webView2Environment) WebViewPage::m_webView2Environment = nullptr;
 	decltype(WebViewPage::m_localFolder)WebViewPage::m_localFolder{ L"" };
+
 
 	WebViewPage::WebViewPage()
 	{
@@ -146,22 +149,24 @@ namespace winrt::PlayGuide::implementation
 					if (auto self = weak_this.get())
 					{
 						args.Handled(true);
+						/*
 						auto core = self->webView.CoreWebView2();
 						if (core)
 						{
 							core.Navigate(args.Uri());
 						}
+						*/
+						hstring url = args.Uri();
+						g_newWindowRequested.Invoke({ 65535, L"", url.c_str() });
 					}
 				});
-			// 核心：页面加载完成事件
+			// 页面加载完成事件
+			/*
 			core.NavigationCompleted(
 				[weak_this](auto&& sender, auto&& args)
 				{
 					if (auto self = weak_this.get())
 					{
-						// ==========================================
-						//         ✅✅✅ 页面加载完成✅✅✅
-						// ==========================================
 						bool isSuccess = args.IsSuccess();       // 是否加载成功
 						hstring url = sender.Source();           // 最终 URL
 						hstring title = sender.DocumentTitle();  // 网页标题
@@ -170,10 +175,33 @@ namespace winrt::PlayGuide::implementation
 
 						// 触发事件通知 MainWindow
 						TabInfo info{ self->id, title.c_str(), url.c_str() };
+						//g_webViewComplatedEvent.Invoke(info);
+					}
+				})
+			core.DOMContentLoaded(
+				[core, weak_this](auto const&, auto const&)
+				{
+					if (auto self = weak_this.get()) {
+						core.ExecuteScriptAsync(L"document.title").Completed([self](auto const& op, auto)
+							{
+								auto result = op.GetResults();
+								auto title = self->UnwrapJsString(result);
+								TabInfo info{ self->id, title.c_str(), L""};
+								g_webViewComplatedEvent.Invoke(info);
+								LOG_DEBUG << L"页面加载完成：" << result.c_str() << L"\n";
+							});
+					}
+				});*/
+			core.DocumentTitleChanged(
+				[weak_this](auto const& sender, auto const&)
+				{
+					if (auto self = weak_this.get()) {
+						auto title = sender.DocumentTitle();
+						TabInfo info{ self->id, title.c_str(), L"" };
 						g_webViewComplatedEvent.Invoke(info);
+						LOG_DEBUG << L"页面加载完成：" << title.c_str() << L"\n";
 					}
 				});
-
 			webView.Source(winrt::Windows::Foundation::Uri(m_url));
 		}
 		catch (std::exception e)
@@ -188,5 +216,12 @@ namespace winrt::PlayGuide::implementation
 		webView = winrt::Microsoft::UI::Xaml::Controls::WebView2();
 
 		RootGrid().Children().Append(webView);
+	}
+
+	winrt::hstring WebViewPage::UnwrapJsString(winrt::hstring const& json)
+	{
+		using namespace winrt::Windows::Data::Json;
+
+		return JsonValue::Parse(json).GetString();
 	}
 }
