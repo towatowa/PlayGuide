@@ -107,7 +107,7 @@ namespace winrt::PlayGuide::implementation
         Event<>::EventRevoker m_systemTrayClickEventRevoker;
         Event<>::EventRevoker m_systemTrayShowWindowRevoker;
         Event<>::EventRevoker m_languageChangedEventRevoker;
-        Event<>::EventRevoker m_hotkeyChangedEventRevoker;
+        Event<const std::wstring&>::EventRevoker m_hotkeyChangedEventRevoker;
         Event<const TabInfo&>::EventRevoker m_newWindowRequestedEventRevoker;
 
         void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);

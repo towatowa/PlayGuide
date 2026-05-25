@@ -137,8 +137,8 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AboutPage.xaml.h">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
+    <ClInclude Include="AboutWindow.xaml.h">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="AppDataService.h" />
@@ -187,7 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
-    <Page Include="AboutPage.xaml">
+    <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ControlWindow.xaml">
@@ -202,8 +202,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutPage.xaml.cpp">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
+    <ClCompile Include="AboutWindow.xaml.cpp">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="AppDataService.cpp">
@@ -276,8 +276,8 @@
     <ClCompile Include="Win32Helper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="AboutPage.idl">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
+    <Midl Include="AboutWindow.idl">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="AppSettingsViewModel.idl" />

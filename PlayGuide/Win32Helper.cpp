@@ -519,3 +519,53 @@ void Win32Helper::ClearCpuAffinityV2()
 {
     SetThreadSelectedCpuSets(GetCurrentThread(), nullptr, 0);
 }
+
+std::wstring Win32Helper::GetAppVersion()
+{
+    wchar_t path[MAX_PATH]{};
+
+    ::GetModuleFileName(nullptr, path, MAX_PATH);
+
+    DWORD handle = 0;
+
+    DWORD size = ::GetFileVersionInfoSize(path, &handle);
+
+    if (size == 0)
+    {
+        return L"Unknown";
+    }
+
+    std::vector<BYTE> data(size);
+
+    if (!::GetFileVersionInfo(path, handle, size, data.data()))
+    {
+        return L"Unknown";
+    }
+
+    VS_FIXEDFILEINFO* info = nullptr;
+
+    UINT len = 0;
+
+    ::VerQueryValue(
+        data.data(),
+        L"\\",
+        reinterpret_cast<LPVOID*>(&info),
+        &len);
+
+    if (!info)
+    {
+        return L"Unknown";
+    }
+
+    wchar_t version[64]{};
+
+    swprintf_s(
+        version,
+        L"%u.%u.%u.%u",
+        HIWORD(info->dwFileVersionMS),
+        LOWORD(info->dwFileVersionMS),
+        HIWORD(info->dwFileVersionLS),
+        LOWORD(info->dwFileVersionLS));
+
+    return version;
+}

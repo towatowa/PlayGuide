@@ -8,9 +8,8 @@
 #include <vector>
 #include "Logger.h"
 #pragma comment(lib, "Shell32.lib")
-
-
-
+#include <winver.h>
+#pragma comment(lib, "Version.lib")
 
 
 using PFN_GetSystemCpuSetInformation = DWORD(WINAPI*)(
@@ -51,6 +50,7 @@ public:
     static void TestEfficientThread();
     static bool SetThreadToEfficientCoresV2();
     static void ClearCpuAffinityV2();
+    static std::wstring GetAppVersion();
     static void SetAutoStart(bool enable);
 private:
     static RECT GetWorkArea(HWND hwnd);

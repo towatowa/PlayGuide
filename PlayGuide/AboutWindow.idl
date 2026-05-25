@@ -1,0 +1,8 @@
+﻿namespace PlayGuide
+{
+    [default_interface]
+    runtimeclass AboutWindow : Microsoft.UI.Xaml.Window
+    {
+        AboutWindow();
+    }
+}

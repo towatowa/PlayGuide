@@ -273,4 +273,25 @@
   <data name="Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="AboutPlayGuide" xml:space="preserve">
+    <value>A floating browser built with WebView2, featuring keyboard shortcuts and fast page controls.</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="OpenRepository" xml:space="preserve">
+    <value>Open Repository</value>
+  </data>
+  <data name="CheckUpdate" xml:space="preserve">
+    <value>Check Update</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="AreadyLatest" xml:space="preserve">
+    <value>Aready latest</value>
+  </data>
 </root>

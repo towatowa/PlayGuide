@@ -97,7 +97,8 @@ namespace winrt::PlayGuide::implementation
 
         void Key(winrt::hstring const& value)
         {
-            SetProperty(m_key, value, L"Key");
+            m_key = value;
+            RaisePropertyChanged(L"Key");
         }
 
         winrt::hstring FormattedKey() noexcept

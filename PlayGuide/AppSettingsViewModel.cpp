@@ -21,6 +21,7 @@ namespace winrt::PlayGuide::implementation
             //m_hotkeys.SetAt(i, newItem);
         }
     }
+
     void AppSettingsViewModel::UpdateHotkeysList() noexcept
     {
         //auto hotkeysList = single_threaded_observable_vector<winrt::PlayGuide::HotkeyItemViewModel>();

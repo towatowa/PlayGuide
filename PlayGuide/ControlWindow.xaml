@@ -73,7 +73,7 @@
                     QueryIcon="Link" />
             </Grid>
         </Border>
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Name="HotkeyGrid">
 
             <!--  左侧 About  -->
             <Button
@@ -100,7 +100,8 @@
                 Background="Transparent"
                 BorderThickness="0"
                 SelectionMode="None"
-                SizeChanged="HotkeyLabels_SizeChanged">
+                SizeChanged="HotkeyLabels_SizeChanged"
+                ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
                 <!--  关键点 1：监听尺寸变化  -->
 
                 <ListView.ItemContainerStyle>

@@ -108,7 +108,7 @@ namespace winrt::PlayGuide::implementation
         }
         Key key(m_currentEditing.Key());
         m_currentEditing.SetHotkey(hstring(result));
-        g_hotkeyChanged.Invoke();
+        g_hotkeyChanged.Invoke(m_currentEditing.id().c_str());
         //AppSettingsViewModel::Instance()->UpdateHotkey(m_currentEditing.id(), result.c_str());
         co_await resume_background();
         AppDataService::Get().SaveHotkey(m_currentEditing.id().c_str(), result);

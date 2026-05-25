@@ -21,28 +21,24 @@ namespace winrt::PlayGuide::implementation
 {
     struct AppSettingsViewModel :  AppSettingsViewModelT<AppSettingsViewModel>
     {
-        // 单例核心：获取唯一实例
-        static com_ptr<AppSettingsViewModel> Instance()
+        inline static winrt::weak_ref<PlayGuide::AppSettingsViewModel> s_instance{ nullptr };
+        static PlayGuide::AppSettingsViewModel Instance()
         {
-            static std::mutex mutex;
-            static com_ptr<AppSettingsViewModel> instance;
-
-            // 双重检查锁定，线程安全
-            if (!instance)
+            if (auto inst = s_instance.get())
             {
-                std::lock_guard<std::mutex> lock(mutex);
-                if (!instance)
-                {
-                    instance = make_self<AppSettingsViewModel>();
-                }
+                return inst;
             }
-            return instance;
+
+            auto newInstance = winrt::make<PlayGuide::implementation::AppSettingsViewModel>();
+            s_instance = newInstance;
+            return newInstance;
         }
 
+        /*
         // 禁止拷贝和赋值（单例必须）
         AppSettingsViewModel(AppSettingsViewModel const&) = delete;
         AppSettingsViewModel& operator=(AppSettingsViewModel const&) = delete;
-
+        */
         AppSettingsViewModel()
         {
             m_hotkeys = single_threaded_observable_vector<winrt::PlayGuide::HotkeyItemViewModel>();

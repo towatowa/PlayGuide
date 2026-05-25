@@ -18,6 +18,8 @@
 #include "global.h"
 #include "LocalizationHelper.h"
 
+#include "AboutWindow.xaml.h"
+
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Windowing;
 using namespace Windows::Graphics;
@@ -26,6 +28,8 @@ using namespace Microsoft::UI::Input;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
+
+static PlayGuide::AboutWindow g_aboutWindow{ nullptr };
 
 namespace winrt::PlayGuide::implementation
 {
@@ -193,10 +197,33 @@ namespace winrt::PlayGuide::implementation
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
 			}
 			});
-		m_hotkeyChangedEventRevoker = g_hotkeyChanged(auto_revoke, [weak_this]() {
+		m_hotkeyChangedEventRevoker = g_hotkeyChanged(auto_revoke, [weak_this](const std::wstring& id) {
 			if (auto self = weak_this.get()) {
 				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
-				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+
+				//self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+				
+				//self->HotkeyGrid().InvalidateMeasure();
+				//self->HotkeyGrid().UpdateLayout();
+				auto source = self->HotkeyLabels().ItemsSource();
+
+				auto hotkeys =
+					source.as<winrt::Windows::Foundation::Collections::IVector<
+					winrt::Windows::Foundation::IInspectable>>();
+
+				for (uint32_t i = 0; i < hotkeys.Size(); i++)
+				{
+					auto item = hotkeys.GetAt(i);
+
+					auto hk = item.as<PlayGuide::HotkeyItemViewModel>();
+
+					if (hk.id() == id)
+					{
+						auto value = make<HotkeyItemViewModel>(hk.Name(), hk.Description(), hk.Key(), hk.IconGlyph(), hk.id());
+						hotkeys.SetAt(i, value);
+						break;
+					}
+				}
 			}
 			});
 
@@ -763,6 +790,17 @@ namespace winrt::PlayGuide::implementation
 	}
 	void ControlWindow::AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&)
 	{
+		if (!g_aboutWindow)
+		{
+			g_aboutWindow = PlayGuide::AboutWindow();
+
+			g_aboutWindow.Closed([](auto&&, auto&&)
+				{
+					g_aboutWindow = nullptr;
+				});
+		}
+
+		g_aboutWindow.Activate();
 	}
 
 	void ControlWindow::HotkeyLabels_SizeChanged(

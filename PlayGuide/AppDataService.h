@@ -86,6 +86,7 @@ public:
 
 	//按键捕获方法
 	void SaveInputMethod(::InputType type) noexcept;
+
 private:
 
 	MainWindowData m_mainData{};

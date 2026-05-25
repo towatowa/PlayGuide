@@ -1,0 +1,126 @@
+﻿<!--  AboutWindow.xaml  -->
+
+<Window
+    x:Class="PlayGuide.AboutWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:PlayGuide"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="About PlayGuide"
+    mc:Ignorable="d">
+
+    <Grid Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Border
+            Width="480"
+            Padding="28"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            CornerRadius="16">
+
+            <StackPanel Spacing="16">
+
+                <!--  ICON  -->
+                <StackPanel HorizontalAlignment="Center" Spacing="10">
+
+                    <Image
+                        Width="84"
+                        Height="84"
+                        HorizontalAlignment="Center"
+                        Source="ms-appx:///Assets/AppIcon.ico" />
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="32"
+                        FontWeight="SemiBold"
+                        Text="PlayGuide" />
+
+                    <TextBlock
+                        MaxWidth="360"
+                        HorizontalAlignment="Center"
+                        local:Loc.Text="AboutPlayGuide"
+                        Opacity="0.6"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Rectangle Height="1" Opacity="0.08" />
+
+                <!--  INFO CARD  -->
+                <StackPanel HorizontalAlignment="Center" Spacing="12">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock local:Loc.Text="Version" Opacity="0.6" />
+                        <TextBlock x:Name="VersionText" Grid.Column="1" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock local:Loc.Text="License" Opacity="0.6" />
+                        <HyperlinkButton
+                            Grid.Column="1"
+                            Padding="0"
+                            Click="OnOpenLicense"
+                            Content="MIT" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Opacity="0.6" Text="GitHub" />
+
+                        <HyperlinkButton
+                            Grid.Column="1"
+                            Padding="0"
+                            local:Loc.Text="OpenRepository"
+                            Click="OnOpenGithub" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Opacity="0.6" Text="WebView2" />
+                        <TextBlock x:Name="WebView2VersionText" Grid.Column="1" />
+                    </Grid>
+
+                </StackPanel>
+
+                <Rectangle Height="1" Opacity="0.08" />
+
+                <!--  BUTTONS  -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="12">
+
+                    <Button
+                        x:Name="UpdateButton"
+                        MinWidth="140"
+                        local:Loc.Text="CheckUpdate"
+                        Click="OnCheckUpdate" />
+
+                </StackPanel>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>

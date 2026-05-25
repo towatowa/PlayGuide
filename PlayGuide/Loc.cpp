@@ -55,6 +55,10 @@ namespace winrt::PlayGuide::implementation
             ts.OnContent(box_value(text));
             ts.OffContent(box_value(text));
         }
+        else if (auto hl = d.try_as<Microsoft::UI::Xaml::Controls::HyperlinkButton>())
+        {
+            hl.Content(box_value(text));
+        }
     }
 
     void Loc::RefreshTree(DependencyObject const& root)
@@ -102,6 +106,10 @@ namespace winrt::PlayGuide::implementation
         {
             ts.OnContent(box_value(text));
             ts.OffContent(box_value(text));
+        }
+        else if (auto hl = d.try_as<Microsoft::UI::Xaml::Controls::HyperlinkButton>())
+        {
+            hl.Content(box_value(text));
         }
     }
 }
