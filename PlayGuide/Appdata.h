@@ -183,7 +183,7 @@ struct PipeMessage {
     > data;
 };
 
-inline std::wstring g_defaultWebUrl{ L"https://www.bilibili.com/" };
+inline const std::wstring g_defaultWebUrl{ L"https://www.bilibili.com/" };
 
 
 constexpr UINT WM_EnableHotkeys = WM_USER + 1;
@@ -289,6 +289,7 @@ struct AppSettings
     bool adminRunning{ false };
     bool intelCpuUseECore{ true };
     InputType inputType{ InputType::KeyboardHook };
+    std::wstring homePage{ L"" };
 };
 
 struct TabInfo
@@ -315,16 +316,19 @@ struct WindowData
     int height{ 720 };
     int alpha{ 255 };//透明度
     WindowState windowState{ WindowState::Normal };
-    virtual ~WindowData() = default; // ⭐关键
+    virtual ~WindowData() = default;
+    
 };
 
 
 
 struct MainWindowData : WindowData
 {
-    std::wstring url;
+   
 };
 
 struct ControlWindowData : WindowData
 {
+    std::vector<TabInfo> urls;
+    uint32_t selectedItem{ 0 };
 };

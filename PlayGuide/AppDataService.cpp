@@ -40,7 +40,7 @@ void AppDataService::SaveMainData(const MainWindowData& data)
 
 	m_ini->WriteInt(L"MainWindow", L"windowState",
 	   (int)data.windowState);
-	m_ini->WriteString(L"Web", L"url", data.url);
+	//m_ini->WriteString(L"Web", L"url", data.url);
 	//SaveUrls(data.urls);
 }
 
@@ -56,14 +56,16 @@ void AppDataService::SaveHotkeys(const HotKeyMap& hotkeys)
 	}
 }
 
-void AppDataService::SaveUrls(const std::vector<std::wstring>& data)
+void AppDataService::SaveUrls(const std::vector<TabInfo>& data)
 {
 	m_ini->WriteInt(L"Urls", L"urlCount", data.size());
 	std::wstring key;
 	for (int i = 0; i < data.size(); ++i)
 	{
-		std::wstring key = L"url" + std::to_wstring(i);
-		m_ini->WriteString(L"Urls", key, data[i]);
+		key = L"url" + std::to_wstring(i);
+		m_ini->WriteString(L"Urls", key, data[i].url);
+		key = L"title" + std::to_wstring(i);
+        m_ini->WriteString(L"Urls", key, data[i].title);
 	}
 }
 
@@ -103,20 +105,21 @@ HotKeyMap AppDataService::LoadHotkeys() const
 	return map;
 }
 
-std::vector<std::wstring> AppDataService::LoadUrls() const
+std::vector<TabInfo> AppDataService::LoadUrls() const
 {
 	// vector webUrls
 	int count = m_ini->ReadInt(L"Urls", L"urlCount", 1);
-	std::vector<std::wstring>urls;
-
+	std::vector<TabInfo>urls;
+	std::wstring key;
 	for (int i = 0; i < count; i++)
 	{
-		std::wstring key = L"url" + std::to_wstring(i);
+		key = L"url" + std::to_wstring(i);
 
 		auto url = m_ini->ReadString(L"Urls", key, L"");
-
-		if (url[0])
-			urls.emplace_back(url);
+		key = L"title" + std::to_wstring(i);
+		auto title = m_ini->ReadString(L"Urls", key, L"");
+		if (url[0] && title[0])
+			urls.emplace_back(TabInfo{ 0, title, url});
 	}
 
 	return urls;
@@ -164,7 +167,7 @@ MainWindowData AppDataService::LoadMainData() const
 	data.alpha = m_ini->ReadInt(L"MainWindow", L"alpha", 255);
 	data.windowState = (WindowState)m_ini->ReadInt(L"MainWindow", L"windowState", (int)WindowState::Normal);
 
-	data.url = m_ini->ReadString(L"Web", L"url", g_defaultWebUrl);
+	//data.url = m_ini->ReadString(L"Web", L"url", g_defaultWebUrl);
 
 	return data;
 }
@@ -200,6 +203,8 @@ void AppDataService::SaveControlData(const ControlWindowData& data)
 		L"alpha",
 		std::to_wstring(data.alpha)
 	);
+	m_ini->WriteInt(L"Urls", L"selectedItem", (int)data.selectedItem);
+	SaveUrls(data.urls);
 }
 
 ControlWindowData AppDataService::LoadControlData() const
@@ -211,6 +216,8 @@ ControlWindowData AppDataService::LoadControlData() const
 	data.width = m_ini->ReadInt(L"ControlWindow", L"width", 1280);
 	data.height = m_ini->ReadInt(L"ControlWindow", L"height", 720);
 	data.alpha = m_ini->ReadInt(L"ControlWindow", L"alpha", 255);
+	data.selectedItem = m_ini->ReadInt(L"Urls", L"selectedItem", 65536);
+	data.urls = LoadUrls();
 
 	return data;
 }
@@ -239,7 +246,6 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	// 默认数据（直接用 struct）
 	// =========================
 	MainWindowData mainData{};
-	mainData.url = g_defaultWebUrl;
 	ControlWindowData controlData{};
 	controlData.width = 854;
 	controlData.height = 120;

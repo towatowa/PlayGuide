@@ -14,9 +14,6 @@ using namespace Microsoft::UI::Xaml::Controls;
 using namespace Windows::Foundation;
 
 
-// 只声明，不创建实体
-extern Event<const TabInfo&> g_webViewComplatedEvent;
-
 namespace winrt::PlayGuide::implementation
 {
     struct WebViewPage : WebViewPageT<WebViewPage>
@@ -51,6 +48,7 @@ namespace winrt::PlayGuide::implementation
         static std::filesystem::path m_localFolder;
         winrt::Microsoft::UI::Xaml::Controls::WebView2 webView{ nullptr };
         int id{ 0 };
+        hstring m_title{ L"" };
     };
 }
 

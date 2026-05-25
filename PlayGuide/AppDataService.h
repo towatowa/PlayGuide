@@ -26,7 +26,7 @@ public:
 	MainWindowData LoadMainData() const;
 	ControlWindowData LoadControlData() const;
 	HotKeyMap LoadHotkeys() const;
-	std::vector<std::wstring> LoadUrls() const;
+	std::vector<TabInfo> LoadUrls() const;
 	AppSettings LoadSettings() const;
 	// =========================
 	// Save
@@ -34,7 +34,7 @@ public:
 	void SaveMainData(const MainWindowData& data);
 	void SaveControlData(const ControlWindowData& data);
 	void SaveHotkeys(const HotKeyMap& hotkeys);
-	void SaveUrls(const std::vector<std::wstring>& data);
+	void SaveUrls(const std::vector<TabInfo>& data);
 	void SaveAppSettings() const;
 	void SaveAppSettings(const AppSettings* settings) const;
 	void SaveHotkey(std::wstring_view key, std::wstring_view value);

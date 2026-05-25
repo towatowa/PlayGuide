@@ -98,11 +98,11 @@ namespace winrt::PlayGuide::implementation
 
         Event<bool>::EventRevoker visibleInvoker;
         Event<bool>::EventRevoker closeEventRevoker;
-        Event<int> tabSeletedChangedEvent;
+        Event<const TabInfo&> tabSeletedChangedEvent;
         Event<int> tabCloseEvent;
-        Event<const TabInfo&>newUrlEnterEvent;
+        Event<const TabInfo&>newUrlRequestEvent;
         //Event<bool>::EventRevoker tabClosingStateEventRevoker;
-        Event<const TabInfo&>::EventRevoker pageCreatedStateEventRevoker;
+        Event<const TabInfo&>::EventRevoker m_documentTitleChangedEventRevoker;
         Event<UINT>::EventRevoker m_pipeServiceHandleRevoker;
         Event<>::EventRevoker m_systemTrayClickEventRevoker;
         Event<>::EventRevoker m_systemTrayShowWindowRevoker;
@@ -110,10 +110,14 @@ namespace winrt::PlayGuide::implementation
         Event<const std::wstring&>::EventRevoker m_hotkeyChangedEventRevoker;
         Event<const TabInfo&>::EventRevoker m_newWindowRequestedEventRevoker;
 
+        Event<const TabInfo&>::EventRevoker m_navigationStartingEventRevoker;
+        Event<const TabInfo&>::EventRevoker m_sourceChangedEventRevoker;
+
         void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void HotkeyLabels_SizeChanged(IInspectable const&, SizeChangedEventArgs const& e);
         void RecalcHotkeyLayout();
+        void RestoreTabItems(std::vector<TabInfo> const& tabs);
     private:
         // 拖拽状态
         bool        m_isDragging{ false };
@@ -136,6 +140,7 @@ namespace winrt::PlayGuide::implementation
         hstring m_title;
         std::mutex m_mutex;
         uint32_t m_nextId{ 2 };
+        DispatcherQueueTimer m_hideTimer{ nullptr };
     };
 }
 

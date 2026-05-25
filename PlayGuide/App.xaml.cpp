@@ -77,8 +77,7 @@ namespace winrt::PlayGuide::implementation
 		controlWindow->SetVisibleInvoker(mainWindow->controlWindowVisible);
 		mainWindow->SetTabCloseEvent(controlWindow->tabCloseEvent);
 		mainWindow->SetTabSeletedChangedEvent(controlWindow->tabSeletedChangedEvent);
-		mainWindow->SetNewUrlEnterEvent(controlWindow->newUrlEnterEvent);
-		controlWindow->SetPageCreatedStateEventRevoker(mainWindow->pageCreatedStateEvent);
+		mainWindow->SetNewUrlRequestEvent(controlWindow->newUrlRequestEvent);
 
 		PipeService::Get().SetHotkeyMsgHandler([weak_this](UINT msg) {
 			if (auto self = weak_this.get())

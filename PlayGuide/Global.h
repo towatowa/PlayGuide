@@ -10,3 +10,7 @@ inline Event<> g_languageChanged;
 inline Event<const std::wstring&> g_hotkeyChanged;
 
 inline Event<const TabInfo&> g_newWindowRequested;
+inline Event<const TabInfo&> g_navigationStarting;
+inline Event<const TabInfo&> g_sourceChanged;
+inline Event<const TabInfo&> g_documentTitleChanged;
+inline Event<const TabInfo&> g_newUrlRequestEvent;

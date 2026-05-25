@@ -3,6 +3,7 @@
 #if __has_include("WebViewPage.g.cpp")
 #include "WebViewPage.g.cpp"
 #endif
+using namespace winrt::Microsoft::Web::WebView2::Core;
 #include "Logger.h"
 #include <winrt/Windows.Storage.h>
 #include "Win32Helper.h"
@@ -15,7 +16,6 @@ using namespace Microsoft::UI::Xaml::Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-Event<const TabInfo&> g_webViewComplatedEvent;
 
 namespace winrt::PlayGuide::implementation
 {
@@ -198,9 +198,26 @@ namespace winrt::PlayGuide::implementation
 					if (auto self = weak_this.get()) {
 						auto title = sender.DocumentTitle();
 						TabInfo info{ self->id, title.c_str(), L"" };
-						g_webViewComplatedEvent.Invoke(info);
+						g_documentTitleChanged.Invoke(info);
+						self->m_title = title;
 						LOG_DEBUG << L"页面加载完成：" << title.c_str() << L"\n";
 					}
+				});
+			
+			core.SourceChanged(
+				[weak_this, core](auto const&, auto const&)
+				{
+					if (auto self = weak_this.get()) {
+						auto url = core.Source();
+						TabInfo info{ self->id, L"", url.c_str()};
+						g_sourceChanged.Invoke(info);
+					}
+				});
+			core.NavigationStarting([weak_this](auto&&, auto&&) {
+				if (auto self = weak_this.get()) {
+					TabInfo info{ self->id, L"", L"" };
+					g_navigationStarting.Invoke(info);
+				}
 				});
 			webView.Source(winrt::Windows::Foundation::Uri(m_url));
 		}

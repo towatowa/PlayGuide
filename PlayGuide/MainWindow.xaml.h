@@ -44,13 +44,13 @@ namespace winrt::PlayGuide::implementation
 		void ApplyWindowState(const MainWindowData&state) noexcept;
 		void SaveWindowStateData() noexcept;
 
-		void CreateWebViewPage(hstring url, int idx) noexcept;
+		Windows::Foundation::IAsyncAction CreateWebViewPage(hstring url, int idx) noexcept;
 		void DeleteWebViewPage(int index) noexcept;
-		void NavigatedTo(int index) noexcept;
+		Windows::Foundation::IAsyncAction NavigatedTo(const TabInfo& info) noexcept;
 
 		void SetTabCloseEvent(Event<int>& event);
-		void SetNewUrlEnterEvent(Event<const TabInfo&>& event);
-		void SetTabSeletedChangedEvent(Event<int>& event);
+		void SetNewUrlRequestEvent(Event<const TabInfo&>& event);
+		void SetTabSeletedChangedEvent(Event<const TabInfo&>& event);
 		void SetPipeServiceHandleEvent(Event<UINT>& event);
 		void SetSystemTrayClickEventRevoker(Event<>& event);
 
@@ -61,8 +61,8 @@ namespace winrt::PlayGuide::implementation
 		Event<bool> controlWindowCloseEvent;
 		//tabview event
 		Event<int>::EventRevoker  tabCloseEvent;
-		Event<const TabInfo&>::EventRevoker  newUrlEnterEvent;
-		Event<int>::EventRevoker  tabSeletedChangedEvent;
+		Event<const TabInfo&>::EventRevoker  newUrlRequestEvent;
+		Event<const TabInfo&>::EventRevoker  tabSeletedChangedEvent;
 		Event<const TabInfo&> pageCreatedStateEvent;
 		Event<const TabInfo&>::EventRevoker webViewComplatedEventRevoker;
 	private:

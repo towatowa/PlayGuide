@@ -65,6 +65,7 @@ namespace winrt::PlayGuide::implementation
 				default:
 					break;
 				}
+				
 			});
 
 		this->Activated([weak_this](auto&&, auto&& args)
@@ -72,7 +73,8 @@ namespace winrt::PlayGuide::implementation
 				auto self = weak_this.get();
 				if (!self) return;
 				self->m_isActive = (args.WindowActivationState() != WindowActivationState::Deactivated);
-
+				if (!self->m_isActive)
+					self->m_hideTimer.Start();
 				LOG_DEBUG << "Activated trigger.\n";
 			});
 		this->Closed([weak_this](auto&&, auto&& args) {
@@ -100,10 +102,14 @@ namespace winrt::PlayGuide::implementation
 						if (!tag)
 							return;
 
-						auto value = winrt::unbox_value<uint32_t>(tag);
+						auto data = tag.as<IPropertySet>();
+						auto idx = unbox_value<uint32_t>(data.Lookup(L"idx"));
+						auto url = unbox_value<hstring>(data.Lookup(L"url"));
+						self->UrlBox().Text(url);
 
-						self->tabSeletedChangedEvent.Invoke(value);
-						LOG_INFO << "SelectionChanged Index=" << value << "\n";
+						self->tabSeletedChangedEvent.Invoke(TabInfo{ idx, L"", url.c_str() });
+
+						LOG_INFO << "SelectionChanged Index=" << idx << "\n";
 					});
 
 				self->urlTabView().TabCloseRequested([self](winrt::Microsoft::UI::Xaml::Controls::TabView const& sender,
@@ -137,14 +143,18 @@ namespace winrt::PlayGuide::implementation
 							}
 							// 删除当前 tab
 							items.RemoveAt(index);
-							self->tabCloseEvent.Invoke(unbox_value<uint32_t>(tab.Tag()));
+
+							auto data = tab.Tag().as<IPropertySet>();
+							auto idx = unbox_value<uint32_t>(data.Lookup(L"idx"));
+
+							self->tabCloseEvent.Invoke(idx);
 							// 手动切换
 							if (nextTab)
 							{
 								self->urlTabView().SelectedItem(nextTab);
 							}
 							else {
-								self->tabSeletedChangedEvent.Invoke(65535);
+								self->tabSeletedChangedEvent.Invoke(TabInfo{ 65535, L"", L"" });
 							}
 					});
 				
@@ -152,21 +162,27 @@ namespace winrt::PlayGuide::implementation
 					Microsoft::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs const& args)
 					{
 							auto tabView = self->urlTabView();
+							auto url = sender.Text();
 
 							// 创建新 TabViewItem
 							TabViewItem newTab;
 							newTab.IsClosable(false);
-							newTab.Tag(box_value(self->m_nextId));
+							PropertySet data;
+							data.Insert(L"url", box_value(url));
+							data.Insert(L"title", box_value(L""));
+							data.Insert(L"idx", box_value(self->m_nextId++));
+							newTab.Tag(box_value(data));
+
 							ToolTipService::SetToolTip(
 								newTab,
 								box_value(LocalizationHelper::Get().String(L"Loading"))
 							);
 							newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
-							self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
+							//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 							tabView.TabItems().Append(newTab);
+							tabView.SelectedItem(newTab);
 							// 获取输入的文本
-							auto url = sender.Text();
-							self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", url.c_str() });
+							//self->newUrlRequestEvent.Invoke({ self->m_nextId++, L"", url.c_str() });
 					});
 				self->urlTabView().AddTabButtonClick([self](IInspectable const& sender, auto const&) {
 						auto tabView = self->urlTabView();
@@ -178,16 +194,21 @@ namespace winrt::PlayGuide::implementation
 							newTab,
 							box_value(LocalizationHelper::Get().String(L"Loading"))
 						);
-						newTab.Tag(box_value(self->m_nextId));
+						PropertySet data;
+						//默认导航网页
+						hstring defaultUrl = L"https://www.bilibili.com/";
+						data.Insert(L"url", box_value(defaultUrl));
+						data.Insert(L"title", box_value(L""));
+						data.Insert(L"idx", box_value(self->m_nextId++));
+						newTab.Tag(box_value(data));
 						newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
-						self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
+						//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 
 						// 添加并选中
 						tabView.TabItems().Append(newTab);
-						//tabView.SelectedItem(newTab);
-						//默认导航网页
-						std::wstring defaultUrl = L"https://www.bilibili.com/";
-						self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
+						tabView.SelectedItem(newTab);
+						
+						//self->newUrlRequestEvent.Invoke({ self->m_nextId++, L"", defaultUrl.c_str() });
 					});
 				
 			});
@@ -201,10 +222,6 @@ namespace winrt::PlayGuide::implementation
 			if (auto self = weak_this.get()) {
 				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
 
-				//self->HotkeyLabels().ItemsSource(vm.Hotkeys());
-				
-				//self->HotkeyGrid().InvalidateMeasure();
-				//self->HotkeyGrid().UpdateLayout();
 				auto source = self->HotkeyLabels().ItemsSource();
 
 				auto hotkeys =
@@ -235,19 +252,81 @@ namespace winrt::PlayGuide::implementation
 				// 创建新 TabViewItem
 				TabViewItem newTab;
 				newTab.IsClosable(false);
-				newTab.Tag(box_value(self->m_nextId));
+				newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+				PropertySet data;
+				data.Insert(L"url", box_value(info.url));
+				data.Insert(L"title", box_value(info.title));
+				data.Insert(L"idx", box_value(self->m_nextId++));
+				newTab.Tag(box_value(data));
+				/*
 				ToolTipService::SetToolTip(
 					newTab,
 					box_value(LocalizationHelper::Get().String(L"Loading"))
 				);
 				newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
-				self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
+				//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
+				*/
 				tabView.TabItems().Append(newTab);
-				
-				self->newUrlEnterEvent.Invoke({ self->m_nextId++, L"", info.url });
+				tabView.SelectedItem(newTab);
+
+				//self->newUrlRequestEvent.Invoke({ self->m_nextId++, L"", info.url });
 			}
 			});
 
+
+		m_documentTitleChangedEventRevoker = g_documentTitleChanged(auto_revoke, [weak_this](const TabInfo& info) {
+			if (auto self = weak_this.get())
+			{
+				if (auto item = self->FindTabViewItem(info.idx)) {
+
+					item.IsClosable(true);
+					item.Header(box_value(info.title));
+					ToolTipService::SetToolTip(
+						item,
+						box_value(info.title)
+					);
+				}
+			}
+			});
+		m_sourceChangedEventRevoker = g_sourceChanged(auto_revoke, [weak_this](const TabInfo& info) {
+			if (auto self = weak_this.get())
+			{
+				if (auto item = self->FindTabViewItem(info.idx)) {
+					self->UrlBox().Text(info.url);
+					ToolTipService::SetToolTip(
+						self->UrlBox(),
+						box_value(info.url)
+					);
+					auto tag = item.Tag();
+					auto data = tag.as<IPropertySet>();
+					data.Insert(L"url", box_value(info.url));
+				}
+			}
+			});
+
+		m_navigationStartingEventRevoker = g_navigationStarting(auto_revoke, [weak_this](const TabInfo& info) {
+			if (auto self = weak_this.get())
+			{
+				if (auto item = self->FindTabViewItem(info.idx)) {
+					item.IsClosable(true);
+					item.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+				}
+			}
+			});
+		m_hideTimer = dispatcherQueue.CreateTimer();
+		m_hideTimer.Interval(std::chrono::milliseconds(3000)); // 延迟时间
+		m_hideTimer.IsRepeating(false); // 关键：只执行一次
+		m_hideTimer.Tick([weak_this](auto&&, auto&&)
+		{
+				if (auto self = weak_this.get())
+				{
+					auto winBounds = self->GetWindowRect();
+					auto side = self->CheckDockSide(winBounds, self->m_screenCache);
+					
+					if(side != DockSide::None)
+                        self->AppWindow().Hide();
+				}
+		});
 	}
 
 
@@ -299,6 +378,15 @@ namespace winrt::PlayGuide::implementation
 				self->Setting().Text(LocalizationHelper::Get().String(L"Settings"));
 				auto vm = AppSettingsViewModel::Instance().try_as<PlayGuide::AppSettingsViewModel>();
 				self->HotkeyLabels().ItemsSource(vm.Hotkeys());
+
+				//恢复创建上次打开的url
+				self->RestoreTabItems(controlData.urls);
+				//恢复选中
+				auto tabItems = self->urlTabView().TabItems();
+				if (tabItems && controlData.selectedItem > 0 && controlData.selectedItem < tabItems.Size())
+				{
+					self->urlTabView().SelectedIndex(controlData.selectedItem);
+				}
 			});
 
 	}
@@ -464,6 +552,7 @@ namespace winrt::PlayGuide::implementation
 			m_hoverTimer.Start();
 		m_isEntered = false;
 		LOG_DEBUG << "Grid_PointerExited trigger.\n";
+		//m_hideTimer.Start();
 	}
 
 	bool ControlWindow::IsPointInsideWindow(POINT& pt)
@@ -522,35 +611,9 @@ namespace winrt::PlayGuide::implementation
 				dispatcher.TryEnqueue([weak_this]() {
 					if (auto self = weak_this.get())
 					{
-						self->Close(); // ✔ 延迟执行，安全
+						self->Close();
 					}
 					});
-			}
-			});
-	}
-	void ControlWindow::SetPageCreatedStateEventRevoker(Event<const TabInfo&>& event)
-	{
-		std::lock_guard lock(m_mutex);
-		auto weak_this = this->get_weak();
-		pageCreatedStateEventRevoker = event(auto_revoke, [weak_this](const TabInfo &info) {
-			
-			if (auto self = weak_this.get())
-			{
-				auto items = self->urlTabView().TabItems();
-				
-				if (auto item = self->FindTabViewItem(info.idx)) {
-
-					item.IsClosable(true);
-					item.Header(box_value(info.title));
-					ToolTipService::SetToolTip(
-						item,
-						box_value(info.title)
-					);
-					//self->TabViewTitle(info.title.c_str());
-					self->UrlBox().Text(info.url);
-					self->urlTabView().SelectedItem(item);
-					self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Globe);
-				}
 			}
 			});
 	}
@@ -580,6 +643,11 @@ namespace winrt::PlayGuide::implementation
 		{
 			AppDataService::Get().ToggleHotkeysEnabled();
 			LOG_INFO << "Hotkeys enabled: " << AppDataService::Get().HotkeyEnableState() << "\n";
+			break;
+		}
+		case WM_ShowHideWindow:
+		{
+			m_hideTimer.Start();
 			break;
 		}
 		default:
@@ -671,29 +739,65 @@ namespace winrt::PlayGuide::implementation
 		//窗口的透明度
 		state.alpha = Win32Helper::GetOpacity(m_hwnd);
 
+		do
+		{
+			auto tabItems = urlTabView().TabItems();
 
-		//热键在后台service进程里写
+			if (!tabItems) break;
+
+			for (int i = 0; i < tabItems.Size(); ++i)
+			{
+				if (auto item = tabItems.GetAt(i).try_as<TabViewItem>())
+				{
+					auto tag = item.Tag();
+					if (auto data = tag.try_as<IPropertySet>())
+					{
+						auto url = unbox_value<hstring>(data.Lookup(L"url"));
+						auto title = unbox_value<hstring>(data.Lookup(L"url"));
+						if (url != L"Settings")
+						{
+							state.urls.emplace_back(TabInfo{ 0, title.c_str(), url.c_str() });
+						}
+					}
+				}
+			}
+			auto selectedIdx = urlTabView().SelectedIndex();
+			if (auto item = tabItems.GetAt(selectedIdx).try_as<TabViewItem>())
+			{
+				auto tag = item.Tag();
+				if (auto data = tag.try_as<IPropertySet>())
+				{
+					auto url = unbox_value<hstring>(data.Lookup(L"url"));
+					if (url != L"Settings")
+					{
+						state.selectedItem = selectedIdx;
+					}
+					else state.selectedItem = tabItems.Size() - 1;
+				}
+			}
+
+		} while (false);
 		AppDataService::Get().SaveControlData(state);
 
 	}
 
 	TabViewItem ControlWindow::FindTabViewItem(uint32_t idx)
 	{
-		for (const auto& item : this->urlTabView().TabItems())
-		{
-			auto tab = item.try_as<TabViewItem>();
-			if (!tab) continue;
-
-			auto tag = tab.Tag();
-
-			if (tag)
-			{
-				if (winrt::unbox_value<uint32_t>(tag) == idx)
-				{
-					return tab;
-				}
-			}
-		}
+        for (int i = 0; i < this->urlTabView().TabItems().Size(); ++i)
+        {
+            auto item = this->urlTabView().TabItems().GetAt(i);
+            auto tab = item.try_as<TabViewItem>();
+            if (!tab) continue;
+            if (auto tag = tab.Tag())
+            {
+                auto data = tag.as<IPropertySet>();
+                auto itemIdx = unbox_value<uint32_t>(data.Lookup(L"idx"));
+                if (itemIdx == idx)
+                {
+                    return tab;
+                }
+            }
+        }
 
 		return nullptr;
 	}
@@ -736,8 +840,8 @@ namespace winrt::PlayGuide::implementation
 
 			if (tag)
 			{
-				auto idx = winrt::unbox_value_or<uint32_t>(tag, 65535);
-
+				auto data = winrt::unbox_value<IPropertySet>(tag);
+				auto idx = winrt::unbox_value<uint32_t>(data.Lookup(L"idx"));
 				if (idx == 0)
 				{
 					// 已存在 -> 直接切换
@@ -752,8 +856,12 @@ namespace winrt::PlayGuide::implementation
 		settingsTab.IsClosable(true);
 
 		//settingsTab.Header(box_value(LocalizationHelper::Get().String(L"Settings")));
+		PropertySet data;
+		data.Insert(L"url", box_value(L"Settings"));
+		data.Insert(L"title", box_value(L"Settings"));
+		data.Insert(L"idx", box_value(uint32_t(0)));
 
-		settingsTab.Tag(box_value(uint32_t(0)));
+		settingsTab.Tag(box_value(data));
 
 		ToolTipService::SetToolTip(
 			settingsTab,
@@ -861,6 +969,30 @@ namespace winrt::PlayGuide::implementation
 					listViewItem.Width(itemWidth);
 				}
 			}
+		}
+	}
+
+	void ControlWindow::RestoreTabItems(std::vector<TabInfo> const& tabs)
+	{
+		using namespace winrt;
+		using namespace Microsoft::UI::Xaml::Controls;
+		using namespace Windows::Foundation::Collections;
+
+		for (auto const& tab : tabs)
+		{
+			TabViewItem item;
+
+			// 1. Header = title
+			item.Header(box_value(tab.title));
+
+			// 2. Tag = PropertySet (idx + url)
+			PropertySet set;
+			set.Insert(L"idx", box_value(m_nextId++));
+			set.Insert(L"url", box_value(tab.url));
+
+			item.Tag(box_value(set));
+
+			urlTabView().TabItems().Append(item);
 		}
 	}
 }

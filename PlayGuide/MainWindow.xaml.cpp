@@ -3,6 +3,7 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+#include <winrt/Windows.System.h>
 #include "Logger.h"
 //#include "PipeClient.h"
 //#include <shobjidl.h>
@@ -79,14 +80,6 @@ namespace winrt::PlayGuide::implementation
 				}
 			}
 			});
-
-		webViewComplatedEventRevoker = g_webViewComplatedEvent(auto_revoke, [weak_this](const TabInfo &info) 
-		{
-			if (auto self = weak_this.get())
-			{
-				self->pageCreatedStateEvent.Invoke(info);
-			}
-		});
 	}
 
 
@@ -159,13 +152,15 @@ namespace winrt::PlayGuide::implementation
 	void MainWindow::PlayPause() noexcept
 	{
 		auto page = this->m_pages[m_curIndex].try_as<PlayGuide::WebViewPage>();
-		page.PlayPause();
+		if(page)
+page.PlayPause();
 	}
 
 	void MainWindow::Seek(int sec) noexcept
 	{
 		auto page = this->m_pages[m_curIndex].try_as<PlayGuide::WebViewPage>();
-		page.Seek(sec);
+		if(page)
+            page.Seek(sec);
 		//webView().ExecuteScriptAsync(js);
 	}
 
@@ -407,19 +402,31 @@ namespace winrt::PlayGuide::implementation
 		
 	}
 
-	void MainWindow::CreateWebViewPage(hstring url, int idx) noexcept
+	Windows::Foundation::IAsyncAction MainWindow::CreateWebViewPage(hstring url, int idx) noexcept
 	{
-		auto weak_this = this->get_weak();
-		DispatcherQueue().TryEnqueue([weak_this, url, idx]() {
-			auto self = weak_this.get();
-			if (!self) return;
-			self->m_pages[idx] = make<PlayGuide::implementation::WebViewPage>(url, idx);
-			//立即切换页面
-			self->RootFrame().Content(self->m_pages[idx]);
-			self->m_curIndex = idx;
-			
-			LOG_INFO << "Created  a page " << std::wstring(url.c_str()) << "\n";
-	     });
+		auto weak_this = get_weak();
+
+		DispatcherQueue().TryEnqueue(
+			[weak_this, url, idx]()
+			{
+				auto self = weak_this.get();
+				if (!self)
+					return;
+
+				if (self->m_pages.contains(idx))
+					return;
+
+				self->m_pages[idx] =
+					make<PlayGuide::implementation::WebViewPage>(
+						url,
+						idx);
+
+				LOG_INFO << "Created page "
+					<< idx
+					<< "\n";
+			});
+
+		co_return;
 	}
 
 	void MainWindow::DeleteWebViewPage(int index) noexcept
@@ -430,30 +437,42 @@ namespace winrt::PlayGuide::implementation
 			if (!self) return;
 			if (index < 0)
 				return;
-
+			auto it = self->m_pages.find(index);
+			if (it == self->m_pages.end())
+				return;
 			if (index == self->m_curIndex)
 				self->RootFrame().Content(nullptr);
 			if (index > 1) {
-				self->m_pages[index].try_as<PlayGuide::WebViewPage>().Close();
-				self->m_pages.erase(index);
+				if (auto page = self->m_pages[index].try_as<PlayGuide::WebViewPage>()) {
+					page.Close();
+					self->m_pages.erase(index);
+				}
 			}
 		   
 			LOG_INFO << "Deleted page " << index << "\n";
 			});
 	}
 
-	void MainWindow::NavigatedTo(int index) noexcept
+	Windows::Foundation::IAsyncAction MainWindow::NavigatedTo(const TabInfo& info) noexcept
 	{
-		m_curIndex = index;
-		auto weak_this = this->get_weak();
-		DispatcherQueue().TryEnqueue([weak_this, index]() {
-			auto self = weak_this.get();
-			if (!self) return;
-			self->RootFrame().Content(self->m_pages[index]);
-			self->m_curIndex = index;
-			
-			LOG_INFO << "Navigated to page " << index << "\n";
-			});
+		if (m_curIndex == info.idx)
+			co_return;
+
+		if (!m_pages.contains(info.idx))
+		{
+			m_pages[info.idx] =
+				make<PlayGuide::implementation::WebViewPage>(
+					info.url.c_str(),
+					info.idx);
+
+			LOG_INFO << "Created page "
+				<< info.idx
+				<< "\n";
+		}
+
+		RootFrame().Content(m_pages[info.idx]);
+
+		m_curIndex = info.idx;
 	}
 
 	void MainWindow::SetTabCloseEvent(Event<int>& event)
@@ -463,19 +482,19 @@ namespace winrt::PlayGuide::implementation
 		});
 	}
 
-	void MainWindow::SetNewUrlEnterEvent(Event<const TabInfo&>& event)
+	void MainWindow::SetNewUrlRequestEvent(Event<const TabInfo&>& event)
 	{
-		newUrlEnterEvent = event(auto_revoke, [this](const TabInfo &info) {
+		newUrlRequestEvent = event(auto_revoke, [this](const TabInfo &info) {
 			m_curIndex = info.idx;
 			CreateWebViewPage(info.url.c_str(), info.idx);
 			});
 	}
 
-	void MainWindow::SetTabSeletedChangedEvent(Event<int>& event)
+	void MainWindow::SetTabSeletedChangedEvent(Event<const TabInfo&>& event)
 	{
-		tabSeletedChangedEvent = event(auto_revoke, [this](int idx) 
+		tabSeletedChangedEvent = event(auto_revoke, [this](const TabInfo& info)
 		{
-			NavigatedTo(idx);
+			NavigatedTo(info);
 		});
 	}
 
