@@ -289,7 +289,7 @@ struct AppSettings
     bool adminRunning{ false };
     bool intelCpuUseECore{ true };
     InputType inputType{ InputType::KeyboardHook };
-    std::wstring homePage{ L"" };
+    std::wstring homePage{ L"https://bing.com"};
 };
 
 struct TabInfo
@@ -319,7 +319,6 @@ struct WindowData
     virtual ~WindowData() = default;
     
 };
-
 
 
 struct MainWindowData : WindowData

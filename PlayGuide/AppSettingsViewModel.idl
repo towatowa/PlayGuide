@@ -31,5 +31,6 @@ namespace PlayGuide
         String TrayOffText{ get; };
 
         void UpdateHotkey(String key, String value);
+        String HomePage{ get; };
     }
 }

@@ -2,6 +2,7 @@
 #include <string>
 #include <Windows.h>
 #include "Appdata.h"
+#include <string_view>
 
 class IniHelper
 {
@@ -23,6 +24,8 @@ public:
     int ReadInt(std::wstring const& section,
         std::wstring const& key,
         int defaultValue = 0);
+
+    void RemoveSection(std::wstring_view section);
 
 private:
     std::wstring m_path;

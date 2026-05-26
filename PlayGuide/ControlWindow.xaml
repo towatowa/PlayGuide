@@ -37,7 +37,8 @@
             Grid.Row="0"
             HorizontalAlignment="Stretch"
             IsAddTabButtonVisible="True"
-            TabWidthMode="Equal" />
+            TabWidthMode="Equal">
+        </TabView>
         <!--  🌐 地址栏  -->
         <Border
             Grid.Row="1"
@@ -73,7 +74,10 @@
                     QueryIcon="Link" />
             </Grid>
         </Border>
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Name="HotkeyGrid">
+        <Grid
+            Name="HotkeyGrid"
+            Grid.Row="2"
+            ColumnDefinitions="Auto,*,Auto">
 
             <!--  左侧 About  -->
             <Button
@@ -99,9 +103,9 @@
                 HorizontalContentAlignment="Stretch"
                 Background="Transparent"
                 BorderThickness="0"
+                ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}"
                 SelectionMode="None"
-                SizeChanged="HotkeyLabels_SizeChanged"
-                ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
+                SizeChanged="HotkeyLabels_SizeChanged">
                 <!--  关键点 1：监听尺寸变化  -->
 
                 <ListView.ItemContainerStyle>

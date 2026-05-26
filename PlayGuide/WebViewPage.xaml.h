@@ -40,6 +40,8 @@ namespace winrt::PlayGuide::implementation
 
         winrt::hstring UnwrapJsString(winrt::hstring const& json);
 
+        Windows::Foundation::IAsyncAction FetchFaviconAsync();
+
     private:
         hstring m_url{ L"" };
         HWND m_hwnd{ nullptr };

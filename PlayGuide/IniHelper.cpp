@@ -54,3 +54,13 @@ int IniHelper::ReadInt(std::wstring const& section,
         m_path.c_str()
     );
 }
+
+void IniHelper::RemoveSection(std::wstring_view section)
+{
+    WritePrivateProfileStringW(
+        section.data(),
+        nullptr,
+        nullptr,
+        m_path.c_str());
+}
+

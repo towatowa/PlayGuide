@@ -78,6 +78,7 @@ void AppDataService::SaveAppSettings(const AppSettings* settings) const
 	m_ini->WriteInt(L"AppSettings", L"AdminRunning", settings->adminRunning ? 1 : 0);
 	m_ini->WriteInt(L"AppSettings", L"IntelCpuUseECore", settings->intelCpuUseECore ? 1 : 0);
 	m_ini->WriteInt(L"AppSettings", L"InputType", (int)settings->inputType);
+	m_ini->WriteString(L"AppSettings", L"HomePage", settings->homePage);
 }
 
 void AppDataService::SaveHotkey(std::wstring_view id, std::wstring_view key)
@@ -152,6 +153,7 @@ AppSettings AppDataService::LoadSettings() const
 	settings.inputType =
 		static_cast<::InputType>(
 			m_ini->ReadInt(L"AppSettings", L"InputType", 0));
+	settings.homePage = m_ini->ReadString(L"AppSettings", L"HomePage", L"https://google.com");
 
 	return settings;
 }
@@ -203,6 +205,7 @@ void AppDataService::SaveControlData(const ControlWindowData& data)
 		L"alpha",
 		std::to_wstring(data.alpha)
 	);
+	m_ini->RemoveSection(L"Urls");
 	m_ini->WriteInt(L"Urls", L"selectedItem", (int)data.selectedItem);
 	SaveUrls(data.urls);
 }
@@ -319,6 +322,12 @@ void AppDataService::SaveInputMethod(::InputType type) noexcept
 	m_settings.inputType = type;
 	SaveSettingItem(L"AppSettings", L"InputType", (int)type);
 	PipeService::Get().SendInputMethod(static_cast<uint32_t>(type));//通知服务端更改
+}
+
+void AppDataService::SaveHomePage(std::wstring_view url) noexcept
+{
+	m_settings.homePage = url;
+	SaveSettingItem(L"AppSettings", L"HomePage", url);
 }
 
 

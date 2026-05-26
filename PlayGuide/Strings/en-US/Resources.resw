@@ -223,7 +223,7 @@
     <value>Expand the window to full screen size.</value>
   </data>
   <data name="HomePage" xml:space="preserve">
-    <value>Home</value>
+    <value>Home page</value>
   </data>
   <data name="AppTitle" xml:space="preserve">
     <value>PlayGuide</value>
@@ -293,5 +293,14 @@
   </data>
   <data name="AreadyLatest" xml:space="preserve">
     <value>Aready latest</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="HomePage_Description" xml:space="preserve">
+    <value>Default page when opening a new tab</value>
+  </data>
+  <data name="IsNotProbablyUrl" xml:space="preserve">
+    <value>Invalid URL</value>
   </data>
 </root>

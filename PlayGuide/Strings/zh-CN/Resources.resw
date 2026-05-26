@@ -301,4 +301,13 @@
   <data name="AreadyLatest" xml:space="preserve">
     <value>已是最新</value>
   </data>
+  <data name="Apply" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="HomePage_Description" xml:space="preserve">
+    <value>当打开新标签时的默认跳转网页</value>
+  </data>
+  <data name="IsNotProbablyUrl" xml:space="preserve">
+    <value>请输入有效网址</value>
+  </data>
 </root>

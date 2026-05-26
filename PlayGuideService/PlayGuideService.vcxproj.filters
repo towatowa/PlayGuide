@@ -30,9 +30,6 @@
     <ClCompile Include="..\PlayGuide\Logger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IniHelper.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\PlayGuide\KeyStateTracker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -40,6 +37,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\PlayGuide\PipeService.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayGuide\IniHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -102,7 +102,38 @@
                     </ComboBox>
                 </Grid>
             </Border>
+            <Border
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8">
 
+                <StackPanel Spacing="10">
+
+                    <TextBlock
+                        local:Loc.Text="HomePage"
+                        FontSize="16"
+                        FontWeight="SemiBold" />
+                    <!--  描述  -->
+                    <TextBlock
+                        Grid.Row="1"
+                        Opacity="0.6"
+                        local:Loc.Text="HomePage_Description"
+                        TextWrapping="Wrap" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <TextBox
+                            x:Name="HomepageBox"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="https://google.com" 
+                            Text="{x:Bind ViewModel.HomePage, Mode=OneWay}"/>
+
+                        <Button
+                            Grid.Column="1"
+                            Click="OnApplyHomepageClicked"
+                            local:Loc.Text="Apply" />
+                    </Grid>
+                </StackPanel>
+
+            </Border>
             <!--  托盘  -->
             <Border
                 Padding="16"
@@ -366,8 +397,10 @@
                         Margin="0,8"
                         Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-                    <ListView x:Name="HotkeyList" IsItemClickEnabled="False"
-                              ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
+                    <ListView
+                        x:Name="HotkeyList"
+                        IsItemClickEnabled="False"
+                        ItemsSource="{x:Bind ViewModel.Hotkeys, Mode=OneWay}">
 
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="local:HotkeyItemViewModel">

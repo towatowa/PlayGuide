@@ -127,4 +127,19 @@ namespace winrt::PlayGuide::implementation
 
         m_flyout.Hide();
     }
+
+    void SettingsPage::OnApplyHomepageClicked(
+        IInspectable const&,
+        RoutedEventArgs const&)
+    {
+        auto url = HomepageBox().Text();
+
+        //补全协议
+        if (!url.starts_with(L"http://") &&
+            !url.starts_with(L"https://"))
+        {
+            url = L"https://" + url;
+        }
+        AppDataService::Get().SaveHomePage(url);
+    }
 }

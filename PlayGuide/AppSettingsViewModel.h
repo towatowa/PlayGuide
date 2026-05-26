@@ -297,6 +297,8 @@ namespace winrt::PlayGuide::implementation
 
         void UpdateHotkey(hstring const& key, hstring const& value) noexcept;
 
+        hstring HomePage() noexcept { return m_pSettings->homePage.c_str(); }
+
     private:
         AppSettings* m_pSettings;
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;

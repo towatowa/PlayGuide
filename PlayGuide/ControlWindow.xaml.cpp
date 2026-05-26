@@ -163,9 +163,20 @@ namespace winrt::PlayGuide::implementation
 					{
 							auto tabView = self->urlTabView();
 							auto url = sender.Text();
+							//补全协议
+							if (!url.starts_with(L"http://") &&
+								!url.starts_with(L"https://"))
+							{
+								url = L"https://" + url;
+							}
 
+							if (!self->IsProbablyUrl(url.c_str()))
+							{
+								self->UrlBox().Text(LocalizationHelper::Get().String(L"IsNotProbablyUrl"));
+								return;
+							}
 							// 创建新 TabViewItem
-							TabViewItem newTab;
+							auto newTab = self->CreateTabItem(LocalizationHelper::Get().String(L"Loading"), nullptr);
 							newTab.IsClosable(false);
 							PropertySet data;
 							data.Insert(L"url", box_value(url));
@@ -177,7 +188,7 @@ namespace winrt::PlayGuide::implementation
 								newTab,
 								box_value(LocalizationHelper::Get().String(L"Loading"))
 							);
-							newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+						
 							//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 							tabView.TabItems().Append(newTab);
 							tabView.SelectedItem(newTab);
@@ -188,7 +199,7 @@ namespace winrt::PlayGuide::implementation
 						auto tabView = self->urlTabView();
 
 						// 创建新 TabViewItem
-						TabViewItem newTab;
+						auto newTab = self->CreateTabItem(LocalizationHelper::Get().String(L"Loading"), nullptr);
 						newTab.IsClosable(false);
 						ToolTipService::SetToolTip(
 							newTab,
@@ -196,12 +207,12 @@ namespace winrt::PlayGuide::implementation
 						);
 						PropertySet data;
 						//默认导航网页
-						hstring defaultUrl = L"https://www.bilibili.com/";
+						hstring defaultUrl = AppSettingsViewModel::Instance().HomePage();
 						data.Insert(L"url", box_value(defaultUrl));
 						data.Insert(L"title", box_value(L""));
 						data.Insert(L"idx", box_value(self->m_nextId++));
 						newTab.Tag(box_value(data));
-						newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+
 						//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
 
 						// 添加并选中
@@ -250,22 +261,15 @@ namespace winrt::PlayGuide::implementation
 				auto tabView = self->urlTabView();
 
 				// 创建新 TabViewItem
-				TabViewItem newTab;
+				auto newTab = self->CreateTabItem(LocalizationHelper::Get().String(L"Loading"), nullptr);
 				newTab.IsClosable(false);
-				newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
 				PropertySet data;
 				data.Insert(L"url", box_value(info.url));
 				data.Insert(L"title", box_value(info.title));
 				data.Insert(L"idx", box_value(self->m_nextId++));
 				newTab.Tag(box_value(data));
-				/*
-				ToolTipService::SetToolTip(
-					newTab,
-					box_value(LocalizationHelper::Get().String(L"Loading"))
-				);
-				newTab.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
-				//self->SiteIcon().Symbol(Microsoft::UI::Xaml::Controls::Symbol::Sync);
-				*/
+			   
+
 				tabView.TabItems().Append(newTab);
 				tabView.SelectedItem(newTab);
 
@@ -280,7 +284,14 @@ namespace winrt::PlayGuide::implementation
 				if (auto item = self->FindTabViewItem(info.idx)) {
 
 					item.IsClosable(true);
-					item.Header(box_value(info.title));
+					auto grid = item.Header().try_as<Grid>();
+					auto header = self->GetHeader(grid);
+					header.title.Text(info.title);
+					if (auto data = item.Tag().try_as<IPropertySet>())
+					{
+						data.Insert(L"title", box_value(info.title));
+					}
+				  
 					ToolTipService::SetToolTip(
 						item,
 						box_value(info.title)
@@ -309,7 +320,9 @@ namespace winrt::PlayGuide::implementation
 			{
 				if (auto item = self->FindTabViewItem(info.idx)) {
 					item.IsClosable(true);
-					item.Header(box_value(LocalizationHelper::Get().String(L"Loading")));
+					auto grid = item.Header().try_as<Grid>();
+					TabHeaderView header = self->GetHeader(grid);
+					header.title.Text(LocalizationHelper::Get().String(L"Loading"));
 				}
 			}
 			});
@@ -327,6 +340,32 @@ namespace winrt::PlayGuide::implementation
                         self->AppWindow().Hide();
 				}
 		});
+
+		m_faviconChanged = g_faviconChanged(auto_revoke, [weak_this](const TabInfoEx& info) {
+			if (auto self = weak_this.get())
+			{
+				if (auto item = self->FindTabViewItem(info.idx))
+				{
+					auto grid = item.Header().try_as<Grid>();
+					auto header = self->GetHeader(grid);
+					header.favicon.Source(info.favicon);
+					header.favicon.Visibility(Visibility::Visible);
+				}
+			}
+			});
+
+		m_isDocumentPlayingAudio = g_isDocumentPlayingAudio(auto_revoke, [weak_this](const TabInfoEx& info) {
+			if (auto self = weak_this.get())
+			{
+				if (auto item = self->FindTabViewItem(info.idx))
+				{
+					auto grid = item.Header().try_as<Grid>();
+					auto header = self->GetHeader(grid);
+					header.status.Glyph(info.isPlayingAudio ? L"\uE767" : L"\uE74F");
+					header.status.Visibility(Visibility::Visible);
+				}
+			}
+			});
 	}
 
 
@@ -383,7 +422,7 @@ namespace winrt::PlayGuide::implementation
 				self->RestoreTabItems(controlData.urls);
 				//恢复选中
 				auto tabItems = self->urlTabView().TabItems();
-				if (tabItems && controlData.selectedItem > 0 && controlData.selectedItem < tabItems.Size())
+				if (tabItems && controlData.selectedItem >= 0 && controlData.selectedItem < tabItems.Size())
 				{
 					self->urlTabView().SelectedIndex(controlData.selectedItem);
 				}
@@ -478,11 +517,13 @@ namespace winrt::PlayGuide::implementation
 			break;
 
 		case DockSide::Right:
+			
 			AppWindow().MoveAndResize({
 				m_screenCache.Width - dockSnapWidth,
 				rec.Y,
 				dockSnapWidth,
 				expandHeight });
+				
 			break;
 
 		case DockSide::Top:
@@ -753,7 +794,7 @@ namespace winrt::PlayGuide::implementation
 					if (auto data = tag.try_as<IPropertySet>())
 					{
 						auto url = unbox_value<hstring>(data.Lookup(L"url"));
-						auto title = unbox_value<hstring>(data.Lookup(L"url"));
+						auto title = unbox_value<hstring>(data.Lookup(L"title"));
 						if (url != L"Settings")
 						{
 							state.urls.emplace_back(TabInfo{ 0, title.c_str(), url.c_str() });
@@ -767,8 +808,8 @@ namespace winrt::PlayGuide::implementation
 				auto tag = item.Tag();
 				if (auto data = tag.try_as<IPropertySet>())
 				{
-					auto url = unbox_value<hstring>(data.Lookup(L"url"));
-					if (url != L"Settings")
+					auto idx = unbox_value<uint32_t>(data.Lookup(L"idx"));
+					if (idx != 0)
 					{
 						state.selectedItem = selectedIdx;
 					}
@@ -855,7 +896,7 @@ namespace winrt::PlayGuide::implementation
 
 		settingsTab.IsClosable(true);
 
-		//settingsTab.Header(box_value(LocalizationHelper::Get().String(L"Settings")));
+		settingsTab.Header(box_value(LocalizationHelper::Get().String(L"Settings")));
 		PropertySet data;
 		data.Insert(L"url", box_value(L"Settings"));
 		data.Insert(L"title", box_value(L"Settings"));
@@ -929,7 +970,7 @@ namespace winrt::PlayGuide::implementation
 		if (count == 0) return;
 
 		// 3. 计算每个子项应该分到的绝对平均宽度
-		double averageWidth = totalWidth / count - 1;
+		double averageWidth = totalWidth / count;
 
 		// 4. 遍历当前已经渲染出来的 ListViewItem 容器，强制设置它们的宽度
 		for (uint32_t i = 0; i < count; i++)
@@ -980,10 +1021,7 @@ namespace winrt::PlayGuide::implementation
 
 		for (auto const& tab : tabs)
 		{
-			TabViewItem item;
-
-			// 1. Header = title
-			item.Header(box_value(tab.title));
+			TabViewItem item = CreateTabItem(tab.title.c_str(), nullptr);
 
 			// 2. Tag = PropertySet (idx + url)
 			PropertySet set;
@@ -995,5 +1033,78 @@ namespace winrt::PlayGuide::implementation
 			urlTabView().TabItems().Append(item);
 		}
 	}
+
+	bool ControlWindow::IsProbablyUrl(std::wstring const& input)
+	{
+		if (input.empty())
+			return false;
+
+		// 已有协议
+		if (input.starts_with(L"http://") ||
+			input.starts_with(L"https://") ||
+			input.starts_with(L"file://") ||
+			input.starts_with(L"ms-appx://"))
+		{
+			return true;
+		}
+
+		// 至少包含点号（域名特征）
+		if (input.find(L'.') != std::wstring::npos)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	TabViewItem ControlWindow::CreateTabItem(hstring const& title,
+		winrt::Microsoft::UI::Xaml::Media::ImageSource favicon)
+	{
+		TabViewItem item;
+
+		Grid header;
+		ColumnDefinition col1;
+		col1.Width(GridLength{ 0, GridUnitType::Auto });
+
+		ColumnDefinition col2;
+		col2.Width(GridLength{ 1, GridUnitType::Star });
+
+		ColumnDefinition col3;
+		col3.Width(GridLength{ 0, GridUnitType::Auto });
+
+		header.ColumnDefinitions().Append(col1);
+		header.ColumnDefinitions().Append(col2);
+		header.ColumnDefinitions().Append(col3);
+
+		// favicon
+		Image icon;
+		icon.Width(16);
+		icon.Height(16);
+		icon.Source(favicon);
+		icon.Visibility(Visibility::Collapsed);
+		icon.Margin({ 0,0,8,0 });
+		Grid::SetColumn(icon, 0);
+
+		// title
+		TextBlock text;
+		text.Text(title);
+		text.TextTrimming(TextTrimming::CharacterEllipsis);
+		Grid::SetColumn(text, 1);
+
+		// status icon
+		FontIcon status;
+		status.Glyph(L"\uE767");
+		status.Visibility(Visibility::Collapsed);
+		Grid::SetColumn(status, 2);
+		status.Margin({ 8,0,0,0 });
+		header.Children().Append(icon);
+		header.Children().Append(text);
+		header.Children().Append(status);
+
+		item.Header(header);
+
+		return item;
+	}
+
 }
 

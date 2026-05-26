@@ -142,11 +142,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\PlayGuide\AppDataService.cpp" />
+    <ClCompile Include="..\PlayGuide\IniHelper.cpp" />
     <ClCompile Include="..\PlayGuide\KeyMapping.cpp" />
     <ClCompile Include="..\PlayGuide\KeyStateTracker.cpp" />
     <ClCompile Include="..\PlayGuide\Logger.cpp" />
     <ClCompile Include="..\PlayGuide\PipeService.cpp" />
-    <ClCompile Include="IniHelper.cpp" />
     <ClCompile Include="KeyboardHook.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RawInputManager.cpp" />

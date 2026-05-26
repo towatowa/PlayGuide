@@ -32,7 +32,7 @@ namespace winrt::PlayGuide::implementation
 {
     // 吸附阈值、展开/收缩尺寸
     constexpr int AdsorbThreshold = 15;
-    constexpr int ExpandWidth = 860;
+    constexpr int ExpandWidth = 900;
     constexpr int ExpandHeight = 120;
     constexpr int DockSnapWidth = 4;
     constexpr int DockSnapHeight = 4;
@@ -44,6 +44,13 @@ namespace winrt::PlayGuide::implementation
         Left,
         Right,
         Top
+    };
+
+    struct TabHeaderView
+    {
+        Image favicon;
+        TextBlock title;
+        FontIcon status;
     };
 
     struct ControlWindow : ControlWindowT<ControlWindow>
@@ -113,11 +120,26 @@ namespace winrt::PlayGuide::implementation
         Event<const TabInfo&>::EventRevoker m_navigationStartingEventRevoker;
         Event<const TabInfo&>::EventRevoker m_sourceChangedEventRevoker;
 
+        Event<const TabInfoEx&>::EventRevoker m_faviconChanged;
+        Event<const TabInfoEx&>::EventRevoker m_isDocumentPlayingAudio;
+
         void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void HotkeyLabels_SizeChanged(IInspectable const&, SizeChangedEventArgs const& e);
         void RecalcHotkeyLayout();
         void RestoreTabItems(std::vector<TabInfo> const& tabs);
+        bool IsProbablyUrl(std::wstring const& input);
+
+        TabViewItem CreateTabItem(hstring const& title, winrt::Microsoft::UI::Xaml::Media::ImageSource favicon);
+
+        TabHeaderView GetHeader(Grid const& grid)
+        {
+            return {
+                grid.Children().GetAt(0).as<Image>(),
+                grid.Children().GetAt(1).as<TextBlock>(),
+                grid.Children().GetAt(2).as<FontIcon>()
+            };
+        }
     private:
         // 拖拽状态
         bool        m_isDragging{ false };

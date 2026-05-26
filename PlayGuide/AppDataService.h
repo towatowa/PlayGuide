@@ -87,6 +87,9 @@ public:
 	//按键捕获方法
 	void SaveInputMethod(::InputType type) noexcept;
 
+	void SaveHomePage(std::wstring_view url) noexcept;
+	std::wstring GetHomePage() noexcept { return m_settings.homePage; }
+
 private:
 
 	MainWindowData m_mainData{};

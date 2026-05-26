@@ -43,6 +43,7 @@ namespace winrt::PlayGuide::implementation
         void SaveCapture_Click(IInspectable const&, RoutedEventArgs const&);
         fire_and_forget CommitHotkey();
         void CancelCapture_Click(IInspectable const&, RoutedEventArgs const&);
+        void OnApplyHomepageClicked(IInspectable const&, RoutedEventArgs const&);
         PlayGuide::HotkeyItemViewModel m_currentEditing{ nullptr };
 
         Button m_hotkeyButton{ nullptr };

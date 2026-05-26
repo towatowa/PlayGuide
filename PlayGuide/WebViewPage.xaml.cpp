@@ -9,10 +9,13 @@ using namespace winrt::Microsoft::Web::WebView2::Core;
 #include "Win32Helper.h"
 #include "Global.h"
 #include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Graphics.Imaging.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 using namespace Microsoft::UI::Xaml::Controls;
+using namespace Windows::Graphics::Imaging;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -220,6 +223,29 @@ namespace winrt::PlayGuide::implementation
 				}
 				});
 			webView.Source(winrt::Windows::Foundation::Uri(m_url));
+			core.FaviconChanged(
+				[weak_this](auto const& sender, auto const&)
+				{
+					if (auto self = weak_this.get())
+					{
+						self->FetchFaviconAsync();
+					}
+				});
+			core.IsDocumentPlayingAudioChanged(
+				[weak_this](auto const&, auto const&)
+				{
+					if (auto self = weak_this.get())
+					{
+						bool playing =
+							self->webView.CoreWebView2().IsDocumentPlayingAudio();
+
+						TabInfoEx info;
+						info.idx = self->id;
+						info.isPlayingAudio = playing;
+
+						g_isDocumentPlayingAudio.Invoke(info);
+					}
+				});
 		}
 		catch (std::exception e)
 		{
@@ -240,5 +266,89 @@ namespace winrt::PlayGuide::implementation
 		using namespace winrt::Windows::Data::Json;
 
 		return JsonValue::Parse(json).GetString();
+	}
+
+	Windows::Foundation::IAsyncAction WebViewPage::FetchFaviconAsync()
+	{
+		auto weak_this = get_weak();
+		auto core = webView.CoreWebView2();
+		if (!core) co_return;
+
+		// 1. 获取图标流
+		auto stream = co_await core.GetFaviconAsync(CoreWebView2FaviconImageFormat::Png);
+		if (!stream) co_return;
+
+		// 2. 切换到后台线程解码，避免卡顿
+		co_await winrt::resume_background();
+
+		Windows::Graphics::Imaging::SoftwareBitmap targetBitmap{ nullptr };
+
+		try
+		{
+			auto randomAccessStream = stream.as<Windows::Storage::Streams::IRandomAccessStream>();
+			auto decoder = co_await Windows::Graphics::Imaging::BitmapDecoder::CreateAsync(randomAccessStream);
+
+			// 先获取原始位图
+			auto originalBitmap = co_await decoder.GetSoftwareBitmapAsync();
+
+			// 🔥 关键修复：检查并强制转换位图格式为 Bgra8 + Premultiplied
+			if (originalBitmap.BitmapPixelFormat() != Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8 ||
+				originalBitmap.BitmapAlphaMode() != Windows::Graphics::Imaging::BitmapAlphaMode::Premultiplied)
+			{
+				targetBitmap = Windows::Graphics::Imaging::SoftwareBitmap::Convert(
+					originalBitmap,
+					Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8,
+					Windows::Graphics::Imaging::BitmapAlphaMode::Premultiplied
+				);
+				// 释放原位图内存
+				originalBitmap.Close();
+			}
+			else
+			{
+				targetBitmap = originalBitmap;
+			}
+		}
+		catch (winrt::hresult_error const& ex)
+		{
+			// 捕获解码或转换失败
+			LOG_ERROR << ((L"Favicon Decode Error: " + std::wstring(ex.message()) + L"\n").c_str());
+			co_return;
+		}
+
+		// 3. 彻底回到 UI 线程后再创建和操作 UI 对象
+		co_await wil::resume_foreground(DispatcherQueue());
+
+		auto self = weak_this.get();
+		if (!self || !targetBitmap)
+		{
+			if (targetBitmap) targetBitmap.Close();
+			co_return;
+		}
+
+		try
+		{
+			// 4. 在 UI 线程创建并设置图片源
+			auto imageSource = winrt::Microsoft::UI::Xaml::Media::Imaging::SoftwareBitmapSource();
+
+			// 此时格式已绝对正确，不会再抛出参数或格式不匹配异常
+			co_await imageSource.SetBitmapAsync(targetBitmap);
+
+			// 5. 释放位图原生内存（ImageSource 内部已完成复制）
+			targetBitmap.Close();
+
+			// 6. 触发通知
+			TabInfoEx info;
+			info.idx = self->id;
+			info.favicon = imageSource;
+
+			g_faviconChanged.Invoke(info);
+		}
+		catch (winrt::hresult_error const& ex)
+		{
+			// 捕获 UI 线程设置失败
+			LOG_ERROR << ((L"Favicon UI Set Error: " + std::wstring(ex.message()) + L"\n").c_str());
+			if (targetBitmap) targetBitmap.Close();
+		}
+
 	}
 }
