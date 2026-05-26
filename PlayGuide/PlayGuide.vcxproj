@@ -427,7 +427,13 @@
       <!-- 注意：这里的逻辑是先匹配所有子目录，再通过排除项过滤 -->
       <ExcludeLangs Include="$(OutDir)de\**;$(OutDir)fr\**;$(OutDir)it\**;$(OutDir)ja\**;$(OutDir)ko\**;$(OutDir)ru\**" />
       <!-- 最终要拷贝的文件清单 -->
-      <FilesToPack Include="@(AllFiles)" Exclude="@(ExcludeFiles);@(ExcludeLangs)" />
+      
+	  <!-- ✔ 保留语言资源 -->
+      <LanguageFiles Include="$(OutDir)Strings\**\*.*" />
+      <LanguageFiles Include="$(OutDir)en-us\**\*.*" />
+      <LanguageFiles Include="$(OutDir)zh-CN\**\*.*" />
+      <LanguageFiles Include="$(OutDir)*.pri" />
+	  <FilesToPack Include="@(AllFiles);@(LanguageFiles)" Exclude="@(ExcludeFiles);@(ExcludeLangs)" />
     </ItemGroup>
     <!-- 3. 执行拷贝 -->
     <Copy SourceFiles="@(FilesToPack)" DestinationFolder="$(TempZipDir)%(RecursiveDir)" SkipUnchangedFiles="true" />
