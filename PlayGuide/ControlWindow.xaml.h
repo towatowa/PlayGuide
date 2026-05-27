@@ -123,6 +123,8 @@ namespace winrt::PlayGuide::implementation
         Event<const TabInfoEx&>::EventRevoker m_faviconChanged;
         Event<const TabInfoEx&>::EventRevoker m_isDocumentPlayingAudio;
 
+        Event<>::EventRevoker m_showSettingsPageEventRevoker;
+
         void SettingsButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void AboutButton_Clicked(IInspectable const&, RoutedEventArgs const&);
         void HotkeyLabels_SizeChanged(IInspectable const&, SizeChangedEventArgs const& e);

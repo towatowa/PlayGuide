@@ -30,19 +30,6 @@ namespace winrt::PlayGuide::implementation
 			m_url = url;
 		}
 		auto weak_this = get_weak();
-		
-		/*
-		this->m_pipeClientHandleRevoker =
-			PipeClient::Get().handler(auto_revoke, [weak_this](SimpleEvent msg)
-				{
-					if (auto self = weak_this.get())
-					{
-						std::wstring title = Win32Helper::GetWindowTitle(msg.hwnd);
-						if (title != L"PlayGuide")
-							self->HandleEvent(msg.vk);
-					}
-				});
-		*/
 
 		this->Closed([weak_this](auto const&, auto const&args)
 			{

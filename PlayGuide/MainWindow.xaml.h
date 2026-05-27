@@ -65,6 +65,7 @@ namespace winrt::PlayGuide::implementation
 		Event<const TabInfo&>::EventRevoker  tabSeletedChangedEvent;
 		Event<const TabInfo&> pageCreatedStateEvent;
 		Event<const TabInfo&>::EventRevoker webViewComplatedEventRevoker;
+
 	private:
 		hstring m_url{ L"https://www.bilibili.com/" };
 

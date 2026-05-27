@@ -303,4 +303,13 @@
   <data name="IsNotProbablyUrl" xml:space="preserve">
     <value>Invalid URL</value>
   </data>
+  <data name="ShowMainWindow" xml:space="preserve">
+    <value>Show Main Window</value>
+  </data>
+  <data name="ShowControlWindow" xml:space="preserve">
+    <value>Show Control Window</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
 </root>

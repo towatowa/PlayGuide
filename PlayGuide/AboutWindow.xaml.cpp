@@ -63,7 +63,7 @@ namespace winrt::PlayGuide::implementation
                 Windows::Foundation::Uri(L"https://api.github.com/repos/towatowa/PlayGuide/releases/latest"));
 
             auto jsonText = co_await response.Content().ReadAsStringAsync();
-
+            LOG_INFO << L"JsonText = " << jsonText.c_str() << "\n";
             auto json = JsonObject::Parse(jsonText);
 
             auto latestVersion =

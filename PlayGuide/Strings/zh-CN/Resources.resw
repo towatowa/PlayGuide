@@ -310,4 +310,13 @@
   <data name="IsNotProbablyUrl" xml:space="preserve">
     <value>请输入有效网址</value>
   </data>
+  <data name="ShowMainWindow" xml:space="preserve">
+    <value>显示主窗口</value>
+  </data>
+  <data name="ShowControlWindow" xml:space="preserve">
+    <value>显示控制窗口</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
 </root>

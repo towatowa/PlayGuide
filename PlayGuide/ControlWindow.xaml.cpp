@@ -366,6 +366,13 @@ namespace winrt::PlayGuide::implementation
 				}
 			}
 			});
+		
+		m_showSettingsPageEventRevoker = g_showSettingsPageEvent(auto_revoke, [weak_this]() {
+			if (auto self = weak_this.get())
+			{
+				self->SettingsButton_Clicked(nullptr, nullptr);
+			}
+			});
 	}
 
 
@@ -859,8 +866,20 @@ namespace winrt::PlayGuide::implementation
 
 	void ControlWindow::SetSystemTrayShowWindowRevoker(Event<>& event)
 	{
-		m_systemTrayShowWindowRevoker = event(auto_revoke, [this]() {
-			AppWindow().Show();
+		m_systemTrayShowWindowRevoker = event(auto_revoke, [weak_this = this->get_weak()]() {
+			if (auto self = weak_this.get()) {
+				auto winBounds = self->GetWindowRect();
+				auto side = self->CheckDockSide(winBounds, self->m_screenCache);
+				if (side != DockSide::None)
+				{
+					UINT dpi = GetDpiForWindow(self->m_hwnd);
+					int expandWidth = ExpandWidth * dpi / 96.0f;
+					int expandHeight = ExpandHeight * dpi / 96.0f;
+					self->AppWindow().Resize({ expandWidth, expandHeight });
+					self->m_hoverTimer.Start();
+				}
+				self->AppWindow().Show();
+			}
 			});
 	}
 

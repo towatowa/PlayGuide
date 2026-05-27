@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "TrayIconService.h"
 #include "Global.h"
+#include "LocalizationHelper.h"
 
 bool TrayIconService::Initialize(HWND hwnd,
     HICON icon,
@@ -166,13 +167,13 @@ void TrayIconService::ShowContextMenu()
         menu,
         MF_STRING,
         (UINT)TrayMenuId::ShowMainWindow,
-        L"显示主窗口");
+        LocalizationHelper::Get().String(L"ShowMainWindow").c_str());
 
     AppendMenuW(
         menu,
         MF_STRING,
         (UINT)TrayMenuId::ShowControlWindow,
-        L"显示控制窗口");
+        LocalizationHelper::Get().String(L"ShowControlWindow").c_str());
 
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 
@@ -180,7 +181,7 @@ void TrayIconService::ShowContextMenu()
         menu,
         MF_STRING,
         (UINT)TrayMenuId::Settings,
-        L"设置");
+        LocalizationHelper::Get().String(L"Settings").c_str());
 
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 
@@ -188,7 +189,7 @@ void TrayIconService::ShowContextMenu()
         menu,
         MF_STRING,
         (UINT)TrayMenuId::Exit,
-        L"退出");
+        LocalizationHelper::Get().String(L"Exit").c_str());
 
     POINT pt{};
 
@@ -218,7 +219,7 @@ void TrayIconService::ShowContextMenu()
         break;
 
     case TrayMenuId::Settings:
-        SettingsEvent.Invoke();
+        g_showSettingsPageEvent.Invoke();
         break;
 
     case TrayMenuId::Exit:

@@ -24,3 +24,4 @@ inline Event<const TabInfo&> g_documentTitleChanged;
 inline Event<const TabInfo&> g_newUrlRequestEvent;
 inline Event<const TabInfoEx&> g_faviconChanged;
 inline Event<const TabInfoEx&> g_isDocumentPlayingAudio;
+inline Event<> g_showSettingsPageEvent;
