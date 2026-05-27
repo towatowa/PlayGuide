@@ -4,5 +4,9 @@
 1. 控制窗口自动隐藏、边缘吸附，主窗口获取鼠标焦点时显示；
 2. 设置页可以自定义快捷键、按键捕获方式、主页设置、以及主题、开机、性能等选项；
 3. 状态恢复功能：会恢复上次关闭关键时的状态
-  
+
+效果：
+<img width="3840" height="2160" alt="test" src="https://github.com/user-attachments/assets/bee62efe-10ba-4a7a-b134-61160cef70ea" />
+
+
   
