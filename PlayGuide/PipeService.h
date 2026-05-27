@@ -10,6 +10,7 @@ using InputMethodHandler = std::function<void(InputType)>;
 using FilterRuleHandler = std::function<void(HWND)>;
 using HotkeyEditHandler = std::function<void(UINT, const Key&)>;
 using HotkeyMsgHandler = std::function<void(UINT)>;
+using FilterRuleSwitchHandler = std::function<void(bool)>;
 
 template<typename T>
 struct WriteResult
@@ -38,6 +39,7 @@ public:
     void SendHotkeyEdit(UINT action, const Key& key);
     void SendFilterRule(HWND hwnd);
     void SendHotkeyMsg(UINT msg);
+    void SendFilterRuleSwitch(bool value);
 
     void SetInputMethodHandler(InputMethodHandler handler) { m_inputMethodHandler = std::move(handler); }
     void SetFilterRuleHandler(FilterRuleHandler handler) { m_filterRuleHandler = std::move(handler); }
@@ -45,9 +47,13 @@ public:
     void SetHotkeyMsgHandler(HotkeyMsgHandler handler) { m_hotkeyMsgHandler = std::move(handler); }
     template<typename T>
     WriteResult<T> WritePacket(HANDLE pipe, MsgCategory cat, const T& data);
+    void SetFilterRuleSwitch(FilterRuleSwitchHandler handler) { m_filterRuleSwitchHandler = std::move(handler);
+    }
 private:
     void ReadLoop();
     void WriteLoop();
+
+   
 
     HANDLE CreatePipeServer(const wchar_t* name, DWORD access);
     HANDLE ConnectPipeClient(const wchar_t* name, DWORD access);
@@ -58,7 +64,7 @@ private:
     FilterRuleHandler m_filterRuleHandler;
     HotkeyEditHandler m_hotkeyEditHandler;
     HotkeyMsgHandler m_hotkeyMsgHandler;
-
+    FilterRuleSwitchHandler m_filterRuleSwitchHandler;
 private:
     std::atomic<bool> m_running{ false };
 

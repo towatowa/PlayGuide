@@ -65,7 +65,7 @@ namespace winrt::PlayGuide::implementation
 				default:
 					break;
 				}
-				
+				self->m_isExpanded = false;
 			});
 
 		this->Activated([weak_this](auto&&, auto&& args)
@@ -400,8 +400,11 @@ namespace winrt::PlayGuide::implementation
 					int height = ExpandHeight * dpi / 96.0f;
 					appWin.MoveAndResize({ controlData.x, controlData.y, width, height });
 					auto side = self->CheckDockSide({ controlData.x, controlData.y, width, height}, self->m_screenCache);
-					if (side != DockSide::None)
+					if (side != DockSide::None) {
+						self->m_isAreadyHover = true;
+						self->m_isExpanded = true;
 						self->m_hoverTimer.Start();
+					}
 
 					//appWin.Resize({ width, height });
 					appWin.TitleBar().SetDragRectangles({ winrt::Windows::Graphics::RectInt32{0, 0, 10000, 40} });
@@ -517,6 +520,10 @@ namespace winrt::PlayGuide::implementation
 		int dockSnapHeight = DockSnapHeight * dpi / 96.0f;
 		int expandWidth = ExpandWidth * dpi / 96.0f;
 		int expandHeight = ExpandHeight * dpi / 96.0f;
+
+		if (m_isAreadyHover && side != DockSide::None)
+			return;
+
 		switch (side)
 		{
 		case DockSide::Left:
@@ -536,11 +543,18 @@ namespace winrt::PlayGuide::implementation
 		case DockSide::Top:
 			AppWindow().MoveAndResize({ rec.X, 0, expandWidth, dockSnapHeight });
 			break;
+		case DockSide::None:
+			m_isAreadyHover = false;
+			return;
 		}
+		m_isAreadyHover = true;
 	}
 
 	void ControlWindow::Grid_PointerEntered(IInspectable const&, Input::PointerRoutedEventArgs const&)
 	{
+		m_hideTimer.Stop();
+		if (m_isExpanded)
+			return;
 		auto bounds = GetWindowRect();
 #ifdef _DEBUG
 		std::string str{ "" };
@@ -559,37 +573,35 @@ namespace winrt::PlayGuide::implementation
 
 		m_pendingResize = true;
 
-		DispatcherQueue().TryEnqueue([this, bounds, size]()
+		m_pendingResize = false;
+		UINT dpi = GetDpiForWindow(m_hwnd);
+		int width = ExpandWidth * dpi / 96.0f;
+		int height = ExpandHeight * dpi / 96.0f;
+		int dockSnapWidth = DockSnapWidth * dpi / 96.0f;
+		int dockSnapHeight = DockSnapHeight * dpi / 96.0f;
+		// 判断当前是收缩态，还原展开尺寸
+		if (bounds.Width <= dockSnapWidth || bounds.Height <= dockSnapHeight)
+		{
+			if (size == DockSide::Right)
 			{
-				m_pendingResize = false;
-				UINT dpi = GetDpiForWindow(m_hwnd);
-				int width = ExpandWidth *  dpi / 96.0f;
-				int height = ExpandHeight * dpi / 96.0f;
-				int dockSnapWidth = DockSnapWidth * dpi / 96.0f;
-				int dockSnapHeight = DockSnapHeight * dpi / 96.0f;
-				// 判断当前是收缩态，还原展开尺寸
-				if (bounds.Width <= dockSnapWidth || bounds.Height <= dockSnapHeight)
-				{
-					if (size == DockSide::Right)
-					{
-						AppWindow().MoveAndResize({
-							m_screenCache.Width - width,
-							bounds.Y,
-						    width,
-							height
-							});
-					}
-					else
-					{
-						AppWindow().MoveAndResize({
-							bounds.X,
-							bounds.Y,
-							width,
-							height
-							});
-					}
-				}
-			});
+				AppWindow().MoveAndResize({
+					m_screenCache.Width - width,
+					bounds.Y,
+					width,
+					height
+					});
+			}
+			else
+			{
+				AppWindow().MoveAndResize({
+					bounds.X,
+					bounds.Y,
+					width,
+					height
+					});
+			}
+		}
+		m_isExpanded = true;
 	}
 
 	void ControlWindow::Grid_PointerExited(IInspectable const&, Input::PointerRoutedEventArgs const&)
@@ -630,6 +642,8 @@ namespace winrt::PlayGuide::implementation
 					{
 						//self->AppWindow().Show();
 						self->m_isActive = true;
+						self->m_hideTimer.Stop();
+					 
 						::ShowWindowAsync(self->m_hwnd, SW_SHOWNOACTIVATE);//使用异步show否则会阻塞主窗口resize
 
 						LOG_DEBUG << L"[ControlWindow]接收到窗口显示信号\n";
@@ -695,7 +709,7 @@ namespace winrt::PlayGuide::implementation
 		}
 		case WM_ShowHideWindow:
 		{
-			m_hideTimer.Start();
+			//m_hideTimer.Start();
 			break;
 		}
 		default:

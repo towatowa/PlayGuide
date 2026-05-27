@@ -319,4 +319,16 @@
   <data name="Exit" xml:space="preserve">
     <value>退出</value>
   </data>
+  <data name="KeyboardOff" xml:space="preserve">
+    <value>焦点时禁用快捷键</value>
+  </data>
+  <data name="KeyboardOff_Description" xml:space="preserve">
+    <value>主窗口 / 控制窗口获得焦点时禁用快捷键</value>
+  </data>
+  <data name="EnableWindowSnapping" xml:space="preserve">
+    <value>主窗口启用边缘吸附</value>
+  </data>
+  <data name="EnableWindowSnapping_Description" xml:space="preserve">
+    <value>将窗口拖动到屏幕边缘时，自动吸附并贴齐边缘。</value>
+  </data>
 </root>

@@ -299,6 +299,22 @@ namespace winrt::PlayGuide::implementation
 
         hstring HomePage() noexcept { return m_pSettings->homePage.c_str(); }
 
+        bool KeyboardOff() noexcept { return m_pSettings->keyboardOff; }
+        auto KeyboardOff(bool value)
+        {
+            if (m_pSettings->keyboardOff == value)
+                return;
+            AppDataService::Get().SaveKeyboardOff(value);
+        }
+        bool EnableWindowSnapping() noexcept {
+            return m_pSettings->enableWindowSnapping;
+        }
+        auto EnableWindowSnapping(bool value) noexcept
+        {
+            if (m_pSettings->enableWindowSnapping == value)
+                return;
+            AppDataService::Get().SaveEnableWindowSnapping(value);
+        }
     private:
         AppSettings* m_pSettings;
         IObservableVector<winrt::PlayGuide::HotkeyItemViewModel> m_hotkeys;

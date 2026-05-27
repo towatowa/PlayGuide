@@ -79,6 +79,8 @@ void AppDataService::SaveAppSettings(const AppSettings* settings) const
 	m_ini->WriteInt(L"AppSettings", L"IntelCpuUseECore", settings->intelCpuUseECore ? 1 : 0);
 	m_ini->WriteInt(L"AppSettings", L"InputType", (int)settings->inputType);
 	m_ini->WriteString(L"AppSettings", L"HomePage", settings->homePage);
+	m_ini->WriteInt(L"AppSettings", L"KeyboardOff", settings->keyboardOff ? 1 : 0);
+	m_ini->WriteInt(L"AppSettings", L"EnableWindowSnapping", settings->enableWindowSnapping ? 1 : 0);
 }
 
 void AppDataService::SaveHotkey(std::wstring_view id, std::wstring_view key)
@@ -154,6 +156,8 @@ AppSettings AppDataService::LoadSettings() const
 		static_cast<::InputType>(
 			m_ini->ReadInt(L"AppSettings", L"InputType", 0));
 	settings.homePage = m_ini->ReadString(L"AppSettings", L"HomePage", L"https://google.com");
+	settings.keyboardOff = static_cast<bool>(m_ini->ReadInt(L"AppSettings", L"KeyboardOff", 0));
+	settings.enableWindowSnapping = static_cast<bool>(m_ini->ReadInt(L"AppSettings", L"EnableWindowSnapping", 1));
 
 	return settings;
 }
@@ -250,9 +254,18 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	// =========================
 	MainWindowData mainData{};
 	ControlWindowData controlData{};
-	controlData.width = 854;
+	controlData.width = 900;
 	controlData.height = 120;
 	AppSettings settings{};
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	
+	int centerX = screenWidth / 2;
+	int centerY = screenHeight / 2;
+	mainData.x = centerX;
+	mainData.y = centerY;
+	controlData.x = mainData.x;
+	controlData.y = centerY - controlData.height;
 	// =========================
 	// 写入
 	// =========================
@@ -330,4 +343,21 @@ void AppDataService::SaveHomePage(std::wstring_view url) noexcept
 	SaveSettingItem(L"AppSettings", L"HomePage", url);
 }
 
+void AppDataService::SaveKeyboardOff(bool value) noexcept
+{
+	m_settings.keyboardOff = value;
+	PipeService::Get().SendFilterRuleSwitch(value);
+	SaveSettingItem(L"AppSettings", L"KeyboardOff", value);
+}
+
+bool AppDataService::KeyboardOff(bool value) noexcept
+{
+	return m_settings.keyboardOff;
+}
+
+void AppDataService::SaveEnableWindowSnapping(bool value) noexcept
+{
+	m_settings.enableWindowSnapping = value;
+	SaveSettingItem(L"AppSettings", L"EnableWindowSnapping", value);
+}
 

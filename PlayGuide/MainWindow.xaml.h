@@ -10,17 +10,32 @@
 #include "Appdata.h"
 #include "WebViewPage.xaml.h"
 #include <unordered_map>
+#include <winrt/Windows.Graphics.h>
+#include <EventToken.h>
+
 
 using namespace winrt::Microsoft::UI::Windowing;
 using namespace winrt::Microsoft::UI::Dispatching;
 using namespace winrt::Windows::Foundation;
 using namespace Microsoft::Web::WebView2::Core;
+using namespace winrt::Windows::Graphics;
 
 
 namespace winrt::PlayGuide::implementation
 {
+	// 停靠方向
+	enum class MainDockSide
+	{
+		None,
+		LeftTop,
+		LeftBottom,
+		RightTop,
+		RightBottom
+	};
 	struct MainWindow : MainWindowT<MainWindow>
 	{
+		
+
 		HWND GetHWND(winrt::Microsoft::UI::Xaml::Window const& window);
 
 		MainWindow(const hstring& url);
@@ -56,6 +71,20 @@ namespace winrt::PlayGuide::implementation
 
 		void SetSystemTrayShowWindowRevoker(Event<>& event);
 
+		void Grid_PointerPressed(IInspectable const& sender, Input::PointerRoutedEventArgs const& e);
+
+		void Grid_PointerMoved(IInspectable const& sender, Input::PointerRoutedEventArgs const& e);
+
+		void Grid_PointerReleased(IInspectable const& sender, Input::PointerRoutedEventArgs const& e);
+
+        RectInt32 GetScreenWorkArea() noexcept;
+
+		MainDockSide CheckDockSide(const RectInt32& windowBounds, const RectInt32& screen) noexcept;
+
+		void InitDockTimer();
+
+		void OnDragFinished();
+
 		Event<bool> controlWindowVisible;
 		Event<bool> controlWindowHideEvent;
 		Event<bool> controlWindowCloseEvent;
@@ -78,6 +107,17 @@ namespace winrt::PlayGuide::implementation
 		uint32_t m_curIndex{ 65535 };
 
 		WindowState m_curWinState{ WindowState::Normal };
+
+		bool m_isDragging{ false };
+		POINT       m_dragStartCursor{};
+		PointInt32  m_dragStartWindowPos{};
+		int         m_refreshRate{ 60 };
+		std::chrono::steady_clock::time_point m_lastMoveTime;
+		RectInt32   m_screenCache{};
+
+		winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer m_dragTimer{ nullptr };
+
+		winrt::event_token m_windowChangedToken{};
 	};
 }
 

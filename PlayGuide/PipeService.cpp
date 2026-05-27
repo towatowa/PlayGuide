@@ -227,6 +227,13 @@ void PipeService::HandleBuffer(uint8_t* buffer, DWORD readBytes)
                 m_inputMethodHandler((InputType)type);
             break;
         }
+        case MsgCategory::FilterRuleSwitch:
+        {
+            bool value;
+            memcpy(&value, payload, sizeof(bool));
+            if (m_filterRuleSwitchHandler)
+                m_filterRuleSwitchHandler(value);
+        }
         }
 
         ptr = next;
@@ -275,4 +282,9 @@ void PipeService::WriteLoop()
 
                 }, msg.data);
         });
+}
+
+void PipeService::SendFilterRuleSwitch(bool value)
+{
+    WorkerQueue<PipeMessage>::Instance().Push({ MsgCategory::FilterRuleSwitch, value });
 }

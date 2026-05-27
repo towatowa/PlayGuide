@@ -15,6 +15,7 @@
 #include "KeyStateTracker.h"
 #include "workerqueue.h"
 
+std::atomic<bool> g_keyboardOff{ false };
 
 std::atomic<std::shared_ptr<std::unordered_set<HWND>>> g_filteredWindows{ 
     std::make_shared<std::unordered_set<HWND>>()
@@ -38,7 +39,7 @@ static void InputCallback(const SimpleEvent& ev)
 
     //过滤窗口
     auto filters = g_filteredWindows.load();
-    if (filters->find(hwnd) != filters->end())
+    if (g_keyboardOff.load() && filters->find(hwnd) != filters->end())
         return;
     Key key(KeyStateTracker::instance()->GetCurrentModifiersKey(), ev.vk);
     LOG_DEBUG << "检测到按键事件: " << key.vk << " (HWND: " << hwnd << ")\n";
@@ -129,12 +130,11 @@ int main()
 
         LOG_INFO << "切换输入监听方式: " << (inputType == InputType::KeyboardHook ? "KeyboardHook" : "RawInput") << "\n";
     });
-    /*
-    WorkerQueue<UINT>::Instance().SetHandler([](UINT msg) {
-        LOG_INFO << "触发热键消息: " << msg << "\n";
-        PipeService::Get().SendHotkeyMsg(msg);
+    
+    PipeService::Get().SetFilterRuleSwitch([](bool value) {
+        g_keyboardOff.store(value);
         });
-        */
+
     WorkerQueue<UINT>::Instance().Start();
     PipeService::Get().StartAsServer();//启动管道服务
     //启动输入监听

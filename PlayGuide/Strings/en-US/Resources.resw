@@ -312,4 +312,16 @@
   <data name="Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
+  <data name="KeyboardOff" xml:space="preserve">
+    <value>Disable Hotkeys When Window Is Focused</value>
+  </data>
+  <data name="KeyboardOff_Description" xml:space="preserve">
+    <value>When enabled, global hotkeys will be disabled while the main window or control window is in focus.</value>
+  </data>
+  <data name="EnableWindowSnapping" xml:space="preserve">
+    <value>Enable Window Snapping</value>
+  </data>
+  <data name="EnableWindowSnapping_Description" xml:space="preserve">
+    <value>When enabled, the main window will automatically snap to screen edges when moved near them.</value>
+  </data>
 </root>

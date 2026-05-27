@@ -77,7 +77,7 @@ void Win32Helper::ShowHide(HWND hwnd)
     if (!hwnd) return;
 
     ShowWindow(hwnd,
-        IsWindowVisible(hwnd) ? SW_HIDE : SW_SHOW);
+        IsWindowVisible(hwnd) ? SW_HIDE : SW_SHOWNOACTIVATE);
 }
 
 void Win32Helper::ApplyStyle(HWND hwnd, LONG removeStyle)

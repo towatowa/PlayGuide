@@ -165,6 +165,8 @@ namespace winrt::PlayGuide::implementation
         std::mutex m_mutex;
         uint32_t m_nextId{ 2 };
         DispatcherQueueTimer m_hideTimer{ nullptr };
+        bool m_isAreadyHover{ false };
+        bool m_isExpanded{ false };
     };
 }
 

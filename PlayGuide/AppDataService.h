@@ -90,6 +90,11 @@ public:
 	void SaveHomePage(std::wstring_view url) noexcept;
 	std::wstring GetHomePage() noexcept { return m_settings.homePage; }
 
+	void SaveKeyboardOff(bool value) noexcept;
+	bool KeyboardOff(bool value) noexcept;
+
+	void SaveEnableWindowSnapping(bool value) noexcept;
+	bool GetEnableWindowSnapping() noexcept { return m_settings.enableWindowSnapping;  }
 private:
 
 	MainWindowData m_mainData{};

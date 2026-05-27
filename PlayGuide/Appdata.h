@@ -148,6 +148,7 @@ enum class MsgCategory : uint32_t
     HotkeyEdit = 2,
     FilterRule = 3,
     HotkeyMsg = 4,
+    FilterRuleSwitch = 5
 };
 
 struct IPCHeader
@@ -254,7 +255,7 @@ inline HotKeyMap g_defaultHotkeys
     {L"SkipForward"         , Key(ModifierMask::None, 54)},
     {L"SkipBackward"        , Key(ModifierMask::None, 53)},
     {L"ShowHideWindow"      , Key(ModifierMask::None, 57)},
-    {L"MaximizeWindow"      , Key(ModifierMask::None, 49)}
+    {L"MaximizeWindow"      , Key(ModifierMask::None, 48)}
 };
 
 enum class LocaleTheme 
@@ -290,6 +291,8 @@ struct AppSettings
     bool intelCpuUseECore{ true };
     InputType inputType{ InputType::KeyboardHook };
     std::wstring homePage{ L"https://bing.com"};
+    bool keyboardOff{ false };
+    bool enableWindowSnapping{ true };
 };
 
 struct TabInfo

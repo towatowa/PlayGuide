@@ -67,6 +67,27 @@ namespace winrt::PlayGuide::implementation
 				}
 			}
 			});
+
+		InitDockTimer();
+		m_windowChangedToken =
+			AppWindow().Changed(
+				[weak_this](auto const& sender, auto const& args)
+				{
+					auto self = weak_this.get();
+					if (!self)
+						return;
+
+					if (args.DidPositionChange())
+					{
+						if (!self->m_dragTimer)
+							return;
+
+						self->m_dragTimer.Stop();
+
+						self->m_dragTimer.Start();
+					}
+				});
+		m_screenCache = GetScreenWorkArea();
 	}
 
 
@@ -231,11 +252,12 @@ page.PlayPause();
 		{
 			if (!AppDataService::Get().HotkeyEnableState())
 				break;
-			DispatcherQueue().TryEnqueue([weak_this]() {
-				if (auto self = weak_this.get()) {
-					self->ShowHideWindow();
-				}
-				});
+			//DispatcherQueue().TryEnqueue([weak_this]() {
+				//if (auto self = weak_this.get()) {
+					//self->ShowHideWindow();
+			Win32Helper::ShowHide(m_hwnd);
+				//}
+				//});
 			break;
 		}
 		case WM_IncreaseOpacity:
@@ -302,17 +324,9 @@ page.PlayPause();
 
 		int x, y;
 
-		if (outOfBounds)
-		{
-			// 居中
-			x = work.left + (work.right - work.left - state.width) / 2;
-			y = work.top + (work.bottom - work.top - state.height) / 2;
-		}
-		else
-		{
-			x = rc.left;
-			y = rc.top;
-		}
+		x = rc.left;
+		y = rc.top;
+		
 
 		// ---- 一次性设置位置 + 大小 ----
 		SetWindowPos(
@@ -386,7 +400,7 @@ page.PlayPause();
 
 		//热键在后台service进程里写
 		AppDataService::Get().SaveMainData(state);
-		
+		m_dragTimer.Stop();
 	}
 
 	Windows::Foundation::IAsyncAction MainWindow::CreateWebViewPage(hstring url, int idx) noexcept
@@ -504,6 +518,137 @@ page.PlayPause();
 		m_systemTrayShowWindowRevoker = event(auto_revoke, [this]() {
 			AppWindow().Show();
 			});
+	}
+
+	RectInt32 MainWindow::GetScreenWorkArea() noexcept {
+		DisplayArea displayArea =
+			DisplayArea::GetFromPoint(
+				Windows::Graphics::PointInt32{ 0, 0 },
+				DisplayAreaFallback::Nearest
+			);
+		auto workArea = displayArea.WorkArea();
+		return workArea;
+	};
+
+	MainDockSide MainWindow::CheckDockSide(const RectInt32& windowBounds, const RectInt32& screen) noexcept
+	{
+		constexpr int threshold = 15;
+
+		bool isLeft =
+			windowBounds.X <= threshold;
+
+		bool isRight =
+			screen.Width - (windowBounds.X + windowBounds.Width)
+			<= threshold;
+
+		bool isTop =
+			windowBounds.Y <= (m_screenCache.Height / 2);
+
+		bool isBottom =
+			windowBounds.Y > (m_screenCache.Height / 2);
+
+		if (isLeft)
+		{
+			if (isTop)
+				return MainDockSide::LeftTop;
+
+			if (isBottom)
+				return MainDockSide::LeftBottom;
+		}
+
+		if (isRight)
+		{
+			if (isTop)
+				return MainDockSide::RightTop;
+
+			if (isBottom)
+				return MainDockSide::RightBottom;
+		}
+
+		return MainDockSide::None;
+	}
+
+	void MainWindow::InitDockTimer()
+	{
+		auto weak_this = get_weak();
+
+		m_dragTimer =
+			DispatcherQueue().CreateTimer();
+
+		m_dragTimer.Interval(
+			std::chrono::milliseconds(500));
+
+		m_dragTimer.IsRepeating(false);
+
+		m_dragTimer.Tick(
+			[weak_this](auto const&, auto const&)
+			{
+				auto self = weak_this.get();
+				if (!self)
+					return;
+
+				self->OnDragFinished();
+			});
+	}
+
+	void MainWindow::OnDragFinished()
+	{
+		if (!AppDataService::Get().GetEnableWindowSnapping())
+			return;
+		auto pos = AppWindow().Position();
+		auto size = AppWindow().Size();
+
+		RectInt32 rect{
+			pos.X,
+			pos.Y,
+			size.Width,
+			size.Height
+		};
+
+		auto side =
+			CheckDockSide(rect, m_screenCache);
+
+		switch (side)
+		{
+		case MainDockSide::LeftTop:
+
+			AppWindow().Move({
+				-10,
+				-10
+				});
+
+			break;
+
+		case MainDockSide::LeftBottom:
+
+			AppWindow().Move({
+				-10,
+				m_screenCache.Height - size.Height + 10
+				});
+
+			break;
+
+		case MainDockSide::RightTop:
+
+			AppWindow().Move({
+				m_screenCache.Width - size.Width+10,
+				-10
+				});
+
+			break;
+
+		case MainDockSide::RightBottom:
+
+			AppWindow().Move({
+				m_screenCache.Width - size.Width + 10,
+				m_screenCache.Height - size.Height + 10
+				});
+
+			break;
+
+		default:
+			break;
+		}
 	}
 }
 

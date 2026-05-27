@@ -102,38 +102,6 @@
                     </ComboBox>
                 </Grid>
             </Border>
-            <Border
-                Padding="16"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                CornerRadius="8">
-
-                <StackPanel Spacing="10">
-
-                    <TextBlock
-                        local:Loc.Text="HomePage"
-                        FontSize="16"
-                        FontWeight="SemiBold" />
-                    <!--  描述  -->
-                    <TextBlock
-                        Grid.Row="1"
-                        Opacity="0.6"
-                        local:Loc.Text="HomePage_Description"
-                        TextWrapping="Wrap" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <TextBox
-                            x:Name="HomepageBox"
-                            HorizontalAlignment="Stretch"
-                            PlaceholderText="https://google.com" 
-                            Text="{x:Bind ViewModel.HomePage, Mode=OneWay}"/>
-
-                        <Button
-                            Grid.Column="1"
-                            Click="OnApplyHomepageClicked"
-                            local:Loc.Text="Apply" />
-                    </Grid>
-                </StackPanel>
-
-            </Border>
             <!--  托盘  -->
             <Border
                 Padding="16"
@@ -160,14 +128,82 @@
                     </StackPanel>
 
                     <ToggleSwitch
-                        x:Name="TraySwitch"
                         Grid.Column="2"
                         IsOn="{x:Bind ViewModel.SystemTrayExecute, Mode=TwoWay}"
                         OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
                         OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                 </Grid>
             </Border>
+            <!--  主窗口自动吸附  -->
+            <Border
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
+                    <FontIcon
+                        Grid.Column="0"
+                        Margin="8"
+                        FontSize="18"
+                        Glyph="&#xE9F5;" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock local:Loc.Text="EnableWindowSnapping" />
+                        <TextBlock
+                            local:Loc.Text="EnableWindowSnapping_Description"
+                            FontSize="12"
+                            Opacity="0.6" />
+                    </StackPanel>
+
+                    <ToggleSwitch
+                        Grid.Column="2"
+                        IsOn="{x:Bind ViewModel.EnableWindowSnapping, Mode=TwoWay}"
+                        OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                        OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
+                </Grid>
+            </Border>
+            <Border
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon
+                        Grid.Column="0"
+                        Margin="8"
+                        FontSize="18"
+                        Glyph="&#xE80F;" />
+                    <StackPanel Spacing="10" Grid.Column="1">
+                        <TextBlock local:Loc.Text="HomePage" />
+                        <!--  描述  -->
+                        <TextBlock
+                            local:Loc.Text="HomePage_Description"
+                            Opacity="0.6"
+                            TextWrapping="Wrap" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <TextBox
+                                x:Name="HomepageBox"
+                                HorizontalAlignment="Stretch"
+                                PlaceholderText="https://google.com"
+                                Text="{x:Bind ViewModel.HomePage, Mode=OneWay}" />
+
+                            <Button
+                                Grid.Column="1"
+                                local:Loc.Text="Apply"
+                                Click="OnApplyHomepageClicked" />
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+            </Border>
             <!--  ================= 启动 =================  -->
             <TextBlock
                 Margin="0,10,0,0"
@@ -539,6 +575,38 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </StackPanel>
+            </Border>
+            <Border
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <FontIcon
+                        Grid.Column="0"
+                        Margin="8"
+                        FontSize="18"
+                        Glyph="&#xE785;" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock local:Loc.Text="KeyboardOff" />
+                        <TextBlock
+                            local:Loc.Text="KeyboardOff_Description"
+                            FontSize="12"
+                            Opacity="0.6" />
+                    </StackPanel>
+
+                    <ToggleSwitch
+                        x:Name="KeyboardOffSwitch"
+                        Grid.Column="2"
+                        IsOn="{x:Bind ViewModel.KeyboardOff, Mode=TwoWay}"
+                        OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                        OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
+                </Grid>
             </Border>
         </StackPanel>
     </ScrollViewer>
