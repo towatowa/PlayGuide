@@ -247,7 +247,7 @@ inline std::unordered_map<std::wstring, std::wstring> g_hotkeyIconGlyphs =
 
 inline HotKeyMap g_defaultHotkeys
 {
-    {L"EnableHotkeys"       , Key(ModifierMask::Ctrl|ModifierMask::Alt, 'H')},//Ctrl+Alt+H
+    {L"EnableHotkeys"       , Key(ModifierMask::Ctrl, 'H')},//Ctrl+Alt+H
     {L"IncreaseOpacity"     , Key(ModifierMask::None, 56)},
     {L"DecreaseOpacity"     , Key(ModifierMask::None, 55)},
     {L"PlayPause"           , Key(ModifierMask::None, 192)},
