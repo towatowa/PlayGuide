@@ -874,7 +874,7 @@ namespace winrt::PlayGuide::implementation
 	void ControlWindow::SetSystemTrayClickEventRevoker(Event<>& event)
 	{
 		m_systemTrayClickEventRevoker = event(auto_revoke, [this]() {
-			AppWindow().Show();
+			Grid_PointerEntered(nullptr, nullptr);
 		});
 	}
 
