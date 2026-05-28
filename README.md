@@ -4,9 +4,13 @@
 1. 控制窗口自动隐藏、边缘吸附，主窗口获取鼠标焦点时显示；
 2. 设置页可以自定义快捷键、按键捕获方式、主页设置、以及主题、开机、性能等选项；
 3. 状态恢复功能：会恢复上次关闭关键时的状态
+4. 主窗口自动吸附
 
 效果：
 <img width="3840" height="2160" alt="test" src="https://github.com/user-attachments/assets/bee62efe-10ba-4a7a-b134-61160cef70ea" />
+# 支持作者
+<img width="45%" alt="微信图片_20260528135051" src="https://github.com/user-attachments/assets/1b29b57f-6073-4cdd-94d8-1a30dc67feda" /><img width="45%" alt="微信图片_20260528135107" src="https://github.com/user-attachments/assets/7c9dea91-ccb2-456f-92dc-aec7f0df64c7" />
+
 
 
   
