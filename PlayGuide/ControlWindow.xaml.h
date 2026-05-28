@@ -157,8 +157,6 @@ namespace winrt::PlayGuide::implementation
         bool        m_isEntered{ false };
         bool        m_userInteracted{ false };
         bool        m_isClosingTab{ false }; // 标记：正在关闭标签
-        bool        m_isCreatingTab{ false };
-        bool        m_pendingResize{ false };
         DispatcherQueueTimer m_hoverTimer{ nullptr }; 
         std::chrono::steady_clock::time_point m_lastMoveTime;
         hstring m_title;

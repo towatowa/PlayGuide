@@ -552,6 +552,7 @@ namespace winrt::PlayGuide::implementation
 
 	void ControlWindow::Grid_PointerEntered(IInspectable const&, Input::PointerRoutedEventArgs const&)
 	{
+		m_isEntered = true;
 		m_hideTimer.Stop();
 		if (m_isExpanded)
 			return;
@@ -566,14 +567,8 @@ namespace winrt::PlayGuide::implementation
 			")\n";
 		LOG_DEBUG << str;
 #endif
-		m_isEntered = true;
 		auto size = CheckDockSide(bounds, m_screenCache);
-		if (m_pendingResize)
-			return;
-
-		m_pendingResize = true;
-
-		m_pendingResize = false;
+		
 		UINT dpi = GetDpiForWindow(m_hwnd);
 		int width = ExpandWidth * dpi / 96.0f;
 		int height = ExpandHeight * dpi / 96.0f;
