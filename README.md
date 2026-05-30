@@ -8,8 +8,6 @@
 
 效果：
 <img width="3840" height="2160" alt="test" src="https://github.com/user-attachments/assets/bee62efe-10ba-4a7a-b134-61160cef70ea" />
-# 支持作者
-<img width="45%" alt="微信图片_20260528135051" src="https://github.com/user-attachments/assets/1b29b57f-6073-4cdd-94d8-1a30dc67feda" /><img width="45%" alt="微信图片_20260528135107" src="https://github.com/user-attachments/assets/7c9dea91-ccb2-456f-92dc-aec7f0df64c7" />
 
 
 
