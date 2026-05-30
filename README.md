@@ -6,8 +6,8 @@
 3. 状态恢复功能：会恢复上次关闭关键时的状态
 4. 主窗口自动吸附
 
-效果：
-<img width="3840" height="2160" alt="test" src="https://github.com/user-attachments/assets/bee62efe-10ba-4a7a-b134-61160cef70ea" />
+# 使用方法
+[B站视频链接](https://www.bilibili.com/video/BV1LEV56eEcE/?spm_id_from=333.1387.list.card_archive.click)
 
 
 
