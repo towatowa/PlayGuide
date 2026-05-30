@@ -94,7 +94,7 @@ namespace KeyMapping
             {"Comma", VK_OEM_COMMA},          // ,
             {"Period", VK_OEM_PERIOD},        // .
             {"Slash", VK_OEM_2},              // /
-            {"Grave", VK_OEM_3},              // `
+            {"~", VK_OEM_3},              // `
     };
 
     static const std::unordered_map<USHORT, std::string> s_vkToKeyName = [] {
