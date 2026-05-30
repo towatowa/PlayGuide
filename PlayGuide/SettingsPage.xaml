@@ -181,7 +181,7 @@
                         Margin="8"
                         FontSize="18"
                         Glyph="&#xE80F;" />
-                    <StackPanel Spacing="10" Grid.Column="1">
+                    <StackPanel Grid.Column="1" Spacing="10">
                         <TextBlock local:Loc.Text="HomePage" />
                         <!--  描述  -->
                         <TextBlock
@@ -424,7 +424,9 @@
                             Margin="0,0,-75,0"
                             HorizontalAlignment="Right"
                             IsEnabled="True"
-                            IsOn="{x:Bind ViewModel.HotkeysEnabled, Mode=OneWay}" />
+                            IsOn="{x:Bind ViewModel.HotkeysEnabled, Mode=OneWay}"
+                            OffContent="{x:Bind ViewModel.TrayOffText, Mode=OneWay}"
+                            OnContent="{x:Bind ViewModel.TrayOnText, Mode=OneWay}" />
                     </Grid>
 
                     <!--  分割线  -->
