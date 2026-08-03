@@ -37,7 +37,7 @@
     <WinUISDKReferences>true</WinUISDKReferences>
     <EnableMsixTooling>true</EnableMsixTooling>
     <SelfContained>false</SelfContained>
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
     <CppWinRTEnabled>true</CppWinRTEnabled>
 	<UseWebView2>true</UseWebView2>
