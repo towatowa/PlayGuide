@@ -37,7 +37,7 @@
     <WinUISDKReferences>true</WinUISDKReferences>
     <EnableMsixTooling>true</EnableMsixTooling>
     <SelfContained>false</SelfContained>
-    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
     <CppWinRTEnabled>true</CppWinRTEnabled>
 	<UseWebView2>true</UseWebView2>
@@ -397,7 +397,7 @@
     <PropertyGroup>
       <!-- 1. 尝试从项目定义中获取版本，如果没有定义则默认为 1.0.0 -->
       <AppVersion Condition="'$(Version)' != ''">$(Version)</AppVersion>
-      <AppVersion Condition="'$(AppVersion)' == ''">1.0.0</AppVersion>
+      <AppVersion Condition="'$(AppVersion)' == ''">1.0.1</AppVersion>
       <!-- 设置压缩包的文件名 -->
       <TempZipDir>$(OutDir)TempPublish\</TempZipDir>
       <ZipFileName>$(SolutionDir)Publish\$(ProjectName)_v$(AppVersion)_Release.zip</ZipFileName>
