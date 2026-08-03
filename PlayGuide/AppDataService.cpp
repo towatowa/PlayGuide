@@ -257,15 +257,24 @@ void AppDataService::CreateDefaultConfig(const std::wstring& path)
 	controlData.width = 900;
 	controlData.height = 120;
 	AppSettings settings{};
+	// 1. 获取屏幕宽高
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-	
+
 	int centerX = screenWidth / 2;
 	int centerY = screenHeight / 2;
-	mainData.x = centerX;
-	mainData.y = centerY;
-	controlData.x = mainData.x;
-	controlData.y = centerY - controlData.height;
+
+	// 2. 让 main 窗口的【几何中心】对齐屏幕中心
+	// 公式：左上角坐标 = 屏幕中心 - 窗口宽高的一半
+	mainData.x = centerX - (mainData.width / 2);
+	mainData.y = centerY - (mainData.height / 2);
+
+	// 3. 显示在 main 窗口的正上方
+	// X 轴：与 main 窗口左对齐（如果你希望它们水平居中对齐，可以用：mainData.x + (mainData.width - controlData.width) / 2）
+	controlData.x = mainData.x - 50;
+
+	// Y 轴：main 窗口的顶边（mainData.y）减去 control 窗口自身的高度
+	controlData.y = mainData.y - controlData.height - 100;
 	// =========================
 	// 写入
 	// =========================

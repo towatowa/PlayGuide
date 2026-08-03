@@ -84,16 +84,15 @@ namespace KeyMapping
         {"Num_Enter", VK_RETURN}, // 注意：区分需结合 ScanCode
 
         // ===== 符号键（美式键盘）=====
-        {"Minus", VK_OEM_MINUS},          // -
-        {"Equal", VK_OEM_PLUS},           // =
-        {"Left_Bracket", VK_OEM_4},       // [
-        {"Right_Bracket", VK_OEM_6},      // ]
-        {"Backslash", VK_OEM_5},          // \
+        {"=", VK_OEM_PLUS},           // =
+        {"[", VK_OEM_4},       // [
+        {"]", VK_OEM_6},      // ]
+        {"\\", VK_OEM_5},          // \
             {"Semicolon", VK_OEM_1},          // ;
-            {"Apostrophe", VK_OEM_7},         // '
-            {"Comma", VK_OEM_COMMA},          // ,
-            {"Period", VK_OEM_PERIOD},        // .
-            {"Slash", VK_OEM_2},              // /
+            {"'", VK_OEM_7},         // '
+            {",", VK_OEM_COMMA},          // ,
+            {".", VK_OEM_PERIOD},        // .
+            {"/", VK_OEM_2},              // /
             {"~", VK_OEM_3},              // `
     };
 

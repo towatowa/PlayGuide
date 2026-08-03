@@ -134,6 +134,8 @@ namespace winrt::PlayGuide::implementation
 
         TabViewItem CreateTabItem(hstring const& title, winrt::Microsoft::UI::Xaml::Media::ImageSource favicon);
 
+        std::wstring StripUrlPrefix(const std::wstring& original_url);
+
         TabHeaderView GetHeader(Grid const& grid)
         {
             return {

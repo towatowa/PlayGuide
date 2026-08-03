@@ -104,8 +104,13 @@ namespace winrt::PlayGuide::implementation
 
 						auto data = tag.as<IPropertySet>();
 						auto idx = unbox_value<uint32_t>(data.Lookup(L"idx"));
-						auto url = unbox_value<hstring>(data.Lookup(L"url"));
-						self->UrlBox().Text(url);
+						hstring url = unbox_value<hstring>(data.Lookup(L"url"));
+						
+						std::wstring url_(url);
+						if (self->IsProbablyUrl(url_))
+							url_ = self->StripUrlPrefix(url_);
+
+						self->UrlBox().Text(url_);
 
 						self->tabSeletedChangedEvent.Invoke(TabInfo{ idx, L"", url.c_str() });
 
@@ -169,7 +174,6 @@ namespace winrt::PlayGuide::implementation
 							{
 								url = L"https://" + url;
 							}
-
 							if (!self->IsProbablyUrl(url.c_str()))
 							{
 								self->UrlBox().Text(LocalizationHelper::Get().String(L"IsNotProbablyUrl"));
@@ -177,7 +181,7 @@ namespace winrt::PlayGuide::implementation
 							}
 							// 创建新 TabViewItem
 							auto newTab = self->CreateTabItem(LocalizationHelper::Get().String(L"Loading"), nullptr);
-							newTab.IsClosable(false);
+							newTab.IsClosable(false);				
 							PropertySet data;
 							data.Insert(L"url", box_value(url));
 							data.Insert(L"title", box_value(L""));
@@ -263,6 +267,9 @@ namespace winrt::PlayGuide::implementation
 				// 创建新 TabViewItem
 				auto newTab = self->CreateTabItem(LocalizationHelper::Get().String(L"Loading"), nullptr);
 				newTab.IsClosable(false);
+				auto url = info.url;
+				if (self->IsProbablyUrl(url))
+					url = self->StripUrlPrefix(url);
 				PropertySet data;
 				data.Insert(L"url", box_value(info.url));
 				data.Insert(L"title", box_value(info.title));
@@ -303,7 +310,12 @@ namespace winrt::PlayGuide::implementation
 			if (auto self = weak_this.get())
 			{
 				if (auto item = self->FindTabViewItem(info.idx)) {
-					self->UrlBox().Text(info.url);
+					std::wstring url = info.url;
+					if (self->IsProbablyUrl(url))
+					{
+						url = self->StripUrlPrefix(url);
+					}
+					self->UrlBox().Text(url);
 					ToolTipService::SetToolTip(
 						self->UrlBox(),
 						box_value(info.url)
@@ -685,6 +697,7 @@ namespace winrt::PlayGuide::implementation
 			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			BYTE alpha = Win32Helper::GetOpacity(m_hwnd) - 10;
+			if (alpha < 45) alpha = 45;
 			Win32Helper::SetOpacity(m_hwnd, alpha);
 			break;
 		}
@@ -692,8 +705,9 @@ namespace winrt::PlayGuide::implementation
 		{
 			if (!AppDataService::Get().HotkeyEnableState())
 				break;
-			byte alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
-			Win32Helper::SetOpacity(m_hwnd, alpha);
+			int alpha = Win32Helper::GetOpacity(m_hwnd) + 10;
+			if (alpha >= 255) alpha = 255;
+			Win32Helper::SetOpacity(m_hwnd, (byte)alpha);
 			break;
 		}
 		case WM_EnableHotkeys:
@@ -1133,6 +1147,26 @@ namespace winrt::PlayGuide::implementation
 
 		return item;
 	}
+
+	std::wstring ControlWindow::StripUrlPrefix(const std::wstring& original_url) {
+		std::wstring_view sv(original_url);
+
+		if (sv.starts_with(L"https://www.")) {
+			sv.remove_prefix(12);
+		}
+		else if (sv.starts_with(L"https://")) {
+			sv.remove_prefix(8);
+		}
+		else if (sv.starts_with(L"http://www.")) {
+			sv.remove_prefix(11);
+		}
+		else if (sv.starts_with(L"http://")) {
+			sv.remove_prefix(7);
+		}
+
+		return std::wstring(sv);
+	}
+
 
 }
 
