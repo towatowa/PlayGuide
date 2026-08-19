@@ -219,7 +219,7 @@ page.PlayPause();
 			break;
 		case WM_PlayPause:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() && m_curIndex <= 1)
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get()) {
@@ -230,7 +230,7 @@ page.PlayPause();
 		}
 		case WM_SkipForward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() || m_curIndex <= 1)
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -240,7 +240,7 @@ page.PlayPause();
 		}
 		case WM_SkipBackward:
 		{
-			if (!AppDataService::Get().HotkeyEnableState() || m_curIndex <= 1)
+			if (!AppDataService::Get().HotkeyEnableState())
 				break;
 			DispatcherQueue().TryEnqueue([weak_this]() {
 				if (auto self = weak_this.get())
@@ -287,6 +287,7 @@ page.PlayPause();
 					self->ToggleMaximize();
 				}
 			});
+			break;
 		}
 		default:
 			break;
